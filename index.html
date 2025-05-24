@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
+    <title>Daily Productivity Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fefefe;
+            padding: 10px;
+            max-width: 100%;
+            margin: 0;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .date {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(221, 160, 221, 0.08);
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(221, 160, 221, 0.12);
+        }
+
+        .section h2 {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-description {
+            color: #7f8c8d;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .task-input {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .task-input input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .task-input input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            background: white;
+            color: #333;
+            min-height: 44px;
+            box-sizing: border-box;
+        }
+
+        .task-input input[type="text"]:focus {
+            outline: none;
+            border-color: #FF1493;
+            box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
+            background: white;
+        }
+
+        .add-task-btn {
+            background: linear-gradient(45deg, #7B3F8A, #9A5FB8) !important;
+            color: white !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+            padding: 12px 20px !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            font-size: 1em !important;
+            margin-top: 15px !important;
+            transition: all 0.3s !important;
+            box-shadow: 0 2px 8px rgba(123, 63, 138, 0.3) !important;
+            width: 100% !important;
+            min-height: 44px !important;
+            font-weight: 600 !important;
+            touch-action: manipulation !important;
+        }
+
+        .add-task-btn:hover, .add-task-btn:active {
+            background: linear-gradient(45deg, #8E4BA0, #B070D0) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(123, 63, 138, 0.4) !important;
+        }
+
+        .creative-workflow {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #E6E6FA 0%, #DDA0DD 50%, #9370DB 100%);
+            color: white;
+            border-left: none;
+            box-shadow: 0 4px 20px rgba(221, 160, 221, 0.4);
+        }
+
+        .creative-workflow h2 {
+            color: white;
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .workflow-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .workflow-section h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .workflow-section .examples {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .brain-dump {
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            border-left: 5px solid #6B2C91 !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+            border-left: 5px solid #6B2C91 !important;
+        }
+
+        .brain-dump h2 {
+            color: white !important;
+        }
+
+        .brain-dump .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .brain-dump textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.95em;
+            resize: vertical;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .brain-dump textarea:focus {
+            outline: none;
+            border-color: #FF1493;
+            box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
+        }
+
+        .stats {
+            position: sticky !important;
+            top: 10px !important;
+            right: 10px !important;
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            color: white !important;
+            padding: 12px 16px !important;
+            border-radius: 12px !important;
+            font-size: 0.9em !important;
+            z-index: 1000 !important;
+            box-shadow: 0 4px 15px rgba(107, 44, 145, 0.4) !important;
+            margin-bottom: 15px !important;
+            text-align: center !important;
+            width: fit-content !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .completed-count {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .sync-status {
+            font-size: 0.8em !important;
+            opacity: 0.95 !important;
+            margin-top: 5px !important;
+            text-align: center !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            padding: 4px 8px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+        }
+
+        /* Cloud Setup Modal */
+        .cloud-setup-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .cloud-setup-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .cloud-setup-content h3 {
+            color: #6B2C91;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .setup-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .setup-input:focus {
+            outline: none;
+            border-color: #6B2C91;
+            box-shadow: 0 0 0 3px rgba(107, 44, 145, 0.2);
+        }
+
+        .setup-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .setup-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .setup-btn.primary {
+            background: linear-gradient(45deg, #6B2C91, #9A4AC0);
+            color: white;
+        }
+
+        .setup-btn.secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .setup-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .workflow-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                position: static;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Category-specific colors - Unicorn Palette */
+        .work { border-left-color: #FF1493; } /* Hot Pink */
+        .education { border-left-color: #FF6347; } /* Coral */
+        .relationships { border-left-color: #FFD700; } /* Bright Gold */
+        .money { border-left-color: #00FF7F; } /* Spring Green */
+        .business { border-left-color: #32CD32; } /* Lime Green */
+        .leisure { border-left-color: #00BFFF; } /* Deep Sky Blue */
+        .vanity { border-left-color: #4169E1; } /* Royal Blue */
+        .health { border-left-color: #DDA0DD; } /* Plum */
+        .home { border-left-color: #9932CC; } /* Dark Orchid */
+
+        /* Unstuck Suggestions Styles */
+        .unstuck-suggestions {
+            border-left-color: #6B2C91 !important;
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .unstuck-suggestions h2 {
+            color: white !important;
+        }
+
+        .unstuck-suggestions .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .suggestion-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .suggestion-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            min-height: 44px;
+            touch-action: manipulation;
+            width: 100%;
+        }
+
+        .suggestion-btn:hover, .suggestion-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .suggestion-btn.primary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #6B2C91;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .suggestion-btn.primary:hover, .suggestion-btn.primary:active {
+            background: white;
+            color: #6B2C91;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .suggestion-btn.primary:hover {
+            background: white;
+        }
+
+        #categoryFilter {
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1em;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            min-height: 44px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+        }
+
+        #categoryFilter option {
+            background: #6B2C91;
+            color: white;
+        }
+
+        .current-suggestion {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .suggestion-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .suggestion-category {
+            font-size: 0.9em;
+            opacity: 0.8;
+            font-style: italic;
+            color: white;
+        }
+
+        .suggestion-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #9370DB, #DDA0DD);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(147, 112, 219, 0.3);
+            min-height: 44px;
+            font-weight: 600;
+            touch-action: manipulation;
+            width: 100%;
+        }
+
+        .action-btn:hover, .action-btn:active {
+            background: linear-gradient(45deg, #BA55D3, #E6E6FA);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(147, 112, 219, 0.4);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(45deg, #8A2BE2, #9370DB);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .action-btn.secondary:hover, .action-btn.secondary:active {
+            background: linear-gradient(45deg, #9932CC, #BA55D3);
+        }
+
+        /* Yesterday's Review Styles */
+        .yesterday-review {
+            border-left-color: #6B2C91 !important;
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .yesterday-review h2 {
+            color: white !important;
+            text-align: center !important;
+            font-size: 1.8em !important;
+            margin-bottom: 15px !important;
+        }
+
+        .yesterday-review .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .yesterday-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.2) !important;
+            padding: 20px !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            min-width: 120px !important;
+        }
+
+        .stat-number {
+            font-size: 2.5em !important;
+            font-weight: bold !important;
+            color: white !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+        }
+
+        .stat-label {
+            font-size: 0.9em !important;
+            opacity: 0.9 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            margin-top: 5px !important;
+            color: white !important;
+        }
+
+        .yesterday-tasks {
+            background: rgba(255, 255, 255, 0.15) !important;
+            padding: 20px !important;
+            border-radius: 10px !important;
+            margin: 20px 0 !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            max-height: 300px !important;
+            overflow-y: auto !important;
+        }
+
+        .yesterday-task-item {
+            background: rgba(255, 255, 255, 0.1) !important;
+            padding: 12px 15px !important;
+            margin: 8px 0 !important;
+            border-radius: 8px !important;
+            border-left: 4px solid rgba(255, 255, 255, 0.4) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: white !important;
+        }
+
+        .task-category-badge {
+            background: rgba(255, 255, 255, 0.3) !important;
+            color: white !important;
+            padding: 4px 8px !important;
+            border-radius: 12px !important;
+            font-size: 0.8em !important;
+            font-weight: bold !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }
+
+        .motivational-btn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #6B2C91 !important;
+            border: 2px solid rgba(255, 255, 255, 0.4) !important;
+            padding: 18px 30px !important;
+            border-radius: 25px !important;
+            cursor: pointer !important;
+            font-size: 1.1em !important;
+            font-weight: bold !important;
+            margin: 20px auto !important;
+            display: block !important;
+            transition: all 0.3s !important;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            min-height: 44px !important;
+            touch-action: manipulation !important;
+            width: 100% !important;
+            max-width: 300px !important;
+            backdrop-filter: blur(10px) !important;
+        }
+
+        .motivational-btn:hover, .motivational-btn:active {
+            background: white !important;
+            color: #6B2C91 !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5) !important;
+            border-color: rgba(255, 255, 255, 0.6) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats" style="background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%); box-shadow: 0 4px 15px rgba(107, 44, 145, 0.4); border: 2px solid rgba(255, 255, 255, 0.2);">
+        <div>Tasks Completed</div>
+        <div class="completed-count" id="completedCount">0</div>
+        <div class="sync-status" id="syncStatus" onclick="showCloudSetup()" style="cursor: pointer; background: rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2);" title="Click to setup cloud sync">📱 Local Storage</div>
+    </div>
+
+    <div class="header">
+        <h1>Daily Productivity Tracker</h1>
+        <div class="date" id="currentDate"></div>
+    </div>
+
+    <!-- Yesterday's Review Section -->
+    <div class="section yesterday-review" id="yesterdaySection" style="margin-bottom: 30px;">
+        <h2>✨ Yesterday's Wins</h2>
+        <div class="section-description">Look at all the amazing things you accomplished yesterday!</div>
+        
+        <div class="yesterday-stats">
+            <div class="stat-box">
+                <div class="stat-number" id="yesterdayCount">0</div>
+                <div class="stat-label">Tasks Completed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="streakCount">0</div>
+                <div class="stat-label">Day Streak</div>
+            </div>
+        </div>
+
+        <div class="yesterday-tasks" id="yesterdayTasks">
+            <!-- Yesterday's completed tasks will appear here -->
+        </div>
+
+        <button class="motivational-btn" onclick="hideYesterdayReview()">Let's Build on This Success! 🚀</button>
+    </div>
+
+    <!-- Unstuck Suggestions Section - Moved to Top -->
+    <div class="section unstuck-suggestions" style="margin-bottom: 30px; background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%); box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4); border: 2px solid rgba(255, 255, 255, 0.2); border-left: 5px solid #6B2C91;">
+        <h2 style="color: white;">💡 Feeling Stuck? Try This</h2>
+        <div class="section-description" style="color: rgba(255, 255, 255, 0.9);">Goal-aligned suggestions to get you moving when motivation is low</div>
+        
+        <div class="suggestion-controls">
+            <button class="suggestion-btn primary" onclick="getRandomSuggestion()" style="background: rgba(255, 255, 255, 0.95); color: #6B2C91; border: 2px solid rgba(255, 255, 255, 0.4);">🎲 Get Random Suggestion</button>
+            <select id="categoryFilter" onchange="getSuggestionByCategory()">
+                <option value="">Choose a focus area...</option>
+                <option value="career">💼 Career & Creativity</option>
+                <option value="wealth">💰 Wealth & Business</option>
+                <option value="growth">🧠 Growth & Learning</option>
+                <option value="home">🏡 Home & Environment</option>
+                <option value="wellness">🏃 Wellness & Health</option>
+                <option value="vanity">💄 Vanity & Visibility</option>
+                <option value="relationships">💕 Relationships & Community</option>
+            </select>
+        </div>
+
+        <div class="current-suggestion" id="currentSuggestion">
+            <div class="suggestion-text" style="color: white;">Click "Get Random Suggestion" to start!</div>
+        </div>
+
+        <div class="suggestion-actions">
+            <button class="action-btn" onclick="addSuggestionAsTask()">+ Add as Task</button>
+            <button class="action-btn secondary" onclick="getAnotherSuggestion()">↻ Another Suggestion</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Life Areas Grid -->
+        <div class="section work">
+            <h2>🏢 Work</h2>
+            <div class="section-description">Creative production, admin, and digital content</div>
+            <div id="work-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('work')">+ Add Task</button>
+        </div>
+
+        <div class="section education">
+            <h2>📚 Education</h2>
+            <div class="section-description">Reading, researching, or watching intellectually nourishing media</div>
+            <div id="education-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('education')">+ Add Task</button>
+        </div>
+
+        <div class="section relationships">
+            <h2>👥 Relationships</h2>
+            <div class="section-description">Connection, communication, and check-ins with your circle</div>
+            <div id="relationships-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('relationships')">+ Add Task</button>
+        </div>
+
+        <div class="section money">
+            <h2>💰 Money</h2>
+            <div class="section-description">Tracking finances, pitching, promoting, or strategizing</div>
+            <div id="money-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('money')">+ Add Task</button>
+        </div>
+
+        <div class="section business">
+            <h2>📈 Business</h2>
+            <div class="section-description">Growth, audience engagement, product building</div>
+            <div id="business-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('business')">+ Add Task</button>
+        </div>
+
+        <div class="section leisure">
+            <h2>🎨 Leisure</h2>
+            <div class="section-description">Intentional play, consuming media, and exploring joy</div>
+            <div id="leisure-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('leisure')">+ Add Task</button>
+        </div>
+
+        <div class="section vanity">
+            <h2>💄 Vanity</h2>
+            <div class="section-description">Skincare, fashion, and beauty rituals that fuel confidence</div>
+            <div id="vanity-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('vanity')">+ Add Task</button>
+        </div>
+
+        <div class="section health">
+            <h2>🏃 Health</h2>
+            <div class="section-description">Movement, mindfulness, meals, or rest</div>
+            <div id="health-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('health')">+ Add Task</button>
+        </div>
+
+        <div class="section home">
+            <h2>🏠 Home</h2>
+            <div class="section-description">Tidying, organizing, decorating, or improving your space</div>
+            <div id="home-tasks"></div>
+            <button class="add-task-btn" onclick="addTask('home')">+ Add Task</button>
+        </div>
+
+        <!-- Creative Workflow Section -->
+        <div class="section creative-workflow">
+            <h2>🔄 Creative Flow: PRODUCE • RECOVER • DISCOVER</h2>
+            <div class="workflow-grid">
+                <div class="workflow-section">
+                    <h3>🎬 PRODUCE</h3>
+                    <div class="examples">Create something new: Record a video, draft a post, write a script, build a graphic</div>
+                    <div id="produce-tasks"></div>
+                    <button class="add-task-btn" onclick="addTask('produce')">+ Add Task</button>
+                </div>
+                
+                <div class="workflow-section">
+                    <h3>📝 RECOVER</h3>
+                    <div class="examples">Revisit unfinished ideas: Finish an outline, revise a blog post, turn notes into content</div>
+                    <div id="recover-tasks"></div>
+                    <button class="add-task-btn" onclick="addTask('recover')">+ Add Task</button>
+                </div>
+                
+                <div class="workflow-section">
+                    <h3>🔍 DISCOVER</h3>
+                    <div class="examples">Feed the pipeline: Read articles, watch videos for inspiration, research trends</div>
+                    <div id="discover-tasks"></div>
+                    <button class="add-task-btn" onclick="addTask('discover')">+ Add Task</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Brain Dump Section -->
+        <div class="section brain-dump">
+            <h2>🧠 Brain Dump</h2>
+            <div class="section-description">Capture any thoughts, ideas, or random notes here</div>
+            <textarea placeholder="Let your thoughts flow here..."></textarea>
+        </div>
+    </div>
+
+    <!-- Cloud Setup Modal -->
+    <div class="cloud-setup-modal" id="cloudSetupModal">
+        <div class="cloud-setup-content">
+            <h3>🌟 Setup Cloud Sync</h3>
+            <p>Connect to Google Sheets to sync your data across all devices!</p>
+            
+            <label>Google Sheets Spreadsheet ID:</label>
+            <input type="text" class="setup-input" id="spreadsheetId" placeholder="1abc...xyz (from your Google Sheets URL)">
+            
+            <label>Google API Key:</label>
+            <input type="text" class="setup-input" id="apiKey" placeholder="AIza... (your Google Sheets API key)">
+            
+            <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 0.9em;">
+                <strong>📋 Quick Setup Guide:</strong><br>
+                1. Go to <a href="https://sheets.google.com" target="_blank" style="color: #6B2C91;">Google Sheets</a> and create a new sheet<br>
+                2. Rename the sheet tab to "ProductivityTracker"<br>
+                3. Copy the long ID from the URL (between /d/ and /edit)<br>
+                4. Get a free API key from <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color: #6B2C91;">Google Cloud Console</a><br>
+                5. Enable the Google Sheets API in your project<br><br>
+                <strong>🔒 Your data stays private!</strong> Only you can access your spreadsheet.
+            </div>
+            
+            <div class="setup-buttons">
+                <button class="setup-btn secondary" onclick="closeCloudSetup()">Skip for Now</button>
+                <button class="setup-btn primary" onclick="setupCloudSync()">Connect & Sync</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        let taskCounter = 0;
+        let currentSuggestion = null;
+        
+        // Google Sheets Configuration
+        let GOOGLE_SHEETS_CONFIG = {
+            spreadsheetId: '', // Will be set by user
+            apiKey: '', // Will be set by user
+            sheetName: 'ProductivityTracker',
+            enabled: false
+        };
+
+        // Cloud sync status
+        let cloudSyncStatus = {
+            lastSync: null,
+            syncInProgress: false,
+            online: navigator.onLine
+        };
+
+        // Monitor online/offline status
+        window.addEventListener('online', () => {
+            cloudSyncStatus.online = true;
+            updateSyncStatus('🌐 Online - Syncing...');
+            syncToCloud();
+        });
+
+        window.addEventListener('offline', () => {
+            cloudSyncStatus.online = false;
+            updateSyncStatus('📱 Offline - Data saved locally');
+        });
+
+        // Google Sheets API Functions
+        async function syncToCloud() {
+            if (!GOOGLE_SHEETS_CONFIG.enabled || cloudSyncStatus.syncInProgress || !cloudSyncStatus.online) {
+                return;
+            }
+
+            cloudSyncStatus.syncInProgress = true;
+            updateSyncStatus('☁️ Syncing to cloud...');
+
+            try {
+                const todayData = getCurrentDayData();
+                await saveToGoogleSheets(todayData);
+                cloudSyncStatus.lastSync = new Date();
+                updateSyncStatus('✅ Synced to Google Sheets');
+            } catch (error) {
+                console.error('Sync failed:', error);
+                updateSyncStatus('❌ Sync failed - saved locally');
+            } finally {
+                cloudSyncStatus.syncInProgress = false;
+            }
+        }
+
+        async function saveToGoogleSheets(data) {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A:Z?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+            
+            const today = getDateString();
+            const row = [
+                today, // Date
+                JSON.stringify(data), // All task data
+                data.brainDump || '', // Brain dump
+                Object.values(data).flat().filter(task => task && task.completed).length, // Completed count
+                new Date().toISOString() // Timestamp
+            ];
+
+            // First, try to find existing row for today
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                const rows = result.values || [];
+                
+                const todayRowIndex = rows.findIndex(row => row[0] === today);
+                
+                if (todayRowIndex >= 0) {
+                    // Update existing row
+                    const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A${todayRowIndex + 1}:E${todayRowIndex + 1}?valueInputOption=RAW&key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+                    await fetch(updateUrl, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ values: [row] })
+                    });
+                } else {
+                    // Append new row
+                    const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A:E:append?valueInputOption=RAW&key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+                    await fetch(appendUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ values: [row] })
+                    });
+                }
+            } catch (error) {
+                throw new Error('Failed to save to Google Sheets: ' + error.message);
+            }
+        }
+
+        async function loadFromGoogleSheets(date) {
+            if (!GOOGLE_SHEETS_CONFIG.enabled) {
+                return null;
+            }
+
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A:Z?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+                const response = await fetch(url);
+                const result = await response.json();
+                const rows = result.values || [];
+                
+                const dateRow = rows.find(row => row[0] === date);
+                if (dateRow && dateRow[1]) {
+                    return JSON.parse(dateRow[1]);
+                }
+            } catch (error) {
+                console.error('Failed to load from Google Sheets:', error);
+            }
+            
+            return null;
+        }
+
+        function getCurrentDayData() {
+            const data = {};
+            categories.forEach(category => {
+                const container = document.getElementById(category + '-tasks');
+                const tasks = [];
+                if (container) {
+                    container.querySelectorAll('.task-input').forEach(taskDiv => {
+                        const checkbox = taskDiv.querySelector('input[type="checkbox"]');
+                        const textInput = taskDiv.querySelector('input[type="text"]');
+                        if (textInput && textInput.value.trim()) {
+                            tasks.push({
+                                text: textInput.value,
+                                completed: checkbox.checked
+                            });
+                        }
+                    });
+                }
+                data[category] = tasks;
+            });
+            
+            const brainDump = document.querySelector('.brain-dump textarea');
+            data.brainDump = brainDump ? brainDump.value : '';
+            data.saveTime = new Date().toISOString();
+            
+            return data;
+        }
+
+        // Cloud setup functions
+        function showCloudSetup() {
+            document.getElementById('cloudSetupModal').style.display = 'block';
+        }
+
+        function closeCloudSetup() {
+            document.getElementById('cloudSetupModal').style.display = 'none';
+        }
+
+        async function setupCloudSync() {
+            const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+
+            if (!spreadsheetId || !apiKey) {
+                alert('Please enter both Spreadsheet ID and API Key');
+                return;
+            }
+
+            // Test the connection
+            updateSyncStatus('🔄 Testing connection...');
+            
+            try {
+                const testUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${apiKey}`;
+                const response = await fetch(testUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Invalid credentials or spreadsheet not accessible');
+                }
+
+                // Save configuration
+                GOOGLE_SHEETS_CONFIG.spreadsheetId = spreadsheetId;
+                GOOGLE_SHEETS_CONFIG.apiKey = apiKey;
+                GOOGLE_SHEETS_CONFIG.enabled = true;
+
+                // Save to localStorage for persistence
+                localStorage.setItem('googleSheetsConfig', JSON.stringify(GOOGLE_SHEETS_CONFIG));
+
+                // Initial sync
+                await syncToCloud();
+                
+                closeCloudSetup();
+                updateSyncStatus('🎉 Connected to Google Sheets!');
+                
+                setTimeout(() => {
+                    updateSyncStatus('✅ Synced to Google Sheets');
+                }, 3000);
+
+            } catch (error) {
+                updateSyncStatus('❌ Connection failed');
+                alert('Connection failed: ' + error.message + '\n\nPlease check your Spreadsheet ID and API Key.');
+            }
+        }
+
+        // Load saved Google Sheets configuration
+        function loadCloudConfig() {
+            const saved = localStorage.getItem('googleSheetsConfig');
+            if (saved) {
+                try {
+                    GOOGLE_SHEETS_CONFIG = { ...GOOGLE_SHEETS_CONFIG, ...JSON.parse(saved) };
+                    if (GOOGLE_SHEETS_CONFIG.enabled) {
+                        updateSyncStatus('✅ Connected to Google Sheets');
+                    }
+                } catch (error) {
+                    console.error('Failed to load cloud config:', error);
+                }
+            }
+        }
+
+        // Load yesterday's review and today's data on page load
+        window.addEventListener('load', function() {
+            loadCloudConfig();
+            loadYesterdayReview();
+            // Always initialize empty tasks in Claude artifacts
+            loadTodayData();
+            // Make sections collapsible on mobile
+            makeCollapsible();
+            
+            // Show cloud setup after 3 seconds if not configured
+            setTimeout(() => {
+                if (!GOOGLE_SHEETS_CONFIG.enabled) {
+                    showCloudSetup();
+                }
+            }, 3000);
+        });
+
+        function getDateString(date = new Date()) {
+            return date.toDateString();
+        }
+
+        function getYesterdayString() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return yesterday.toDateString();
+        }
+
+        async function loadYesterdayReview() {
+            // Always show demo in Claude artifacts
+            if (window.location.href.includes('claude.ai') || !localStorage) {
+                showDemoYesterday();
+                return;
+            }
+            
+            let yesterdayData = null;
+
+            // Try to load from cloud first
+            if (GOOGLE_SHEETS_CONFIG.enabled && cloudSyncStatus.online) {
+                try {
+                    yesterdayData = await loadFromGoogleSheets(getYesterdayString());
+                } catch (error) {
+                    console.error('Failed to load yesterday from cloud:', error);
+                }
+            }
+
+            // Fallback to local storage
+            if (!yesterdayData) {
+                const yesterdayKey = 'dailyTracker-' + getYesterdayString();
+                const localData = localStorage.getItem(yesterdayKey);
+                if (localData) {
+                    try {
+                        yesterdayData = JSON.parse(localData);
+                    } catch (e) {
+                        console.log('Could not parse yesterday data');
+                    }
+                }
+            }
+
+            if (yesterdayData) {
+                displayYesterdayReview(yesterdayData);
+            } else {
+                // No yesterday data found, hide the section
+                const yesterdaySection = document.getElementById('yesterdaySection');
+                if (yesterdaySection) {
+                    yesterdaySection.style.display = 'none';
+                }
+            }
+        }
+
+        function showDemoYesterday() {
+            // Show demo data for Claude artifacts
+            const demoData = {
+                work: [
+                    { text: "Drafted pitch for major publication", completed: true },
+                    { text: "Created content calendar for next week", completed: true }
+                ],
+                education: [
+                    { text: "Read chapter on creativity psychology", completed: true }
+                ],
+                relationships: [
+                    { text: "Called mom to check in", completed: true },
+                    { text: "Sent encouraging message to friend", completed: true }
+                ],
+                business: [
+                    { text: "Researched partnership opportunities", completed: true }
+                ],
+                health: [
+                    { text: "10-minute morning walk", completed: true },
+                    { text: "Prepared healthy lunch", completed: true }
+                ],
+                vanity: [
+                    { text: "Tried new makeup look for video", completed: true }
+                ]
+            };
+            displayYesterdayReview(demoData);
+        }
+
+        // Show demo immediately for Claude artifacts
+        showDemoYesterday();
+
+        function displayYesterdayReview(data) {
+            const categoryNames = {
+                work: '💼 Work',
+                education: '📚 Education', 
+                relationships: '💕 Relationships',
+                money: '💰 Money',
+                business: '📈 Business',
+                leisure: '🎨 Leisure',
+                vanity: '💄 Vanity',
+                health: '🏃 Health',
+                home: '🏠 Home',
+                produce: '🎬 Produce',
+                recover: '📝 Recover',
+                discover: '🔍 Discover'
+            };
+
+            let completedTasks = [];
+            let totalCompleted = 0;
+
+            // Collect all completed tasks
+            Object.keys(data).forEach(category => {
+                if (category === 'brainDump') return;
+                
+                if (Array.isArray(data[category])) {
+                    data[category].forEach(task => {
+                        if (task.completed && task.text.trim()) {
+                            completedTasks.push({
+                                text: task.text,
+                                category: categoryNames[category] || category
+                            });
+                            totalCompleted++;
+                        }
+                    });
+                }
+            });
+
+            if (totalCompleted > 0) {
+                // Show the yesterday section (already visible in Claude artifacts)
+                document.getElementById('yesterdayCount').textContent = totalCompleted;
+                
+                // Calculate streak (simplified for demo)
+                const streak = calculateStreak();
+                document.getElementById('streakCount').textContent = streak;
+
+                // Display tasks
+                const tasksContainer = document.getElementById('yesterdayTasks');
+                tasksContainer.innerHTML = completedTasks.map(task => `
+                    <div class="yesterday-task-item">
+                        <span class="task-category-badge">${task.category}</span>
+                        <span>${task.text}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function calculateStreak() {
+            if (typeof localStorage === 'undefined') return 7; // Demo value
+            
+            let streak = 0;
+            let checkDate = new Date();
+            
+            // Check last 30 days for completed tasks
+            for (let i = 1; i <= 30; i++) {
+                checkDate.setDate(checkDate.getDate() - 1);
+                const dateKey = 'dailyTracker-' + checkDate.toDateString();
+                const dayData = localStorage.getItem(dateKey);
+                
+                if (dayData) {
+                    try {
+                        const data = JSON.parse(dayData);
+                        let hasCompletedTasks = false;
+                        
+                        Object.keys(data).forEach(category => {
+                            if (category === 'brainDump') return;
+                            if (Array.isArray(data[category])) {
+                                data[category].forEach(task => {
+                                    if (task.completed && task.text.trim()) {
+                                        hasCompletedTasks = true;
+                                    }
+                                });
+                            }
+                        });
+                        
+                        if (hasCompletedTasks) {
+                            streak++;
+                        } else {
+                            break; // Streak broken
+                        }
+                    } catch (e) {
+                        break;
+                    }
+                } else {
+                    break; // No data for this day
+                }
+            }
+            
+            return streak;
+        }
+
+        function hideYesterdayReview() {
+            document.getElementById('yesterdaySection').style.display = 'none';
+        }
+
+        // Collapsible section functionality
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+
+        // Add collapsible headers to sections
+        function makeCollapsible() {
+            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump)');
+            sections.forEach(section => {
+                const h2 = section.querySelector('h2');
+                if (h2) {
+                    const sectionId = section.id || 'section-' + Math.random().toString(36).substr(2, 9);
+                    section.id = sectionId;
+                    
+                    const header = document.createElement('div');
+                    header.className = 'section-header';
+                    header.onclick = () => toggleSection(sectionId);
+                    
+                    const collapseIcon = document.createElement('span');
+                    collapseIcon.className = 'collapse-icon';
+                    collapseIcon.innerHTML = '▼';
+                    
+                    h2.parentNode.insertBefore(header, h2);
+                    header.appendChild(h2);
+                    header.appendChild(collapseIcon);
+                    
+                    const content = document.createElement('div');
+                    content.className = 'section-content';
+                    const nextSibling = h2.nextSibling;
+                    while (nextSibling) {
+                        const temp = nextSibling.nextSibling;
+                        content.appendChild(nextSibling);
+                        nextSibling = temp;
+                    }
+                    section.appendChild(content);
+                }
+            });
+        }
+
+        // Goal-aligned suggestions based on your vision
+        const suggestions = {
+            career: [
+                "Draft a pitch for a major publication like The New Yorker",
+                "Record a 5-minute video sharing your sharp take on a current event",
+                "Write 3 original, thought-provoking social media posts",
+                "Outline a concept for your own show or media brand",
+                "Create a visually stunning graphic to accompany your next piece",
+                "Research and draft commentary on a trending political topic",
+                "Start writing a script for a 'Read & React' style video",
+                "Design a media kit that showcases your intellectual authority",
+                "Brainstorm 10 original angles on popular topics in your field",
+                "Write a compelling bio that positions you as a thought leader"
+            ],
+            wealth: [
+                "Research 3 potential brand partnership opportunities",
+                "Draft a proposal for a premium subscription tier",
+                "Calculate your target monthly income and reverse-engineer the steps",
+                "Create a pricing strategy for a new digital product",
+                "Reach out to one potential speaking engagement contact",
+                "Analyze your most profitable content and plan to create more",
+                "Set up a system to track all income streams",
+                "Research successful creators in your space and their business models",
+                "Draft an email pitch for a lucrative collaboration",
+                "Create a one-page business plan for your creative empire"
+            ],
+            growth: [
+                "Read one article from a prestigious publication and take notes",
+                "Listen to 20 minutes of an intellectually stimulating podcast",
+                "Research a trending topic and collect 5 interesting statistics",
+                "Turn your recent reading highlights into potential content ideas",
+                "Watch a cultural commentary video and write your own response",
+                "Read the first chapter of a book that challenges your thinking",
+                "Subscribe to a new newsletter from a thought leader you admire",
+                "Research an academic paper related to your interests",
+                "Create a system to capture and organize your best ideas",
+                "Follow 3 new accounts that share high-quality intellectual content"
+            ],
+            home: [
+                "Rearrange one corner of your space to be more inspiring",
+                "Research and save 5 beautiful home decor ideas on Pinterest",
+                "Declutter your desk area for better creative focus",
+                "Add one beautiful object to your most-used workspace",
+                "Research neighborhoods or homes you'd love to live in",
+                "Create a mood board for your ideal living space",
+                "Organize your books in a way that sparks joy",
+                "Light a candle and appreciate your current environment",
+                "Take a photo of the most beautiful corner of your home",
+                "Research one home improvement that would boost your creativity"
+            ],
+            wellness: [
+                "Take a 10-minute walk while listening to something inspiring",
+                "Do 5 minutes of stretching or gentle movement",
+                "Prepare one nourishing meal that makes you feel good",
+                "Practice 5 minutes of deep breathing or meditation",
+                "Take a luxurious shower or bath as a reset ritual",
+                "Write down 3 things you're grateful for today",
+                "Schedule time for rest without guilt",
+                "Dance to one song that makes you feel powerful",
+                "Step outside and get some natural light",
+                "Plan one joyful activity for this week"
+            ],
+            vanity: [
+                "Try a new makeup look that makes you feel powerful",
+                "Organize your closet and plan 3 outfits that tell your story",
+                "Take a few photos of yourself looking confident",
+                "Research a beauty trend you want to try",
+                "Put together an outfit that makes you feel like your best self",
+                "Do a skincare routine that feels luxurious",
+                "Practice your signature pose or expression in the mirror",
+                "Choose accessories that elevate your daily look",
+                "Plan your outfit for tomorrow with intention",
+                "Share your style inspiration on social media"
+            ],
+            relationships: [
+                "Send a thoughtful message to someone who supports your work",
+                "Comment meaningfully on 3 posts from people in your community",
+                "Reach out to a creator you admire for a potential collaboration",
+                "Write a post that invites your audience to share their thoughts",
+                "Schedule a coffee date with someone who inspires you",
+                "Thank someone who has helped your career or creativity",
+                "Join a conversation in your field on social media",
+                "Plan a way to give value to your community this week",
+                "Reach out to an old friend who might enjoy your current work",
+                "Engage with your Patreon community or create content for them"
+            ]
+        };
+
+        function getRandomSuggestion() {
+            const allSuggestions = Object.values(suggestions).flat();
+            const allCategories = Object.keys(suggestions);
+            
+            const randomSuggestion = allSuggestions[Math.floor(Math.random() * allSuggestions.length)];
+            const category = allCategories.find(cat => suggestions[cat].includes(randomSuggestion));
+            
+            displaySuggestion(randomSuggestion, category);
+        }
+
+        function getSuggestionByCategory() {
+            const selectedCategory = document.getElementById('categoryFilter').value;
+            if (!selectedCategory) return;
+            
+            const categorySuggestions = suggestions[selectedCategory];
+            const randomSuggestion = categorySuggestions[Math.floor(Math.random() * categorySuggestions.length)];
+            
+            displaySuggestion(randomSuggestion, selectedCategory);
+        }
+
+        function displaySuggestion(text, category) {
+            const categoryNames = {
+                career: '💼 Career & Creativity',
+                wealth: '💰 Wealth & Business', 
+                growth: '🧠 Growth & Learning',
+                home: '🏡 Home & Environment',
+                wellness: '🏃 Wellness & Health',
+                vanity: '💄 Vanity & Visibility',
+                relationships: '💕 Relationships & Community'
+            };
+
+            currentSuggestion = { text, category };
+            
+            document.getElementById('currentSuggestion').innerHTML = `
+                <div class="suggestion-text">${text}</div>
+                <div class="suggestion-category">${categoryNames[category]}</div>
+            `;
+        }
+
+        function getAnotherSuggestion() {
+            const filter = document.getElementById('categoryFilter').value;
+            if (filter) {
+                getSuggestionByCategory();
+            } else {
+                getRandomSuggestion();
+            }
+        }
+
+        function addSuggestionAsTask() {
+            if (!currentSuggestion) return;
+            
+            // Map suggestion categories to task categories
+            const categoryMap = {
+                career: 'work',
+                wealth: 'business', 
+                growth: 'education',
+                home: 'home',
+                wellness: 'health',
+                vanity: 'vanity',
+                relationships: 'relationships'
+            };
+            
+            const targetCategory = categoryMap[currentSuggestion.category];
+            if (!targetCategory) return;
+            
+            const container = document.getElementById(targetCategory + '-tasks');
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'task-input';
+            taskDiv.innerHTML = `
+                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount()">
+                <input type="text" value="${currentSuggestion.text}" onkeypress="handleEnter(event, '${targetCategory}')">
+            `;
+            container.appendChild(taskDiv);
+            taskCounter++;
+            
+            // Show feedback
+            const suggestionEl = document.getElementById('currentSuggestion');
+            const originalBg = suggestionEl.style.background;
+            suggestionEl.style.background = 'rgba(46, 204, 113, 0.3)';
+            setTimeout(() => {
+                suggestionEl.style.background = originalBg;
+            }, 1000);
+        }
+
+        function addTask(category) {
+            const container = document.getElementById(category + '-tasks');
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'task-input';
+            taskDiv.innerHTML = `
+                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount()">
+                <input type="text" placeholder="Enter your task here..." onkeypress="handleEnter(event, '${category}')">
+            `;
+            container.appendChild(taskDiv);
+            
+            // Focus on the new input
+            const inputs = taskDiv.querySelectorAll('input[type="text"]');
+            inputs[inputs.length - 1].focus();
+            
+            taskCounter++;
+        }
+
+        function handleEnter(event, category) {
+            if (event.key === 'Enter') {
+                addTask(category);
+            }
+        }
+
+        function updateCompletedCount() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            document.getElementById('completedCount').textContent = completed;
+        }
+
+        // Initialize with one task per category
+        const categories = ['work', 'education', 'relationships', 'money', 'business', 'leisure', 'vanity', 'health', 'home', 'produce', 'recover', 'discover'];
+        categories.forEach(category => {
+            addTask(category);
+        });
+
+        // Enhanced save function with cloud sync
+        function saveData() {
+            const data = getCurrentDayData();
+            
+            // Always save locally first
+            if (typeof localStorage !== 'undefined') {
+                const todayKey = 'dailyTracker-' + getDateString();
+                localStorage.setItem(todayKey, JSON.stringify(data));
+                localStorage.setItem('dailyTracker-latest', JSON.stringify(data));
+            }
+
+            // Sync to cloud if enabled and online
+            if (GOOGLE_SHEETS_CONFIG.enabled && cloudSyncStatus.online) {
+                syncToCloud();
+            }
+        }
+
+        // Enhanced load function with cloud sync
+        async function loadTodayData() {
+            let data = null;
+
+            // Try to load from cloud first
+            if (GOOGLE_SHEETS_CONFIG.enabled && cloudSyncStatus.online) {
+                try {
+                    updateSyncStatus('📥 Loading from cloud...');
+                    data = await loadFromGoogleSheets(getDateString());
+                    if (data) {
+                        updateSyncStatus('📱 Loaded from Google Sheets');
+                    }
+                } catch (error) {
+                    console.error('Failed to load from cloud:', error);
+                }
+            }
+
+            // Fallback to local storage
+            if (!data && typeof localStorage !== 'undefined') {
+                const todayKey = 'dailyTracker-' + getDateString();
+                const todayData = localStorage.getItem(todayKey);
+                if (todayData) {
+                    try {
+                        data = JSON.parse(todayData);
+                    } catch (e) {
+                        console.log('Could not parse local data');
+                    }
+                }
+            }
+
+            if (data) {
+                loadDataIntoUI(data);
+            } else {
+                initializeEmptyTasks();
+            }
+        }
+
+        function loadDataIntoUI(data) {
+            // Load tasks for each category
+            categories.forEach(category => {
+                if (data[category] && Array.isArray(data[category])) {
+                    const container = document.getElementById(category + '-tasks');
+                    if (container) {
+                        container.innerHTML = ''; // Clear existing
+                        
+                        data[category].forEach(task => {
+                            if (task.text && task.text.trim()) {
+                                const taskDiv = document.createElement('div');
+                                taskDiv.className = 'task-input';
+                                taskDiv.innerHTML = `
+                                    <input type="checkbox" id="task-${taskCounter}" 
+                                           ${task.completed ? 'checked' : ''} 
+                                           onchange="updateCompletedCount()">
+                                    <input type="text" value="${task.text}" 
+                                           onkeypress="handleEnter(event, '${category}')">
+                                `;
+                                container.appendChild(taskDiv);
+                                taskCounter++;
+                            }
+                        });
+                        
+                        // Add one empty task at the end
+                        addTask(category);
+                    }
+                }
+            });
+            
+            // Load brain dump
+            if (data.brainDump) {
+                const textarea = document.querySelector('.brain-dump textarea');
+                if (textarea) {
+                    textarea.value = data.brainDump;
+                }
+            }
+            
+            // Update completed count
+            updateCompletedCount();
+        }
+
+        function initializeEmptyTasks() {
+            // Initialize with one task per category
+            categories.forEach(category => {
+                const container = document.getElementById(category + '-tasks');
+                if (container && container.children.length === 0) {
+                    addTask(category);
+                }
+            });
+        }
+
+        // Auto-save every 30 seconds
+        setInterval(saveData, 30000);
+    </script>
+</body>
+</html>
