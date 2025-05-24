@@ -628,7 +628,7 @@
     <div class="stats">
         <div>Tasks Completed</div>
         <div class="completed-count" id="completedCount">0</div>
-        <div class="sync-status" id="syncStatus">🔥 Firebase Ready</div>
+        <div class="sync-status" id="syncStatus">Ready to Track</div>
     </div>
 
     <div class="header">
@@ -788,25 +788,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
-            authDomain: "productivity-tracker-knf13.firebaseapp.com",
-            projectId: "productivity-tracker-knf13",
-            storageBucket: "productivity-tracker-knf13.firebasestorage.app",
-            messagingSenderId: "76203539357",
-            appId: "1:76203539357:web:7d474a6a57c631b80d96"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         // Set current date
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
             weekday: 'long',
@@ -821,7 +803,6 @@
         // Initialize with one task per category
         const categories = ['work', 'education', 'relationships', 'money', 'business', 'leisure', 'vanity', 'health', 'home', 'produce', 'recover', 'discover'];
 
-        // Firebase sync functions
         function updateSyncStatus(message) {
             const statusEl = document.getElementById('syncStatus');
             if (statusEl) {
@@ -839,70 +820,64 @@
             return yesterday.toDateString();
         }
 
-        // Save data to Firebase
-        async function saveToFirebase() {
+        function saveData() {
             try {
-                updateSyncStatus('🔄 Syncing...');
+                updateSyncStatus('💾 Saving...');
                 
                 const data = getCurrentDayData();
                 const todayKey = getDateString();
                 
-                await db.collection('dailyTracking').doc(todayKey).set({
-                    ...data,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                // Store in localStorage as fallback
+                localStorage.setItem(todayKey, JSON.stringify(data));
                 
-                updateSyncStatus('✅ Synced to Firebase');
+                updateSyncStatus('✅ Saved');
                 
                 setTimeout(() => {
-                    updateSyncStatus('🔥 Firebase Ready');
+                    updateSyncStatus('Ready to Track');
                 }, 2000);
                 
             } catch (error) {
-                console.error('Firebase sync error:', error);
-                updateSyncStatus('❌ Sync failed');
+                console.error('Save error:', error);
+                updateSyncStatus('❌ Save failed');
             }
         }
 
-        // Load data from Firebase
-        async function loadFromFirebase(date = getDateString()) {
+        function loadData(date = getDateString()) {
             try {
                 updateSyncStatus('📥 Loading...');
                 
-                const doc = await db.collection('dailyTracking').doc(date).get();
+                const data = localStorage.getItem(date);
                 
-                if (doc.exists) {
-                    const data = doc.data();
-                    loadDataIntoUI(data);
-                    updateSyncStatus('📱 Loaded from Firebase');
+                if (data) {
+                    const parsedData = JSON.parse(data);
+                    loadDataIntoUI(parsedData);
+                    updateSyncStatus('📱 Loaded');
                 } else {
                     initializeEmptyTasks();
-                    updateSyncStatus('🔥 Firebase Ready');
+                    updateSyncStatus('Ready to Track');
                 }
                 
             } catch (error) {
-                console.error('Firebase load error:', error);
+                console.error('Load error:', error);
                 initializeEmptyTasks();
                 updateSyncStatus('❌ Load failed');
             }
         }
 
-        // Load yesterday's data for review
-        async function loadYesterdayReview() {
+        function loadYesterdayReview() {
             try {
                 const yesterdayKey = getYesterdayString();
-                const doc = await db.collection('dailyTracking').doc(yesterdayKey).get();
+                const data = localStorage.getItem(yesterdayKey);
                 
-                if (doc.exists) {
-                    const data = doc.data();
-                    displayYesterdayReview(data);
+                if (data) {
+                    const parsedData = JSON.parse(data);
+                    displayYesterdayReview(parsedData);
                 } else {
-                    // Show demo data if no yesterday data
-                    showDemoYesterday();
+                    hideYesterdayReview(); // Hide if no real data
                 }
             } catch (error) {
                 console.error('Error loading yesterday data:', error);
-                showDemoYesterday();
+                hideYesterdayReview(); // Hide on error too
             }
         }
 
@@ -946,10 +921,10 @@
                                 taskDiv.innerHTML = `
                                     <input type="checkbox" id="task-${taskCounter}" 
                                            ${task.completed ? 'checked' : ''} 
-                                           onchange="updateCompletedCount(); saveToFirebase();">
+                                           onchange="updateCompletedCount(); saveData();">
                                     <input type="text" value="${task.text}" 
                                            onkeypress="handleEnter(event, '${category}')"
-                                           onchange="saveToFirebase()">
+                                           onchange="saveData()">
                                 `;
                                 container.appendChild(taskDiv);
                                 taskCounter++;
@@ -965,7 +940,7 @@
                 const textarea = document.querySelector('.brain-dump textarea');
                 if (textarea) {
                     textarea.value = data.brainDump;
-                    textarea.addEventListener('input', saveToFirebase);
+                    textarea.addEventListener('input', saveData);
                 }
             }
             
@@ -986,10 +961,10 @@
             const taskDiv = document.createElement('div');
             taskDiv.className = 'task-input';
             taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount(); saveToFirebase();">
+                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount(); saveData();">
                 <input type="text" placeholder="Enter your task here..." 
                        onkeypress="handleEnter(event, '${category}')"
-                       onchange="saveToFirebase()">
+                       onchange="saveData()">
             `;
             container.appendChild(taskDiv);
             
@@ -1167,16 +1142,15 @@
             const taskDiv = document.createElement('div');
             taskDiv.className = 'task-input';
             taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount(); saveToFirebase();">
+                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount(); saveData();">
                 <input type="text" value="${currentSuggestion.text}" 
                        onkeypress="handleEnter(event, '${targetCategory}')"
-                       onchange="saveToFirebase()">
+                       onchange="saveData()">
             `;
             container.appendChild(taskDiv);
             taskCounter++;
             
-            // Save to Firebase
-            saveToFirebase();
+            saveData();
             
             const suggestionEl = document.getElementById('currentSuggestion');
             const originalBg = suggestionEl.style.background;
@@ -1186,32 +1160,7 @@
             }, 1000);
         }
 
-        function showDemoYesterday() {
-            const demoData = {
-                work: [
-                    { text: "Drafted pitch for major publication", completed: true },
-                    { text: "Created content calendar for next week", completed: true }
-                ],
-                education: [
-                    { text: "Read chapter on creativity psychology", completed: true }
-                ],
-                relationships: [
-                    { text: "Called mom to check in", completed: true },
-                    { text: "Sent encouraging message to friend", completed: true }
-                ],
-                business: [
-                    { text: "Researched partnership opportunities", completed: true }
-                ],
-                health: [
-                    { text: "10-minute morning walk", completed: true },
-                    { text: "Prepared healthy lunch", completed: true }
-                ],
-                vanity: [
-                    { text: "Tried new makeup look for video", completed: true }
-                ]
-            };
-            displayYesterdayReview(demoData);
-        }
+
 
         function displayYesterdayReview(data) {
             const categoryNames = {
@@ -1248,6 +1197,7 @@
                 }
             });
 
+            // Only show the section if there are actually completed tasks
             if (totalCompleted > 0) {
                 document.getElementById('yesterdayCount').textContent = totalCompleted;
                 document.getElementById('streakCount').textContent = calculateStreak();
@@ -1259,6 +1209,10 @@
                         <span>${task.text}</span>
                     </div>
                 `).join('');
+                
+                document.getElementById('yesterdaySection').style.display = 'block';
+            } else {
+                hideYesterdayReview();
             }
         }
 
@@ -1311,22 +1265,22 @@
 
         // Initialize the app
         window.addEventListener('load', async function() {
-            await loadYesterdayReview();
-            await loadFromFirebase();
+            loadYesterdayReview();
+            loadData();
             makeCollapsible();
             
             // Set up brain dump auto-save
             const textarea = document.querySelector('.brain-dump textarea');
             if (textarea) {
-                textarea.addEventListener('input', saveToFirebase);
+                textarea.addEventListener('input', saveData);
             }
         });
 
         // Auto-save every 30 seconds
-        setInterval(saveToFirebase, 30000);
+        setInterval(saveData, 30000);
 
         // Save before page unload
-        window.addEventListener('beforeunload', saveToFirebase);
+        window.addEventListener('beforeunload', saveData);
     </script>
 </body>
 </html>
