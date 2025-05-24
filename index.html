@@ -1315,8 +1315,6 @@
             }, 1000);
         }
 
-
-
         function displayYesterdayReview(data) {
             const categoryNames = {
                 work: '💼 Work',
@@ -1386,7 +1384,7 @@
         }
 
         function makeCollapsible() {
-            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump)');
+            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump):not(.daily-summary)');
             sections.forEach(section => {
                 const h2 = section.querySelector('h2');
                 if (h2) {
@@ -1448,7 +1446,6 @@
             });
 
             let completedTasks = [];
-            let totalTasks = 0;
             let totalCompleted = 0;
 
             const categoryNames = {
@@ -1483,7 +1480,6 @@
                             tasks: tasks
                         };
                         
-                        totalTasks += tasks.length;
                         totalCompleted += completed.length;
                         
                         // Add completed tasks to list
@@ -1497,9 +1493,6 @@
                 }
             });
 
-            const completionRate = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
-            const productivity = getProductivityLevel(completionRate);
-
             // Generate summary HTML
             let summaryHTML = `
                 <div class="summary-section">
@@ -1509,21 +1502,13 @@
                 <div class="summary-stats">
                     <div class="summary-stat">
                         <div class="summary-stat-number">${totalCompleted}</div>
-                        <div class="summary-stat-label">Completed</div>
-                    </div>
-                    <div class="summary-stat">
-                        <div class="summary-stat-number">${totalTasks}</div>
-                        <div class="summary-stat-label">Total Tasks</div>
-                    </div>
-                    <div class="summary-stat">
-                        <div class="summary-stat-number">${completionRate}%</div>
-                        <div class="summary-stat-label">Completion Rate</div>
+                        <div class="summary-stat-label">Tasks Completed</div>
                     </div>
                 </div>
 
                 <div class="summary-section">
-                    <h3>🏆 ${productivity.emoji} ${productivity.title}</h3>
-                    <p>${productivity.message}</p>
+                    <h3>🏆 Today's Wins</h3>
+                    <p>${getEncouragementMessage(totalCompleted)}</p>
                 </div>
             `;
 
@@ -1570,37 +1555,17 @@
             document.getElementById('summaryContent').innerHTML = summaryHTML;
         }
 
-        function getProductivityLevel(completionRate) {
-            if (completionRate >= 90) {
-                return {
-                    emoji: '🔥',
-                    title: 'Productivity Champion!',
-                    message: 'Outstanding work! You crushed nearly everything on your list today.'
-                };
-            } else if (completionRate >= 70) {
-                return {
-                    emoji: '⭐',
-                    title: 'Solid Progress',
-                    message: 'Great job staying focused and getting things done today!'
-                };
-            } else if (completionRate >= 50) {
-                return {
-                    emoji: '💪',
-                    title: 'Steady Momentum',
-                    message: 'You made meaningful progress. Every step forward counts!'
-                };
-            } else if (completionRate >= 25) {
-                return {
-                    emoji: '🌱',
-                    title: 'Building Habits',
-                    message: 'You started strong. Tomorrow is a new opportunity to grow!'
-                };
+        function getEncouragementMessage(completedTasks) {
+            if (completedTasks >= 10) {
+                return "🔥 Incredible! You accomplished so much today!";
+            } else if (completedTasks >= 7) {
+                return "⭐ Fantastic work! You really made things happen today.";
+            } else if (completedTasks >= 4) {
+                return "💪 Great progress! You tackled several important tasks.";
+            } else if (completedTasks >= 1) {
+                return "🌱 Every task completed is a step forward. Well done!";
             } else {
-                return {
-                    emoji: '🚀',
-                    title: 'Ready for Tomorrow',
-                    message: 'Today was about planning and preparation. Tomorrow, you\'ll soar!'
-                };
+                return "🚀 Tomorrow is a fresh start with endless possibilities!";
             }
         }
 
@@ -1624,23 +1589,17 @@
             exportText += `${'='.repeat(50)}\n\n`;
 
             // Stats
-            let totalTasks = 0;
             let totalCompleted = 0;
             Object.keys(data).forEach(category => {
                 if (category === 'brainDump') return;
                 if (Array.isArray(data[category])) {
-                    const tasks = data[category].filter(task => task.text && task.text.trim());
-                    const completed = tasks.filter(task => task.completed);
-                    totalTasks += tasks.length;
+                    const completed = data[category].filter(task => task.completed && task.text && task.text.trim());
                     totalCompleted += completed.length;
                 }
             });
 
-            const completionRate = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
             exportText += `OVERVIEW:\n`;
-            exportText += `- Tasks Completed: ${totalCompleted}\n`;
-            exportText += `- Total Tasks: ${totalTasks}\n`;
-            exportText += `- Completion Rate: ${completionRate}%\n\n`;
+            exportText += `- Tasks Completed: ${totalCompleted}\n\n`;
 
             // Completed tasks
             exportText += `ACCOMPLISHMENTS:\n`;
