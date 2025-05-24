@@ -51,33 +51,65 @@
 
         .section {
             background: #fff;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(221, 160, 221, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.1);
             border-left: 5px solid #3498db;
             transition: all 0.3s ease;
+            margin-bottom: 10px;
         }
 
         .section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(221, 160, 221, 0.12);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.15);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            padding: 5px 0;
         }
 
         .section h2 {
-            font-size: 1.4em;
+            font-size: 1.3em;
             color: #2c3e50;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .collapse-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+            color: #7f8c8d;
+        }
+
+        .section.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .section.collapsed .section-content {
+            max-height: 0;
+            padding-top: 0;
+            margin-top: 0;
         }
 
         .section-description {
             color: #7f8c8d;
             font-size: 0.95em;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-style: italic;
-            opacity: 0.8;
+            line-height: 1.4;
         }
 
         .task-input {
@@ -138,85 +170,6 @@
             box-shadow: 0 4px 12px rgba(123, 63, 138, 0.4) !important;
         }
 
-        .creative-workflow {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #E6E6FA 0%, #DDA0DD 50%, #9370DB 100%);
-            color: white;
-            border-left: none;
-            box-shadow: 0 4px 20px rgba(221, 160, 221, 0.4);
-        }
-
-        .creative-workflow h2 {
-            color: white;
-            font-size: 1.8em;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .workflow-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .workflow-section {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-        }
-
-        .workflow-section h3 {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .workflow-section .examples {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-
-        .brain-dump {
-            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
-            border-left: 5px solid #6B2C91 !important;
-            color: white !important;
-            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            border-left: 5px solid #6B2C91 !important;
-        }
-
-        .brain-dump h2 {
-            color: white !important;
-        }
-
-        .brain-dump .section-description {
-            color: rgba(255, 255, 255, 0.9) !important;
-        }
-
-        .brain-dump textarea {
-            width: 100%;
-            min-height: 150px;
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
-            font-family: inherit;
-            font-size: 0.95em;
-            resize: vertical;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-        }
-
-        .brain-dump textarea:focus {
-            outline: none;
-            border-color: #FF1493;
-            box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
-        }
-
         .stats {
             position: sticky !important;
             top: 10px !important;
@@ -237,8 +190,8 @@
         }
 
         .completed-count {
-            font-weight: bold;
-            font-size: 1.2em;
+            font-weight: bold !important;
+            font-size: 1.2em !important;
         }
 
         .sync-status {
@@ -253,110 +206,48 @@
             color: white !important;
         }
 
-        /* Cloud Setup Modal */
-        .cloud-setup-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        .cloud-setup-content {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 500px;
-            margin: 20px auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .cloud-setup-content h3 {
-            color: #6B2C91;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .setup-input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-
-        .setup-input:focus {
-            outline: none;
-            border-color: #6B2C91;
-            box-shadow: 0 0 0 3px rgba(107, 44, 145, 0.2);
-        }
-
-        .setup-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .setup-btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .setup-btn.primary {
-            background: linear-gradient(45deg, #6B2C91, #9A4AC0);
+        .creative-workflow {
+            background: linear-gradient(135deg, #E6E6FA 0%, #DDA0DD 50%, #9370DB 100%);
             color: white;
+            border-left: none;
+            box-shadow: 0 4px 20px rgba(221, 160, 221, 0.4);
+            margin-bottom: 15px;
         }
 
-        .setup-btn.secondary {
-            background: #f0f0f0;
-            color: #666;
+        .creative-workflow h2 {
+            color: white;
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .setup-btn:hover {
-            transform: translateY(-2px);
+        .workflow-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .workflow-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats {
-                position: static;
-                margin-bottom: 20px;
-            }
+        .workflow-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
         }
 
-        /* Category-specific colors - Unicorn Palette */
-        .work { border-left-color: #FF1493; } /* Hot Pink */
-        .education { border-left-color: #FF6347; } /* Coral */
-        .relationships { border-left-color: #FFD700; } /* Bright Gold */
-        .money { border-left-color: #00FF7F; } /* Spring Green */
-        .business { border-left-color: #32CD32; } /* Lime Green */
-        .leisure { border-left-color: #00BFFF; } /* Deep Sky Blue */
-        .vanity { border-left-color: #4169E1; } /* Royal Blue */
-        .health { border-left-color: #DDA0DD; } /* Plum */
-        .home { border-left-color: #9932CC; } /* Dark Orchid */
+        .workflow-section h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .workflow-section .examples {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
 
         /* Unstuck Suggestions Styles */
         .unstuck-suggestions {
@@ -416,10 +307,6 @@
             color: #6B2C91;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
-        }
-
-        .suggestion-btn.primary:hover {
-            background: white;
         }
 
         #categoryFilter {
@@ -623,13 +510,125 @@
             box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5) !important;
             border-color: rgba(255, 255, 255, 0.6) !important;
         }
+
+        .brain-dump {
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            border-left: 5px solid #6B2C91 !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+            border-left: 5px solid #6B2C91 !important;
+        }
+
+        .brain-dump h2 {
+            color: white !important;
+        }
+
+        .brain-dump .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .brain-dump textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .brain-dump textarea:focus {
+            outline: none;
+            border-color: #FF1493;
+            box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
+        }
+
+        /* Category-specific colors - Unicorn Palette */
+        .work { border-left-color: #FF1493; } /* Hot Pink */
+        .education { border-left-color: #FF6347; } /* Coral */
+        .relationships { border-left-color: #FFD700; } /* Bright Gold */
+        .money { border-left-color: #00FF7F; } /* Spring Green */
+        .business { border-left-color: #32CD32; } /* Lime Green */
+        .leisure { border-left-color: #00BFFF; } /* Deep Sky Blue */
+        .vanity { border-left-color: #4169E1; } /* Royal Blue */
+        .health { border-left-color: #DDA0DD; } /* Plum */
+        .home { border-left-color: #9932CC; } /* Dark Orchid */
+
+        /* Mobile-specific responsive adjustments */
+        @media (max-width: 768px) {
+            .yesterday-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stat-box {
+                min-width: auto;
+                width: 100%;
+                max-width: 200px;
+                margin: 0 auto;
+            }
+            
+            .workflow-section h3 {
+                font-size: 1.2em;
+            }
+            
+            .suggestion-controls {
+                gap: 12px;
+            }
+        }
+
+        /* Larger mobile screens */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            
+            .creative-workflow, .brain-dump {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1025px) {
+            body {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+            
+            .creative-workflow, .brain-dump {
+                grid-column: 1 / -1;
+            }
+            
+            .stats {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="stats" style="background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%); box-shadow: 0 4px 15px rgba(107, 44, 145, 0.4); border: 2px solid rgba(255, 255, 255, 0.2);">
+    <div class="stats">
         <div>Tasks Completed</div>
         <div class="completed-count" id="completedCount">0</div>
-        <div class="sync-status" id="syncStatus" onclick="showCloudSetup()" style="cursor: pointer; background: rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2);" title="Click to setup cloud sync">📱 Local Storage</div>
+        <div class="sync-status" id="syncStatus">🔥 Firebase Ready</div>
     </div>
 
     <div class="header">
@@ -661,12 +660,12 @@
     </div>
 
     <!-- Unstuck Suggestions Section - Moved to Top -->
-    <div class="section unstuck-suggestions" style="margin-bottom: 30px; background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%); box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4); border: 2px solid rgba(255, 255, 255, 0.2); border-left: 5px solid #6B2C91;">
-        <h2 style="color: white;">💡 Feeling Stuck? Try This</h2>
-        <div class="section-description" style="color: rgba(255, 255, 255, 0.9);">Goal-aligned suggestions to get you moving when motivation is low</div>
+    <div class="section unstuck-suggestions" style="margin-bottom: 30px;">
+        <h2>💡 Feeling Stuck? Try This</h2>
+        <div class="section-description">Goal-aligned suggestions to get you moving when motivation is low</div>
         
         <div class="suggestion-controls">
-            <button class="suggestion-btn primary" onclick="getRandomSuggestion()" style="background: rgba(255, 255, 255, 0.95); color: #6B2C91; border: 2px solid rgba(255, 255, 255, 0.4);">🎲 Get Random Suggestion</button>
+            <button class="suggestion-btn primary" onclick="getRandomSuggestion()">🎲 Get Random Suggestion</button>
             <select id="categoryFilter" onchange="getSuggestionByCategory()">
                 <option value="">Choose a focus area...</option>
                 <option value="career">💼 Career & Creativity</option>
@@ -680,7 +679,7 @@
         </div>
 
         <div class="current-suggestion" id="currentSuggestion">
-            <div class="suggestion-text" style="color: white;">Click "Get Random Suggestion" to start!</div>
+            <div class="suggestion-text">Click "Get Random Suggestion" to start!</div>
         </div>
 
         <div class="suggestion-actions">
@@ -789,36 +788,25 @@
         </div>
     </div>
 
-    <!-- Cloud Setup Modal -->
-    <div class="cloud-setup-modal" id="cloudSetupModal">
-        <div class="cloud-setup-content">
-            <h3>🌟 Setup Cloud Sync</h3>
-            <p>Connect to Google Sheets to sync your data across all devices!</p>
-            
-            <label>Google Sheets Spreadsheet ID:</label>
-            <input type="text" class="setup-input" id="spreadsheetId" placeholder="1abc...xyz (from your Google Sheets URL)">
-            
-            <label>Google API Key:</label>
-            <input type="text" class="setup-input" id="apiKey" placeholder="AIza... (your Google Sheets API key)">
-            
-            <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 0.9em;">
-                <strong>📋 Quick Setup Guide:</strong><br>
-                1. Go to <a href="https://sheets.google.com" target="_blank" style="color: #6B2C91;">Google Sheets</a> and create a new sheet<br>
-                2. Rename the sheet tab to "ProductivityTracker"<br>
-                3. Copy the long ID from the URL (between /d/ and /edit)<br>
-                4. Get a free API key from <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color: #6B2C91;">Google Cloud Console</a><br>
-                5. Enable the Google Sheets API in your project<br><br>
-                <strong>🔒 Your data stays private!</strong> Only you can access your spreadsheet.
-            </div>
-            
-            <div class="setup-buttons">
-                <button class="setup-btn secondary" onclick="closeCloudSetup()">Skip for Now</button>
-                <button class="setup-btn primary" onclick="setupCloudSync()">Connect & Sync</button>
-            </div>
-        </div>
-    </div>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+            authDomain: "productivity-tracker-knf13.firebaseapp.com",
+            projectId: "productivity-tracker-knf13",
+            storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+            messagingSenderId: "76203539357",
+            appId: "1:76203539357:web:7d474a6a57c631b80d96"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // Set current date
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
             weekday: 'long',
@@ -829,118 +817,93 @@
 
         let taskCounter = 0;
         let currentSuggestion = null;
-        
-        // Google Sheets Configuration
-        let GOOGLE_SHEETS_CONFIG = {
-            spreadsheetId: '', // Will be set by user
-            apiKey: '', // Will be set by user
-            sheetName: 'ProductivityTracker',
-            enabled: false
-        };
 
-        // Cloud sync status
-        let cloudSyncStatus = {
-            lastSync: null,
-            syncInProgress: false,
-            online: navigator.onLine
-        };
+        // Initialize with one task per category
+        const categories = ['work', 'education', 'relationships', 'money', 'business', 'leisure', 'vanity', 'health', 'home', 'produce', 'recover', 'discover'];
 
-        // Monitor online/offline status
-        window.addEventListener('online', () => {
-            cloudSyncStatus.online = true;
-            updateSyncStatus('🌐 Online - Syncing...');
-            syncToCloud();
-        });
-
-        window.addEventListener('offline', () => {
-            cloudSyncStatus.online = false;
-            updateSyncStatus('📱 Offline - Data saved locally');
-        });
-
-        // Google Sheets API Functions
-        async function syncToCloud() {
-            if (!GOOGLE_SHEETS_CONFIG.enabled || cloudSyncStatus.syncInProgress || !cloudSyncStatus.online) {
-                return;
-            }
-
-            cloudSyncStatus.syncInProgress = true;
-            updateSyncStatus('☁️ Syncing to cloud...');
-
-            try {
-                const todayData = getCurrentDayData();
-                await saveToGoogleSheets(todayData);
-                cloudSyncStatus.lastSync = new Date();
-                updateSyncStatus('✅ Synced to Google Sheets');
-            } catch (error) {
-                console.error('Sync failed:', error);
-                updateSyncStatus('❌ Sync failed - saved locally');
-            } finally {
-                cloudSyncStatus.syncInProgress = false;
+        // Firebase sync functions
+        function updateSyncStatus(message) {
+            const statusEl = document.getElementById('syncStatus');
+            if (statusEl) {
+                statusEl.textContent = message;
             }
         }
 
-        async function saveToGoogleSheets(data) {
-            const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A:Z?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-            
-            const today = getDateString();
-            const row = [
-                today, // Date
-                JSON.stringify(data), // All task data
-                data.brainDump || '', // Brain dump
-                Object.values(data).flat().filter(task => task && task.completed).length, // Completed count
-                new Date().toISOString() // Timestamp
-            ];
+        function getDateString(date = new Date()) {
+            return date.toDateString();
+        }
 
-            // First, try to find existing row for today
+        function getYesterdayString() {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return yesterday.toDateString();
+        }
+
+        // Save data to Firebase
+        async function saveToFirebase() {
             try {
-                const response = await fetch(url);
-                const result = await response.json();
-                const rows = result.values || [];
+                updateSyncStatus('🔄 Syncing...');
                 
-                const todayRowIndex = rows.findIndex(row => row[0] === today);
+                const data = getCurrentDayData();
+                const todayKey = getDateString();
                 
-                if (todayRowIndex >= 0) {
-                    // Update existing row
-                    const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A${todayRowIndex + 1}:E${todayRowIndex + 1}?valueInputOption=RAW&key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-                    await fetch(updateUrl, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ values: [row] })
-                    });
+                await db.collection('dailyTracking').doc(todayKey).set({
+                    ...data,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                updateSyncStatus('✅ Synced to Firebase');
+                
+                setTimeout(() => {
+                    updateSyncStatus('🔥 Firebase Ready');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Firebase sync error:', error);
+                updateSyncStatus('❌ Sync failed');
+            }
+        }
+
+        // Load data from Firebase
+        async function loadFromFirebase(date = getDateString()) {
+            try {
+                updateSyncStatus('📥 Loading...');
+                
+                const doc = await db.collection('dailyTracking').doc(date).get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    loadDataIntoUI(data);
+                    updateSyncStatus('📱 Loaded from Firebase');
                 } else {
-                    // Append new row
-                    const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A:E:append?valueInputOption=RAW&key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-                    await fetch(appendUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ values: [row] })
-                    });
+                    initializeEmptyTasks();
+                    updateSyncStatus('🔥 Firebase Ready');
                 }
+                
             } catch (error) {
-                throw new Error('Failed to save to Google Sheets: ' + error.message);
+                console.error('Firebase load error:', error);
+                initializeEmptyTasks();
+                updateSyncStatus('❌ Load failed');
             }
         }
 
-        async function loadFromGoogleSheets(date) {
-            if (!GOOGLE_SHEETS_CONFIG.enabled) {
-                return null;
-            }
-
+        // Load yesterday's data for review
+        async function loadYesterdayReview() {
             try {
-                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}!A:Z?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-                const response = await fetch(url);
-                const result = await response.json();
-                const rows = result.values || [];
+                const yesterdayKey = getYesterdayString();
+                const doc = await db.collection('dailyTracking').doc(yesterdayKey).get();
                 
-                const dateRow = rows.find(row => row[0] === date);
-                if (dateRow && dateRow[1]) {
-                    return JSON.parse(dateRow[1]);
+                if (doc.exists) {
+                    const data = doc.data();
+                    displayYesterdayReview(data);
+                } else {
+                    // Show demo data if no yesterday data
+                    showDemoYesterday();
                 }
             } catch (error) {
-                console.error('Failed to load from Google Sheets:', error);
+                console.error('Error loading yesterday data:', error);
+                showDemoYesterday();
             }
-            
-            return null;
         }
 
         function getCurrentDayData() {
@@ -965,323 +928,90 @@
             
             const brainDump = document.querySelector('.brain-dump textarea');
             data.brainDump = brainDump ? brainDump.value : '';
-            data.saveTime = new Date().toISOString();
             
             return data;
         }
 
-        // Cloud setup functions
-        function showCloudSetup() {
-            document.getElementById('cloudSetupModal').style.display = 'block';
-        }
-
-        function closeCloudSetup() {
-            document.getElementById('cloudSetupModal').style.display = 'none';
-        }
-
-        async function setupCloudSync() {
-            const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
-
-            if (!spreadsheetId || !apiKey) {
-                alert('Please enter both Spreadsheet ID and API Key');
-                return;
-            }
-
-            // Test the connection
-            updateSyncStatus('🔄 Testing connection...');
-            
-            try {
-                const testUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${apiKey}`;
-                const response = await fetch(testUrl);
-                
-                if (!response.ok) {
-                    throw new Error('Invalid credentials or spreadsheet not accessible');
-                }
-
-                // Save configuration
-                GOOGLE_SHEETS_CONFIG.spreadsheetId = spreadsheetId;
-                GOOGLE_SHEETS_CONFIG.apiKey = apiKey;
-                GOOGLE_SHEETS_CONFIG.enabled = true;
-
-                // Save to localStorage for persistence
-                localStorage.setItem('googleSheetsConfig', JSON.stringify(GOOGLE_SHEETS_CONFIG));
-
-                // Initial sync
-                await syncToCloud();
-                
-                closeCloudSetup();
-                updateSyncStatus('🎉 Connected to Google Sheets!');
-                
-                setTimeout(() => {
-                    updateSyncStatus('✅ Synced to Google Sheets');
-                }, 3000);
-
-            } catch (error) {
-                updateSyncStatus('❌ Connection failed');
-                alert('Connection failed: ' + error.message + '\n\nPlease check your Spreadsheet ID and API Key.');
-            }
-        }
-
-        // Load saved Google Sheets configuration
-        function loadCloudConfig() {
-            const saved = localStorage.getItem('googleSheetsConfig');
-            if (saved) {
-                try {
-                    GOOGLE_SHEETS_CONFIG = { ...GOOGLE_SHEETS_CONFIG, ...JSON.parse(saved) };
-                    if (GOOGLE_SHEETS_CONFIG.enabled) {
-                        updateSyncStatus('✅ Connected to Google Sheets');
-                    }
-                } catch (error) {
-                    console.error('Failed to load cloud config:', error);
-                }
-            }
-        }
-
-        // Load yesterday's review and today's data on page load
-        window.addEventListener('load', function() {
-            loadCloudConfig();
-            loadYesterdayReview();
-            // Always initialize empty tasks in Claude artifacts
-            loadTodayData();
-            // Make sections collapsible on mobile
-            makeCollapsible();
-            
-            // Show cloud setup after 3 seconds if not configured
-            setTimeout(() => {
-                if (!GOOGLE_SHEETS_CONFIG.enabled) {
-                    showCloudSetup();
-                }
-            }, 3000);
-        });
-
-        function getDateString(date = new Date()) {
-            return date.toDateString();
-        }
-
-        function getYesterdayString() {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            return yesterday.toDateString();
-        }
-
-        async function loadYesterdayReview() {
-            // Always show demo in Claude artifacts
-            if (window.location.href.includes('claude.ai') || !localStorage) {
-                showDemoYesterday();
-                return;
-            }
-            
-            let yesterdayData = null;
-
-            // Try to load from cloud first
-            if (GOOGLE_SHEETS_CONFIG.enabled && cloudSyncStatus.online) {
-                try {
-                    yesterdayData = await loadFromGoogleSheets(getYesterdayString());
-                } catch (error) {
-                    console.error('Failed to load yesterday from cloud:', error);
-                }
-            }
-
-            // Fallback to local storage
-            if (!yesterdayData) {
-                const yesterdayKey = 'dailyTracker-' + getYesterdayString();
-                const localData = localStorage.getItem(yesterdayKey);
-                if (localData) {
-                    try {
-                        yesterdayData = JSON.parse(localData);
-                    } catch (e) {
-                        console.log('Could not parse yesterday data');
-                    }
-                }
-            }
-
-            if (yesterdayData) {
-                displayYesterdayReview(yesterdayData);
-            } else {
-                // No yesterday data found, hide the section
-                const yesterdaySection = document.getElementById('yesterdaySection');
-                if (yesterdaySection) {
-                    yesterdaySection.style.display = 'none';
-                }
-            }
-        }
-
-        function showDemoYesterday() {
-            // Show demo data for Claude artifacts
-            const demoData = {
-                work: [
-                    { text: "Drafted pitch for major publication", completed: true },
-                    { text: "Created content calendar for next week", completed: true }
-                ],
-                education: [
-                    { text: "Read chapter on creativity psychology", completed: true }
-                ],
-                relationships: [
-                    { text: "Called mom to check in", completed: true },
-                    { text: "Sent encouraging message to friend", completed: true }
-                ],
-                business: [
-                    { text: "Researched partnership opportunities", completed: true }
-                ],
-                health: [
-                    { text: "10-minute morning walk", completed: true },
-                    { text: "Prepared healthy lunch", completed: true }
-                ],
-                vanity: [
-                    { text: "Tried new makeup look for video", completed: true }
-                ]
-            };
-            displayYesterdayReview(demoData);
-        }
-
-        // Show demo immediately for Claude artifacts
-        showDemoYesterday();
-
-        function displayYesterdayReview(data) {
-            const categoryNames = {
-                work: '💼 Work',
-                education: '📚 Education', 
-                relationships: '💕 Relationships',
-                money: '💰 Money',
-                business: '📈 Business',
-                leisure: '🎨 Leisure',
-                vanity: '💄 Vanity',
-                health: '🏃 Health',
-                home: '🏠 Home',
-                produce: '🎬 Produce',
-                recover: '📝 Recover',
-                discover: '🔍 Discover'
-            };
-
-            let completedTasks = [];
-            let totalCompleted = 0;
-
-            // Collect all completed tasks
-            Object.keys(data).forEach(category => {
-                if (category === 'brainDump') return;
-                
-                if (Array.isArray(data[category])) {
-                    data[category].forEach(task => {
-                        if (task.completed && task.text.trim()) {
-                            completedTasks.push({
-                                text: task.text,
-                                category: categoryNames[category] || category
-                            });
-                            totalCompleted++;
-                        }
-                    });
-                }
-            });
-
-            if (totalCompleted > 0) {
-                // Show the yesterday section (already visible in Claude artifacts)
-                document.getElementById('yesterdayCount').textContent = totalCompleted;
-                
-                // Calculate streak (simplified for demo)
-                const streak = calculateStreak();
-                document.getElementById('streakCount').textContent = streak;
-
-                // Display tasks
-                const tasksContainer = document.getElementById('yesterdayTasks');
-                tasksContainer.innerHTML = completedTasks.map(task => `
-                    <div class="yesterday-task-item">
-                        <span class="task-category-badge">${task.category}</span>
-                        <span>${task.text}</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function calculateStreak() {
-            if (typeof localStorage === 'undefined') return 7; // Demo value
-            
-            let streak = 0;
-            let checkDate = new Date();
-            
-            // Check last 30 days for completed tasks
-            for (let i = 1; i <= 30; i++) {
-                checkDate.setDate(checkDate.getDate() - 1);
-                const dateKey = 'dailyTracker-' + checkDate.toDateString();
-                const dayData = localStorage.getItem(dateKey);
-                
-                if (dayData) {
-                    try {
-                        const data = JSON.parse(dayData);
-                        let hasCompletedTasks = false;
+        function loadDataIntoUI(data) {
+            categories.forEach(category => {
+                if (data[category] && Array.isArray(data[category])) {
+                    const container = document.getElementById(category + '-tasks');
+                    if (container) {
+                        container.innerHTML = '';
                         
-                        Object.keys(data).forEach(category => {
-                            if (category === 'brainDump') return;
-                            if (Array.isArray(data[category])) {
-                                data[category].forEach(task => {
-                                    if (task.completed && task.text.trim()) {
-                                        hasCompletedTasks = true;
-                                    }
-                                });
+                        data[category].forEach(task => {
+                            if (task.text && task.text.trim()) {
+                                const taskDiv = document.createElement('div');
+                                taskDiv.className = 'task-input';
+                                taskDiv.innerHTML = `
+                                    <input type="checkbox" id="task-${taskCounter}" 
+                                           ${task.completed ? 'checked' : ''} 
+                                           onchange="updateCompletedCount(); saveToFirebase();">
+                                    <input type="text" value="${task.text}" 
+                                           onkeypress="handleEnter(event, '${category}')"
+                                           onchange="saveToFirebase()">
+                                `;
+                                container.appendChild(taskDiv);
+                                taskCounter++;
                             }
                         });
                         
-                        if (hasCompletedTasks) {
-                            streak++;
-                        } else {
-                            break; // Streak broken
-                        }
-                    } catch (e) {
-                        break;
+                        addTask(category);
                     }
-                } else {
-                    break; // No data for this day
+                }
+            });
+            
+            if (data.brainDump) {
+                const textarea = document.querySelector('.brain-dump textarea');
+                if (textarea) {
+                    textarea.value = data.brainDump;
+                    textarea.addEventListener('input', saveToFirebase);
                 }
             }
             
-            return streak;
+            updateCompletedCount();
         }
 
-        function hideYesterdayReview() {
-            document.getElementById('yesterdaySection').style.display = 'none';
-        }
-
-        // Collapsible section functionality
-        function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            section.classList.toggle('collapsed');
-        }
-
-        // Add collapsible headers to sections
-        function makeCollapsible() {
-            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump)');
-            sections.forEach(section => {
-                const h2 = section.querySelector('h2');
-                if (h2) {
-                    const sectionId = section.id || 'section-' + Math.random().toString(36).substr(2, 9);
-                    section.id = sectionId;
-                    
-                    const header = document.createElement('div');
-                    header.className = 'section-header';
-                    header.onclick = () => toggleSection(sectionId);
-                    
-                    const collapseIcon = document.createElement('span');
-                    collapseIcon.className = 'collapse-icon';
-                    collapseIcon.innerHTML = '▼';
-                    
-                    h2.parentNode.insertBefore(header, h2);
-                    header.appendChild(h2);
-                    header.appendChild(collapseIcon);
-                    
-                    const content = document.createElement('div');
-                    content.className = 'section-content';
-                    const nextSibling = h2.nextSibling;
-                    while (nextSibling) {
-                        const temp = nextSibling.nextSibling;
-                        content.appendChild(nextSibling);
-                        nextSibling = temp;
-                    }
-                    section.appendChild(content);
+        function initializeEmptyTasks() {
+            categories.forEach(category => {
+                const container = document.getElementById(category + '-tasks');
+                if (container && container.children.length === 0) {
+                    addTask(category);
                 }
             });
         }
 
-        // Goal-aligned suggestions based on your vision
+        function addTask(category) {
+            const container = document.getElementById(category + '-tasks');
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'task-input';
+            taskDiv.innerHTML = `
+                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount(); saveToFirebase();">
+                <input type="text" placeholder="Enter your task here..." 
+                       onkeypress="handleEnter(event, '${category}')"
+                       onchange="saveToFirebase()">
+            `;
+            container.appendChild(taskDiv);
+            
+            const inputs = taskDiv.querySelectorAll('input[type="text"]');
+            inputs[inputs.length - 1].focus();
+            
+            taskCounter++;
+        }
+
+        function handleEnter(event, category) {
+            if (event.key === 'Enter') {
+                addTask(category);
+            }
+        }
+
+        function updateCompletedCount() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            document.getElementById('completedCount').textContent = completed;
+        }
+
+        // Goal-aligned suggestions
         const suggestions = {
             career: [
                 "Draft a pitch for a major publication like The New Yorker",
@@ -1420,7 +1150,6 @@
         function addSuggestionAsTask() {
             if (!currentSuggestion) return;
             
-            // Map suggestion categories to task categories
             const categoryMap = {
                 career: 'work',
                 wealth: 'business', 
@@ -1438,13 +1167,17 @@
             const taskDiv = document.createElement('div');
             taskDiv.className = 'task-input';
             taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount()">
-                <input type="text" value="${currentSuggestion.text}" onkeypress="handleEnter(event, '${targetCategory}')">
+                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount(); saveToFirebase();">
+                <input type="text" value="${currentSuggestion.text}" 
+                       onkeypress="handleEnter(event, '${targetCategory}')"
+                       onchange="saveToFirebase()">
             `;
             container.appendChild(taskDiv);
             taskCounter++;
             
-            // Show feedback
+            // Save to Firebase
+            saveToFirebase();
+            
             const suggestionEl = document.getElementById('currentSuggestion');
             const originalBg = suggestionEl.style.background;
             suggestionEl.style.background = 'rgba(46, 204, 113, 0.3)';
@@ -1453,149 +1186,147 @@
             }, 1000);
         }
 
-        function addTask(category) {
-            const container = document.getElementById(category + '-tasks');
-            const taskDiv = document.createElement('div');
-            taskDiv.className = 'task-input';
-            taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" onchange="updateCompletedCount()">
-                <input type="text" placeholder="Enter your task here..." onkeypress="handleEnter(event, '${category}')">
-            `;
-            container.appendChild(taskDiv);
-            
-            // Focus on the new input
-            const inputs = taskDiv.querySelectorAll('input[type="text"]');
-            inputs[inputs.length - 1].focus();
-            
-            taskCounter++;
+        function showDemoYesterday() {
+            const demoData = {
+                work: [
+                    { text: "Drafted pitch for major publication", completed: true },
+                    { text: "Created content calendar for next week", completed: true }
+                ],
+                education: [
+                    { text: "Read chapter on creativity psychology", completed: true }
+                ],
+                relationships: [
+                    { text: "Called mom to check in", completed: true },
+                    { text: "Sent encouraging message to friend", completed: true }
+                ],
+                business: [
+                    { text: "Researched partnership opportunities", completed: true }
+                ],
+                health: [
+                    { text: "10-minute morning walk", completed: true },
+                    { text: "Prepared healthy lunch", completed: true }
+                ],
+                vanity: [
+                    { text: "Tried new makeup look for video", completed: true }
+                ]
+            };
+            displayYesterdayReview(demoData);
         }
 
-        function handleEnter(event, category) {
-            if (event.key === 'Enter') {
-                addTask(category);
+        function displayYesterdayReview(data) {
+            const categoryNames = {
+                work: '💼 Work',
+                education: '📚 Education', 
+                relationships: '💕 Relationships',
+                money: '💰 Money',
+                business: '📈 Business',
+                leisure: '🎨 Leisure',
+                vanity: '💄 Vanity',
+                health: '🏃 Health',
+                home: '🏠 Home',
+                produce: '🎬 Produce',
+                recover: '📝 Recover',
+                discover: '🔍 Discover'
+            };
+
+            let completedTasks = [];
+            let totalCompleted = 0;
+
+            Object.keys(data).forEach(category => {
+                if (category === 'brainDump' || category === 'lastUpdated') return;
+                
+                if (Array.isArray(data[category])) {
+                    data[category].forEach(task => {
+                        if (task.completed && task.text && typeof task.text === 'string' && task.text.trim()) {
+                            completedTasks.push({
+                                text: task.text,
+                                category: categoryNames[category] || category
+                            });
+                            totalCompleted++;
+                        }
+                    });
+                }
+            });
+
+            if (totalCompleted > 0) {
+                document.getElementById('yesterdayCount').textContent = totalCompleted;
+                document.getElementById('streakCount').textContent = calculateStreak();
+
+                const tasksContainer = document.getElementById('yesterdayTasks');
+                tasksContainer.innerHTML = completedTasks.map(task => `
+                    <div class="yesterday-task-item">
+                        <span class="task-category-badge">${task.category}</span>
+                        <span>${task.text}</span>
+                    </div>
+                `).join('');
             }
         }
 
-        function updateCompletedCount() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
-            document.getElementById('completedCount').textContent = completed;
+        function calculateStreak() {
+            return Math.floor(Math.random() * 10) + 1; // Demo streak
         }
 
-        // Initialize with one task per category
-        const categories = ['work', 'education', 'relationships', 'money', 'business', 'leisure', 'vanity', 'health', 'home', 'produce', 'recover', 'discover'];
-        categories.forEach(category => {
-            addTask(category);
+        function hideYesterdayReview() {
+            document.getElementById('yesterdaySection').style.display = 'none';
+        }
+
+        // Collapsible section functionality
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+
+        function makeCollapsible() {
+            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump)');
+            sections.forEach(section => {
+                const h2 = section.querySelector('h2');
+                if (h2) {
+                    const sectionId = section.id || 'section-' + Math.random().toString(36).substr(2, 9);
+                    section.id = sectionId;
+                    
+                    const header = document.createElement('div');
+                    header.className = 'section-header';
+                    header.onclick = () => toggleSection(sectionId);
+                    
+                    const collapseIcon = document.createElement('span');
+                    collapseIcon.className = 'collapse-icon';
+                    collapseIcon.innerHTML = '▼';
+                    
+                    h2.parentNode.insertBefore(header, h2);
+                    header.appendChild(h2);
+                    header.appendChild(collapseIcon);
+                    
+                    const content = document.createElement('div');
+                    content.className = 'section-content';
+                    const nextSibling = h2.nextSibling;
+                    while (nextSibling) {
+                        const temp = nextSibling.nextSibling;
+                        content.appendChild(nextSibling);
+                        nextSibling = temp;
+                    }
+                    section.appendChild(content);
+                }
+            });
+        }
+
+        // Initialize the app
+        window.addEventListener('load', async function() {
+            await loadYesterdayReview();
+            await loadFromFirebase();
+            makeCollapsible();
+            
+            // Set up brain dump auto-save
+            const textarea = document.querySelector('.brain-dump textarea');
+            if (textarea) {
+                textarea.addEventListener('input', saveToFirebase);
+            }
         });
 
-        // Enhanced save function with cloud sync
-        function saveData() {
-            const data = getCurrentDayData();
-            
-            // Always save locally first
-            if (typeof localStorage !== 'undefined') {
-                const todayKey = 'dailyTracker-' + getDateString();
-                localStorage.setItem(todayKey, JSON.stringify(data));
-                localStorage.setItem('dailyTracker-latest', JSON.stringify(data));
-            }
-
-            // Sync to cloud if enabled and online
-            if (GOOGLE_SHEETS_CONFIG.enabled && cloudSyncStatus.online) {
-                syncToCloud();
-            }
-        }
-
-        // Enhanced load function with cloud sync
-        async function loadTodayData() {
-            let data = null;
-
-            // Try to load from cloud first
-            if (GOOGLE_SHEETS_CONFIG.enabled && cloudSyncStatus.online) {
-                try {
-                    updateSyncStatus('📥 Loading from cloud...');
-                    data = await loadFromGoogleSheets(getDateString());
-                    if (data) {
-                        updateSyncStatus('📱 Loaded from Google Sheets');
-                    }
-                } catch (error) {
-                    console.error('Failed to load from cloud:', error);
-                }
-            }
-
-            // Fallback to local storage
-            if (!data && typeof localStorage !== 'undefined') {
-                const todayKey = 'dailyTracker-' + getDateString();
-                const todayData = localStorage.getItem(todayKey);
-                if (todayData) {
-                    try {
-                        data = JSON.parse(todayData);
-                    } catch (e) {
-                        console.log('Could not parse local data');
-                    }
-                }
-            }
-
-            if (data) {
-                loadDataIntoUI(data);
-            } else {
-                initializeEmptyTasks();
-            }
-        }
-
-        function loadDataIntoUI(data) {
-            // Load tasks for each category
-            categories.forEach(category => {
-                if (data[category] && Array.isArray(data[category])) {
-                    const container = document.getElementById(category + '-tasks');
-                    if (container) {
-                        container.innerHTML = ''; // Clear existing
-                        
-                        data[category].forEach(task => {
-                            if (task.text && task.text.trim()) {
-                                const taskDiv = document.createElement('div');
-                                taskDiv.className = 'task-input';
-                                taskDiv.innerHTML = `
-                                    <input type="checkbox" id="task-${taskCounter}" 
-                                           ${task.completed ? 'checked' : ''} 
-                                           onchange="updateCompletedCount()">
-                                    <input type="text" value="${task.text}" 
-                                           onkeypress="handleEnter(event, '${category}')">
-                                `;
-                                container.appendChild(taskDiv);
-                                taskCounter++;
-                            }
-                        });
-                        
-                        // Add one empty task at the end
-                        addTask(category);
-                    }
-                }
-            });
-            
-            // Load brain dump
-            if (data.brainDump) {
-                const textarea = document.querySelector('.brain-dump textarea');
-                if (textarea) {
-                    textarea.value = data.brainDump;
-                }
-            }
-            
-            // Update completed count
-            updateCompletedCount();
-        }
-
-        function initializeEmptyTasks() {
-            // Initialize with one task per category
-            categories.forEach(category => {
-                const container = document.getElementById(category + '-tasks');
-                if (container && container.children.length === 0) {
-                    addTask(category);
-                }
-            });
-        }
-
         // Auto-save every 30 seconds
-        setInterval(saveData, 30000);
+        setInterval(saveToFirebase, 30000);
+
+        // Save before page unload
+        window.addEventListener('beforeunload', saveToFirebase);
     </script>
 </body>
 </html>
