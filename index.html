@@ -548,6 +548,146 @@
             box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
         }
 
+        /* Daily Summary Styles */
+        .daily-summary {
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            border-left: 5px solid #6B2C91 !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .daily-summary h2 {
+            color: white !important;
+        }
+
+        .daily-summary .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .summary-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            min-height: 44px;
+            touch-action: manipulation;
+            width: 100%;
+        }
+
+        .summary-btn:hover, .summary-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .summary-btn.primary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #6B2C91;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .summary-btn.primary:hover, .summary-btn.primary:active {
+            background: white;
+            color: #6B2C91;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .summary-content {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            line-height: 1.6;
+        }
+
+        .summary-placeholder {
+            text-align: center;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .summary-section {
+            margin-bottom: 25px;
+        }
+
+        .summary-section h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .summary-stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .summary-stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .summary-stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .summary-task-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .summary-task-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .summary-brain-dump {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-style: italic;
+        }
+
         /* Category-specific colors - Unicorn Palette */
         .work { border-left-color: #FF1493; } /* Hot Pink */
         .education { border-left-color: #FF6347; } /* Coral */
@@ -592,7 +732,7 @@
                 margin: 0 auto;
             }
             
-            .creative-workflow, .brain-dump {
+            .creative-workflow, .brain-dump, .daily-summary {
                 grid-column: 1 / -1;
             }
         }
@@ -611,7 +751,7 @@
                 gap: 30px;
             }
             
-            .creative-workflow, .brain-dump {
+            .creative-workflow, .brain-dump, .daily-summary {
                 grid-column: 1 / -1;
             }
             
@@ -785,6 +925,21 @@
             <h2>🧠 Brain Dump</h2>
             <div class="section-description">Capture any thoughts, ideas, or random notes here</div>
             <textarea placeholder="Let your thoughts flow here..."></textarea>
+        </div>
+
+        <!-- Daily Summary Section -->
+        <div class="section daily-summary">
+            <h2>📊 Daily Summary</h2>
+            <div class="section-description">Review your day's progress and accomplishments</div>
+            
+            <div class="summary-controls">
+                <button class="summary-btn primary" onclick="generateDailySummary()">📋 Generate Today's Summary</button>
+                <button class="summary-btn" onclick="exportSummary()">📤 Export Summary</button>
+            </div>
+
+            <div class="summary-content" id="summaryContent">
+                <div class="summary-placeholder">Click "Generate Today's Summary" to see your daily progress!</div>
+            </div>
         </div>
     </div>
 
@@ -1281,6 +1436,251 @@
 
         // Save before page unload
         window.addEventListener('beforeunload', saveData);
+
+        // Daily Summary Functions
+        function generateDailySummary() {
+            const data = getCurrentDayData();
+            const today = new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let completedTasks = [];
+            let totalTasks = 0;
+            let totalCompleted = 0;
+
+            const categoryNames = {
+                work: '💼 Work',
+                education: '📚 Education', 
+                relationships: '💕 Relationships',
+                money: '💰 Money',
+                business: '📈 Business',
+                leisure: '🎨 Leisure',
+                vanity: '💄 Vanity',
+                health: '🏃 Health',
+                home: '🏠 Home',
+                produce: '🎬 Produce',
+                recover: '📝 Recover',
+                discover: '🔍 Discover'
+            };
+
+            // Analyze tasks by category
+            const categoryStats = {};
+            Object.keys(data).forEach(category => {
+                if (category === 'brainDump') return;
+                
+                if (Array.isArray(data[category])) {
+                    const tasks = data[category].filter(task => task.text && task.text.trim());
+                    const completed = tasks.filter(task => task.completed);
+                    
+                    if (tasks.length > 0) {
+                        categoryStats[category] = {
+                            name: categoryNames[category] || category,
+                            total: tasks.length,
+                            completed: completed.length,
+                            tasks: tasks
+                        };
+                        
+                        totalTasks += tasks.length;
+                        totalCompleted += completed.length;
+                        
+                        // Add completed tasks to list
+                        completed.forEach(task => {
+                            completedTasks.push({
+                                text: task.text,
+                                category: categoryNames[category] || category
+                            });
+                        });
+                    }
+                }
+            });
+
+            const completionRate = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
+            const productivity = getProductivityLevel(completionRate);
+
+            // Generate summary HTML
+            let summaryHTML = `
+                <div class="summary-section">
+                    <h3>📅 ${today}</h3>
+                </div>
+
+                <div class="summary-stats">
+                    <div class="summary-stat">
+                        <div class="summary-stat-number">${totalCompleted}</div>
+                        <div class="summary-stat-label">Completed</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-number">${totalTasks}</div>
+                        <div class="summary-stat-label">Total Tasks</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-number">${completionRate}%</div>
+                        <div class="summary-stat-label">Completion Rate</div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3>🏆 ${productivity.emoji} ${productivity.title}</h3>
+                    <p>${productivity.message}</p>
+                </div>
+            `;
+
+            // Add completed tasks if any
+            if (completedTasks.length > 0) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h3>✅ Accomplished Today</h3>
+                        <ul class="summary-task-list">
+                            ${completedTasks.map(task => `
+                                <li class="summary-task-item">
+                                    <strong>${task.category}:</strong> ${task.text}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Add category breakdown
+            if (Object.keys(categoryStats).length > 0) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h3>📊 Category Breakdown</h3>
+                        ${Object.entries(categoryStats).map(([key, stats]) => `
+                            <div style="margin-bottom: 10px;">
+                                <strong>${stats.name}:</strong> ${stats.completed}/${stats.total} completed
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Add brain dump if exists
+            if (data.brainDump && data.brainDump.trim()) {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h3>🧠 Brain Dump</h3>
+                        <div class="summary-brain-dump">${data.brainDump}</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('summaryContent').innerHTML = summaryHTML;
+        }
+
+        function getProductivityLevel(completionRate) {
+            if (completionRate >= 90) {
+                return {
+                    emoji: '🔥',
+                    title: 'Productivity Champion!',
+                    message: 'Outstanding work! You crushed nearly everything on your list today.'
+                };
+            } else if (completionRate >= 70) {
+                return {
+                    emoji: '⭐',
+                    title: 'Solid Progress',
+                    message: 'Great job staying focused and getting things done today!'
+                };
+            } else if (completionRate >= 50) {
+                return {
+                    emoji: '💪',
+                    title: 'Steady Momentum',
+                    message: 'You made meaningful progress. Every step forward counts!'
+                };
+            } else if (completionRate >= 25) {
+                return {
+                    emoji: '🌱',
+                    title: 'Building Habits',
+                    message: 'You started strong. Tomorrow is a new opportunity to grow!'
+                };
+            } else {
+                return {
+                    emoji: '🚀',
+                    title: 'Ready for Tomorrow',
+                    message: 'Today was about planning and preparation. Tomorrow, you\'ll soar!'
+                };
+            }
+        }
+
+        function exportSummary() {
+            const summaryContent = document.getElementById('summaryContent');
+            if (summaryContent.querySelector('.summary-placeholder')) {
+                alert('Please generate a summary first!');
+                return;
+            }
+
+            const data = getCurrentDayData();
+            const today = new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let exportText = `DAILY PRODUCTIVITY SUMMARY\n`;
+            exportText += `${today}\n`;
+            exportText += `${'='.repeat(50)}\n\n`;
+
+            // Stats
+            let totalTasks = 0;
+            let totalCompleted = 0;
+            Object.keys(data).forEach(category => {
+                if (category === 'brainDump') return;
+                if (Array.isArray(data[category])) {
+                    const tasks = data[category].filter(task => task.text && task.text.trim());
+                    const completed = tasks.filter(task => task.completed);
+                    totalTasks += tasks.length;
+                    totalCompleted += completed.length;
+                }
+            });
+
+            const completionRate = totalTasks > 0 ? Math.round((totalCompleted / totalTasks) * 100) : 0;
+            exportText += `OVERVIEW:\n`;
+            exportText += `- Tasks Completed: ${totalCompleted}\n`;
+            exportText += `- Total Tasks: ${totalTasks}\n`;
+            exportText += `- Completion Rate: ${completionRate}%\n\n`;
+
+            // Completed tasks
+            exportText += `ACCOMPLISHMENTS:\n`;
+            const categoryNames = {
+                work: 'Work', education: 'Education', relationships: 'Relationships',
+                money: 'Money', business: 'Business', leisure: 'Leisure',
+                vanity: 'Vanity', health: 'Health', home: 'Home',
+                produce: 'Produce', recover: 'Recover', discover: 'Discover'
+            };
+
+            Object.keys(data).forEach(category => {
+                if (category === 'brainDump') return;
+                if (Array.isArray(data[category])) {
+                    const completed = data[category].filter(task => task.completed && task.text && task.text.trim());
+                    if (completed.length > 0) {
+                        exportText += `\n${categoryNames[category] || category}:\n`;
+                        completed.forEach(task => {
+                            exportText += `  ✓ ${task.text}\n`;
+                        });
+                    }
+                }
+            });
+
+            // Brain dump
+            if (data.brainDump && data.brainDump.trim()) {
+                exportText += `\nBRAIN DUMP:\n`;
+                exportText += `${data.brainDump}\n`;
+            }
+
+            // Download as text file
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `daily-summary-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>
