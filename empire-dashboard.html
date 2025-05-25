@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6c757d;
+            --border: #e9ecef;
+            --accent: #6b46c1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* Main Layout */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Overview Grid */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .brand-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .brand-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .brand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .brand-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-launching {
+            background: #fed7aa;
+            color: #92400e;
+        }
+
+        .status-planning {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .brand-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Brand Detail View */
+        .view-container {
+            display: none;
+        }
+
+        .view-container.active {
+            display: block;
+        }
+
+        .brand-detail-header {
+            margin-bottom: 2rem;
+        }
+
+        .brand-detail-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .brand-detail-header p {
+            color: var(--text-secondary);
+        }
+
+        /* Pipeline/Events Section */
+        .pipeline-section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .pipeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .pipeline-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #553c9a;
+        }
+
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .pipeline-stage {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stage-title {
+            font-weight: 600;
+        }
+
+        .stage-count {
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .content-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: move;
+            transition: all 0.2s;
+        }
+
+        .content-item:hover {
+            background: #e9ecef;
+        }
+
+        /* Performance Section */
+        .performance-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .performance-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .performance-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .performance-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .performance-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .performance-change {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--success);
+        }
+
+        /* Cross-Brand Section */
+        .cross-brand-section {
+            margin-top: 3rem;
+        }
+
+        .cross-brand-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .opportunities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .opportunity-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .opportunity-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .opportunity-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .opportunity-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .opportunity-brands {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .brand-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pipeline-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Empire Dashboard</h1>
+            <nav class="nav" id="navigation">
+                <button class="nav-btn active" onclick="showView('overview')">Overview</button>
+                <button class="nav-btn" onclick="showView('knf')">KNF</button>
+                <button class="nav-btn" onclick="showView('fh')">For Harriet</button>
+                <button class="nav-btn" onclick="showView('tss')">The Shallow Side</button>
+                <button class="nav-btn" onclick="showView('mtih')">MTiH</button>
+                <button class="nav-btn" onclick="showView('bwitw')">BWitW</button>
+                <button class="nav-btn" onclick="showView('tok')">Taste of Kimberly</button>
+                <button class="nav-btn" onclick="showView('indigo')">Indigo Hour</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Overview -->
+        <div id="overview-view" class="view-container active">
+            <div class="overview-grid" id="brandGrid">
+                <!-- Brand cards will be generated -->
+            </div>
+
+            <section class="cross-brand-section">
+                <h2>Cross-Brand Opportunities</h2>
+                <div class="opportunities-grid" id="opportunitiesGrid">
+                    <!-- Opportunities will be generated -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Brand Detail Views -->
+        <div id="brand-details">
+            <!-- Brand details will be generated -->
+        </div>
+    </main>
+
+    <script>
+        // Simplified brand data
+        const brands = {
+            knf: {
+                name: 'KNF',
+                fullName: 'Kimberly Nicole Foster',
+                description: 'Personal brand & cultural criticism',
+                status: 'active',
+                type: 'content',
+                metrics: {
+                    content: 24,
+                    reach: '125K',
+                    engagement: '8.5%',
+                    revenue: '$15K'
+                },
+                pipeline: {
+                    ideas: ['Award season analysis', 'TikTok trends', 'Celebrity interviews', 'TV series critique'],
+                    production: ['Video: Nostalgia', 'Article: Fashion Politics', 'Podcast recording'],
+                    ready: ['Instagram posts', 'Tweet threads', 'TikTok'],
+                    published: ['Video: Representation', 'Newsletter: March']
+                }
+            },
+            fh: {
+                name: 'For Harriet',
+                fullName: 'For Harriet',
+                description: 'Black feminist publication',
+                status: 'active',
+                type: 'content',
+                metrics: {
+                    content: 32,
+                    reach: '250K',
+                    engagement: '12%',
+                    revenue: '$22K'
+                },
+                pipeline: {
+                    ideas: ['Health investigation', 'Director profiles', 'Voting analysis', 'Tech features'],
+                    production: ['Documentary', 'Podcast series', 'Editorial series'],
+                    ready: ['Event coverage', 'Special features'],
+                    published: ['Feature stories', 'Video content']
+                }
+            },
+            tss: {
+                name: 'The Shallow Side',
+                fullName: 'The Shallow Side',
+                description: 'Fashion & beauty commentary',
+                status: 'launching',
+                type: 'content',
+                metrics: {
+                    content: 12,
+                    reach: '500',
+                    engagement: 'Launch',
+                    revenue: 'TBD'
+                },
+                pipeline: {
+                    ideas: ['Fashion Week', 'Beauty standards', 'Luxury access'],
+                    production: ['Launch video', 'Brand manifesto'],
+                    ready: ['Teaser campaign'],
+                    published: ['Brand identity']
+                }
+            },
+            mtih: {
+                name: 'MTiH',
+                fullName: 'Making Things is Hard',
+                description: 'Tech & business for creatives',
+                status: 'active',
+                type: 'content',
+                metrics: {
+                    content: 18,
+                    reach: '45K',
+                    engagement: '15%',
+                    revenue: '$8K'
+                },
+                pipeline: {
+                    ideas: ['AI tools', 'Revenue streams', 'Business models'],
+                    production: ['Course creation', 'Newsletter'],
+                    ready: ['Blog posts', 'Videos'],
+                    published: ['Guides', 'Case studies']
+                }
+            },
+            bwitw: {
+                name: 'BWitW',
+                fullName: 'Black Women in the Wild',
+                description: 'Community events & connections',
+                status: 'active',
+                type: 'events',
+                metrics: {
+                    events: 6,
+                    community: '250+',
+                    satisfaction: '95%',
+                    connections: '12'
+                },
+                pipeline: {
+                    planning: ['Summer Rooftop Mixer', 'Virtual Wine Night'],
+                    upcoming: ['May 18: Punch Social', 'May 18: Day Party'],
+                    marketing: ['Social campaigns', 'Email outreach'],
+                    completed: ['March Launch Event']
+                }
+            },
+            tok: {
+                name: 'ToK',
+                fullName: 'Taste of Kimberly',
+                description: 'Personal style newsletter',
+                status: 'planning',
+                type: 'content',
+                metrics: {
+                    content: 15,
+                    launch: 'Q2',
+                    price: '$29/mo',
+                    planning: '3mo'
+                },
+                pipeline: {
+                    ideas: ['Style evolution', 'Shopping guides', 'Mood boards'],
+                    production: ['Newsletter template', 'Welcome series'],
+                    ready: ['Brand guide', 'Timeline'],
+                    published: ['Market research']
+                }
+            },
+            indigo: {
+                name: 'Indigo Hour',
+                fullName: 'The Indigo Hour',
+                description: 'Intellectual salon series',
+                status: 'planning',
+                type: 'events',
+                metrics: {
+                    concepts: 5,
+                    venues: 2,
+                    capacity: 25,
+                    launch: 'Q2'
+                },
+                pipeline: {
+                    concepts: ['Future of Media', 'Art as Resistance', 'Tech & Culture'],
+                    planning: ['Pilot event structure', 'Guest curation'],
+                    venues: ['Gallery spaces', 'Private venues'],
+                    ready: []
+                }
+            }
+        };
+
+        const opportunities = [
+            {
+                title: 'BWitW Documentary Series',
+                description: 'Document community events for content across KNF and For Harriet',
+                brands: ['BWitW', 'KNF', 'FH']
+            },
+            {
+                title: 'Fashion Week Coverage',
+                description: 'Multi-angle coverage across fashion, culture, and business perspectives',
+                brands: ['TSS', 'KNF', 'MTiH']
+            },
+            {
+                title: 'Creator Economy Summit',
+                description: 'Combine MTiH expertise with Indigo Hour format for industry event',
+                brands: ['MTiH', 'Indigo', 'BWitW']
+            },
+            {
+                title: 'Newsletter Cross-Promotion',
+                description: 'Leverage all brands to launch Taste of Kimberly successfully',
+                brands: ['ToK', 'KNF', 'TSS']
+            }
+        ];
+
+        // Initialize dashboard
+        function init() {
+            createBrandCards();
+            createOpportunities();
+            createBrandDetails();
+        }
+
+        // Create brand cards
+        function createBrandCards() {
+            const grid = document.getElementById('brandGrid');
+            
+            Object.entries(brands).forEach(([key, brand]) => {
+                const card = document.createElement('div');
+                card.className = 'brand-card';
+                card.onclick = () => showView(key);
+                
+                const metricsHTML = brand.type === 'content' ? `
+                    <div class="metric">
+                        <div class="metric-value">${brand.metrics.content}</div>
+                        <div class="metric-label">Pipeline</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">${brand.metrics.reach}</div>
+                        <div class="metric-label">Reach</div>
+                    </div>
+                ` : `
+                    <div class="metric">
+                        <div class="metric-value">${brand.metrics.events || brand.metrics.concepts}</div>
+                        <div class="metric-label">${brand.name === 'BWitW' ? 'Events' : 'Concepts'}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">${brand.metrics.community || brand.metrics.capacity}</div>
+                        <div class="metric-label">${brand.name === 'BWitW' ? 'Community' : 'Capacity'}</div>
+                    </div>
+                `;
+                
+                card.innerHTML = `
+                    <div class="brand-header">
+                        <h3 class="brand-title">${brand.name}</h3>
+                        <span class="brand-status status-${brand.status}">${brand.status}</span>
+                    </div>
+                    <p class="brand-description">${brand.description}</p>
+                    <div class="brand-metrics">${metricsHTML}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Create opportunities
+        function createOpportunities() {
+            const grid = document.getElementById('opportunitiesGrid');
+            
+            opportunities.forEach(opp => {
+                const card = document.createElement('div');
+                card.className = 'opportunity-card';
+                
+                card.innerHTML = `
+                    <h4 class="opportunity-title">${opp.title}</h4>
+                    <p class="opportunity-description">${opp.description}</p>
+                    <div class="opportunity-brands">
+                        ${opp.brands.map(b => `<span class="brand-tag">${b}</span>`).join('')}
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Create brand detail views
+        function createBrandDetails() {
+            const container = document.getElementById('brand-details');
+            
+            Object.entries(brands).forEach(([key, brand]) => {
+                const view = document.createElement('div');
+                view.id = `${key}-view`;
+                view.className = 'view-container';
+                
+                const pipelineHTML = brand.type === 'content' ? 
+                    createContentPipeline(brand.pipeline) : 
+                    createEventPipeline(brand.pipeline);
+                
+                const performanceHTML = brand.type === 'content' ?
+                    createContentPerformance(brand) :
+                    createEventPerformance(brand);
+                
+                view.innerHTML = `
+                    <div class="brand-detail-header">
+                        <h2>${brand.fullName}</h2>
+                        <p>${brand.description}</p>
+                    </div>
+                    
+                    <div class="pipeline-section">
+                        <div class="pipeline-header">
+                            <h3>${brand.type === 'content' ? 'Content Pipeline' : 'Event Pipeline'}</h3>
+                            <button class="btn-primary">+ Add ${brand.type === 'content' ? 'Content' : 'Event'}</button>
+                        </div>
+                        <div class="pipeline-grid">
+                            ${pipelineHTML}
+                        </div>
+                    </div>
+                    
+                    <div class="performance-section">
+                        ${performanceHTML}
+                    </div>
+                `;
+                
+                container.appendChild(view);
+            });
+        }
+
+        // Create content pipeline
+        function createContentPipeline(pipeline) {
+            const stages = ['ideas', 'production', 'ready', 'published'];
+            const stageNames = {
+                ideas: 'Ideas',
+                production: 'In Production',
+                ready: 'Ready to Publish',
+                published: 'Published'
+            };
+            
+            return stages.map(stage => `
+                <div class="pipeline-stage">
+                    <div class="stage-header">
+                        <span class="stage-title">${stageNames[stage]}</span>
+                        <span class="stage-count">${pipeline[stage]?.length || 0}</span>
+                    </div>
+                    ${(pipeline[stage] || []).map(item => 
+                        `<div class="content-item">${item}</div>`
+                    ).join('')}
+                </div>
+            `).join('');
+        }
+
+        // Create event pipeline
+        function createEventPipeline(pipeline) {
+            const stages = Object.keys(pipeline);
+            const stageNames = {
+                planning: 'Planning',
+                upcoming: 'Upcoming',
+                marketing: 'Marketing',
+                completed: 'Completed',
+                concepts: 'Concepts',
+                venues: 'Venues',
+                ready: 'Ready'
+            };
+            
+            return stages.map(stage => `
+                <div class="pipeline-stage">
+                    <div class="stage-header">
+                        <span class="stage-title">${stageNames[stage] || stage}</span>
+                        <span class="stage-count">${pipeline[stage]?.length || 0}</span>
+                    </div>
+                    ${(pipeline[stage] || []).map(item => 
+                        `<div class="content-item">${item}</div>`
+                    ).join('')}
+                </div>
+            `).join('');
+        }
+
+        // Create content performance cards
+        function createContentPerformance(brand) {
+            return `
+                <div class="performance-card">
+                    <div class="performance-icon">📊</div>
+                    <div class="performance-value">${brand.metrics.reach}</div>
+                    <div class="performance-label">Monthly Reach</div>
+                    <div class="performance-change">↑ 12% from last month</div>
+                </div>
+                <div class="performance-card">
+                    <div class="performance-icon">💰</div>
+                    <div class="performance-value">${brand.metrics.revenue}</div>
+                    <div class="performance-label">Monthly Revenue</div>
+                    <div class="performance-change">↑ 8% from last month</div>
+                </div>
+                <div class="performance-card">
+                    <div class="performance-icon">⚡</div>
+                    <div class="performance-value">${brand.metrics.engagement}</div>
+                    <div class="performance-label">Engagement Rate</div>
+                    <div class="performance-change">↑ 2.3% from last month</div>
+                </div>
+            `;
+        }
+
+        // Create event performance cards
+        function createEventPerformance(brand) {
+            if (brand.name === 'BWitW') {
+                return `
+                    <div class="performance-card">
+                        <div class="performance-icon">🎉</div>
+                        <div class="performance-value">${brand.metrics.events}</div>
+                        <div class="performance-label">Events This Year</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">👥</div>
+                        <div class="performance-value">${brand.metrics.community}</div>
+                        <div class="performance-label">Community Members</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">💬</div>
+                        <div class="performance-value">${brand.metrics.connections}</div>
+                        <div class="performance-label">Group Chats Formed</div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="performance-card">
+                        <div class="performance-icon">💡</div>
+                        <div class="performance-value">${brand.metrics.concepts}</div>
+                        <div class="performance-label">Event Concepts</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">📍</div>
+                        <div class="performance-value">${brand.metrics.venues}</div>
+                        <div class="performance-label">Venue Options</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-icon">🗓️</div>
+                        <div class="performance-value">${brand.metrics.launch}</div>
+                        <div class="performance-label">Target Launch</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Show view
+        function showView(view) {
+            // Hide all views
+            document.querySelectorAll('.view-container').forEach(v => {
+                v.classList.remove('active');
+            });
+            
+            // Show selected view
+            document.getElementById(`${view}-view`).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
