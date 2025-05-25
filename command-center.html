@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kimberly's Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #fefefe;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Navigation Hub */
+        .nav-hub {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%);
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4);
+            z-index: 1000;
+            padding: 15px 20px;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .nav-title {
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: #6B2C91;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-btn.active {
+            background: white;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Quick Stats Bar */
+        .quick-stats {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9em;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-top: 100px;
+            height: calc(100vh - 100px);
+            position: relative;
+        }
+
+        /* IFrame Container */
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Loading State */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #9A4AC0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #6B2C91;
+            font-size: 1.1em;
+        }
+
+        /* Floating Quick Actions */
+        .quick-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #7B3F8A, #9A5FB8);
+            color: white;
+            border: 3px solid white;
+            cursor: pointer;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(123, 63, 138, 0.4);
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(123, 63, 138, 0.6);
+        }
+
+        .action-tooltip {
+            position: absolute;
+            right: 70px;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .action-btn:hover .action-tooltip {
+            opacity: 1;
+        }
+
+        /* Data Sync Indicator */
+        .sync-indicator {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background: white;
+            border: 2px solid #C084E8;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 0.85em;
+            box-shadow: 0 2px 10px rgba(107, 44, 145, 0.2);
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .sync-indicator.show {
+            display: block;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-hub {
+                padding: 10px 15px;
+            }
+
+            .nav-content {
+                justify-content: center;
+            }
+
+            .nav-title {
+                font-size: 1.2em;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+
+            .nav-buttons {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .nav-btn {
+                min-width: 100px;
+                font-size: 0.9em;
+                padding: 8px 15px;
+            }
+
+            .quick-stats {
+                display: none;
+            }
+
+            .quick-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .action-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3em;
+            }
+
+            .main-container {
+                margin-top: 120px;
+                height: calc(100vh - 120px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Hub -->
+    <nav class="nav-hub">
+        <div class="nav-content">
+            <h1 class="nav-title">✨ Kimberly's Command Center ✨</h1>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="loadView('personal')">
+                    📝 Personal
+                </button>
+                <button class="nav-btn" onclick="loadView('empire')">
+                    👑 Empire
+                </button>
+                <div class="quick-stats" id="quickStats">
+                    <div class="stat-item">
+                        <span>Tasks:</span>
+                        <span class="stat-value" id="taskCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Brands:</span>
+                        <span class="stat-value">7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="iframe-container" id="viewContainer">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Loading your command center...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Quick Actions -->
+    <div class="quick-actions">
+        <button class="action-btn" onclick="quickAddTask()">
+            ➕
+            <span class="action-tooltip">Quick Add Task</span>
+        </button>
+        <button class="action-btn" onclick="toggleDarkMode()">
+            🌙
+            <span class="action-tooltip">Toggle Dark Mode</span>
+        </button>
+        <button class="action-btn" onclick="syncData()">
+            🔄
+            <span class="action-tooltip">Sync Data</span>
+        </button>
+    </div>
+
+    <!-- Sync Indicator -->
+    <div class="sync-indicator" id="syncIndicator">
+        ✅ Data synced successfully!
+    </div>
+
+    <script>
+        // Current view state
+        let currentView = 'personal';
+        let personalURL = 'productivity-tracker.html'; // Your personal tracker
+        let empireURL = 'empire-dashboard.html'; // Your empire dashboard
+
+        // Initialize
+        window.addEventListener('load', function() {
+            loadView('personal');
+            updateStats();
+            setupCommunication();
+        });
+
+        // Load view
+        function loadView(view) {
+            currentView = view;
+            const container = document.getElementById('viewContainer');
+            const buttons = document.querySelectorAll('.nav-btn');
+            
+            // Update active button
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(view)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Show loading
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading ${view === 'personal' ? 'Personal Tracker' : 'Empire Dashboard'}...</div>
+                </div>
+            `;
+
+            // Load iframe
+            setTimeout(() => {
+                const url = view === 'personal' ? personalURL : empireURL;
+                container.innerHTML = `<iframe id="mainFrame" src="${url}" onload="onFrameLoaded()"></iframe>`;
+            }, 300);
+        }
+
+        // Frame loaded
+        function onFrameLoaded() {
+            updateStats();
+            setupFrameCommunication();
+        }
+
+        // Setup communication between frames
+        function setupCommunication() {
+            window.addEventListener('message', function(event) {
+                if (event.data.type === 'statsUpdate') {
+                    document.getElementById('taskCount').textContent = event.data.taskCount || 0;
+                }
+                if (event.data.type === 'navigationRequest') {
+                    loadView(event.data.view);
+                }
+            });
+        }
+
+        // Setup frame communication
+        function setupFrameCommunication() {
+            const iframe = document.getElementById('mainFrame');
+            if (iframe && iframe.contentWindow) {
+                // Request stats from personal tracker
+                if (currentView === 'personal') {
+                    iframe.contentWindow.postMessage({ type: 'requestStats' }, '*');
+                }
+            }
+        }
+
+        // Update stats from localStorage
+        function updateStats() {
+            try {
+                // Get today's data from localStorage
+                const todayKey = new Date().toDateString();
+                const data = localStorage.getItem(todayKey);
+                if (data) {
+                    const parsedData = JSON.parse(data);
+                    let taskCount = 0;
+                    
+                    // Count completed tasks
+                    Object.keys(parsedData).forEach(category => {
+                        if (Array.isArray(parsedData[category])) {
+                            taskCount += parsedData[category].filter(task => task.completed).length;
+                        }
+                    });
+                    
+                    document.getElementById('taskCount').textContent = taskCount;
+                }
+            } catch (error) {
+                console.log('Stats update error:', error);
+            }
+        }
+
+        // Quick add task
+        function quickAddTask() {
+            if (currentView !== 'personal') {
+                loadView('personal');
+            }
+            
+            // Show sync indicator
+            showSyncIndicator('Switching to Personal Tracker...');
+        }
+
+        // Toggle dark mode (placeholder)
+        function toggleDarkMode() {
+            showSyncIndicator('Dark mode coming soon!');
+        }
+
+        // Sync data
+        function syncData() {
+            updateStats();
+            showSyncIndicator('Data synced successfully!');
+        }
+
+        // Show sync indicator
+        function showSyncIndicator(message) {
+            const indicator = document.getElementById('syncIndicator');
+            indicator.textContent = message;
+            indicator.classList.add('show');
+            
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Cmd/Ctrl + 1 = Personal
+            if ((e.metaKey || e.ctrlKey) && e.key === '1') {
+                e.preventDefault();
+                loadView('personal');
+            }
+            // Cmd/Ctrl + 2 = Empire
+            if ((e.metaKey || e.ctrlKey) && e.key === '2') {
+                e.preventDefault();
+                loadView('empire');
+            }
+            // Cmd/Ctrl + A = Quick Add
+            if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+                e.preventDefault();
+                quickAddTask();
+            }
+        });
+
+        // Update stats every 30 seconds
+        setInterval(updateStats, 30000);
+    </script>
+</body>
+</html>
