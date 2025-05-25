@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
-    <title>Daily Productivity Tracker</title>
+    <title>Kimberly's Productivity Tracker</title>
+    <!-- Add these Firebase scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+        authDomain: "productivity-tracker-knf13.firebaseapp.com",
+        projectId: "productivity-tracker-knf13",
+        storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+        messagingSenderId: "76203539357",
+        appId: "1:76203539357:web:7d474a6a57c631b80d96"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+</script>
     <style>
         * {
             margin: 0;
@@ -1312,58 +1330,116 @@
         }
 
         function saveData() {
-            try {
-                updateSyncStatus('💾 Saving...');
-                const data = getCurrentDayData();
-                const todayKey = getDateString();
-                
-                // Store in localStorage
-                localStorage.setItem(todayKey, JSON.stringify(data));
-                updateSyncStatus('✅ Saved');
-                
-                setTimeout(() => {
-                    updateSyncStatus('Ready to Track');
-                }, 2000);
-            } catch (error) {
-                console.error('Save error:', error);
-                updateSyncStatus('❌ Save failed');
-            }
-        }
+    try {
+        updateSyncStatus('🔄 Syncing...');
+        const data = getCurrentDayData();
+        const todayKey = getDateString();
+        
+        // Save to localStorage first (backup)
+        localStorage.setItem(todayKey, JSON.stringify(data));
+        
+        // Save to Firebase
+        db.collection('productivity').doc(todayKey).set({
+            ...data,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            updateSyncStatus('☁️ Cloud Synced');
+            setTimeout(() => {
+                updateSyncStatus('Ready to Track');
+            }, 2000);
+        })
+        .catch((error) => {
+            console.error('Firebase save error:', error);
+            updateSyncStatus('⚠️ Local Only');
+        });
+        
+    } catch (error) {
+        console.error('Save error:', error);
+        updateSyncStatus('❌ Save failed');
+    }
+}
 
-        function loadData(date = getDateString()) {
-            try {
-                updateSyncStatus('📥 Loading...');
+       function loadData(date = getDateString()) {
+    try {
+        updateSyncStatus('📥 Loading...');
+        
+        // Try Firebase first
+        db.collection('productivity').doc(date).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    delete data.lastUpdated; // Remove Firebase timestamp
+                    loadDataIntoUI(data);
+                    updateSyncStatus('☁️ Cloud Loaded');
+                    // Update localStorage with cloud data
+                    localStorage.setItem(date, JSON.stringify(data));
+                } else {
+                    // No cloud data, try localStorage
+                    const localData = localStorage.getItem(date);
+                    if (localData) {
+                        const parsedData = JSON.parse(localData);
+                        loadDataIntoUI(parsedData);
+                        updateSyncStatus('📱 Local Data');
+                    } else {
+                        initializeEmptyTasks();
+                        updateSyncStatus('Ready to Track');
+                    }
+                }
+            })
+            .catch((error) => {
+                console.error('Firebase load error:', error);
+                // Fallback to localStorage
                 const data = localStorage.getItem(date);
                 if (data) {
                     const parsedData = JSON.parse(data);
                     loadDataIntoUI(parsedData);
-                    updateSyncStatus('✅ Loaded');
+                    updateSyncStatus('📱 Local Data');
                 } else {
                     initializeEmptyTasks();
                     updateSyncStatus('Ready to Track');
                 }
-            } catch (error) {
-                console.error('Load error:', error);
-                initializeEmptyTasks();
-                updateSyncStatus('❌ Load failed');
-            }
-        }
+            });
+            
+    } catch (error) {
+        console.error('Load error:', error);
+        initializeEmptyTasks();
+        updateSyncStatus('❌ Load failed');
+    }
+}
 
         function loadYesterdayReview() {
-            try {
-                const yesterdayKey = getYesterdayString();
-                const data = localStorage.getItem(yesterdayKey);
-                if (data) {
-                    const parsedData = JSON.parse(data);
-                    displayYesterdayReview(parsedData);
+    try {
+        const yesterdayKey = getYesterdayString();
+        
+        // Try Firebase first
+        db.collection('productivity').doc(yesterdayKey).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    delete data.lastUpdated;
+                    displayYesterdayReview(data);
                 } else {
-                    hideYesterdayReview();
+                    // Try localStorage
+                    const localData = localStorage.getItem(yesterdayKey);
+                    if (localData) {
+                        const parsedData = JSON.parse(localData);
+                        displayYesterdayReview(parsedData);
+                    } else {
+                        hideYesterdayReview();
+                    }
                 }
-            } catch (error) {
-                console.error('Error loading yesterday data:', error);
+            })
+            .catch((error) => {
+                console.error('Yesterday review error:', error);
                 hideYesterdayReview();
-            }
-        }
+            });
+            
+    } catch (error) {
+        console.error('Error loading yesterday data:', error);
+        hideYesterdayReview();
+    }
+}
 
         function getCurrentDayData() {
             const data = {};
