@@ -2322,6 +2322,20 @@
                 textarea.addEventListener('input', saveData);
             }
         });
+        // Real-time sync listener
+const todayKey = getDateString();
+db.collection('productivity').doc(todayKey)
+    .onSnapshot((doc) => {
+        if (doc.exists && doc.metadata.hasPendingWrites === false) {
+            const data = doc.data();
+            delete data.lastUpdated;
+            loadDataIntoUI(data);
+            updateSyncStatus('☁️ Synced from another device!');
+            setTimeout(() => {
+                updateSyncStatus('☁️ Cloud Synced');
+            }, 3000);
+        }
+    });
 
         // Auto-save every 30 seconds
         setInterval(saveData, 30000);
