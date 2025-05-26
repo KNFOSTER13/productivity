@@ -3,17 +3,17 @@
 <head>
     <!-- 
     =========================================================
-    Empire Dashboard • Preview-Only Build (FULL) + Calendar Views v3.2.0
+    Empire Dashboard • Enhanced Edition v4.0.0
     ---------------------------------------------------------
-    • Calendar view toggle for all brands
-    • Content scheduling and event planning  
-    • Multi-brand calendar overlay option
-    • Drag and drop between pipeline and calendar
+    • Object-based data structure with metadata
+    • Delete functionality with confirmation
+    • Inline and panel editing capabilities
+    • Enhanced item management
     =========================================================
     -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empire Dashboard — Preview</title>
+    <title>Empire Dashboard — Enhanced</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -24,6 +24,9 @@
             --text-m: #6e6e82;
             --accent: #8245ff;
             --shadow: 0 2px 6px rgba(0,0,0,.06);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
         }
         * {
             margin: 0;
@@ -264,11 +267,53 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
+            transition: opacity .3s, transform .3s;
+        }
+        .item.deleting {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        .item-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .item-title {
+            flex: 1;
+            cursor: pointer;
+        }
+        .item-title:hover {
+            text-decoration: underline;
         }
         .item-date {
             font-size: .68rem;
             color: var(--text-m);
             margin-left: .4rem;
+        }
+        .item-actions {
+            display: flex;
+            gap: .3rem;
+            opacity: 0;
+            transition: opacity .2s;
+        }
+        .item:hover .item-actions {
+            opacity: 1;
+        }
+        .item-action {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: .9rem;
+            padding: .2rem;
+            color: var(--text-m);
+            transition: color .2s;
+        }
+        .item-action.edit:hover {
+            color: var(--accent);
+        }
+        .item-action.delete:hover {
+            color: var(--danger);
         }
         .item.ready { border-left: 3px solid #4ade80; }
         .item.published { border-left: 3px solid #6b7280; opacity: .7; }
@@ -277,6 +322,171 @@
         .item.upcoming { border-left: 3px solid #f97316; }
         .item.marketing { animation: pulse 2s infinite; }
         .item.completed { opacity: .5; text-decoration: line-through; }
+        /* priority badges */
+        .priority-badge {
+            font-size: .6rem;
+            padding: .1rem .3rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .priority-high {
+            background: var(--danger);
+            color: #fff;
+        }
+        .priority-medium {
+            background: var(--warning);
+            color: #fff;
+        }
+        .priority-low {
+            background: var(--bg-mute);
+            color: var(--text-m);
+        }
+        /* inline edit */
+        .item-edit-inline {
+            display: flex;
+            gap: .3rem;
+            flex: 1;
+        }
+        .item-edit-input {
+            flex: 1;
+            padding: .2rem .4rem;
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            font-size: .8rem;
+            font-family: inherit;
+        }
+        .item-edit-btn {
+            padding: .2rem .4rem;
+            border: none;
+            border-radius: 4px;
+            font-size: .7rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .item-edit-save {
+            background: var(--success);
+            color: #fff;
+        }
+        .item-edit-cancel {
+            background: var(--bg-mute);
+            color: var(--text);
+        }
+        /* edit panel */
+        .edit-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100%;
+            background: var(--bg);
+            box-shadow: -2px 0 10px rgba(0,0,0,.1);
+            transition: right .3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .edit-panel.open {
+            right: 0;
+        }
+        .edit-panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .edit-panel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .edit-panel-close {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-m);
+        }
+        .edit-panel-body {
+            padding: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: .4rem;
+        }
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: .5rem .7rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: .85rem;
+            font-family: inherit;
+            transition: border-color .2s;
+        }
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            padding: .4rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            min-height: 38px;
+        }
+        .tag {
+            background: var(--bg-mute);
+            padding: .2rem .5rem;
+            border-radius: 4px;
+            font-size: .75rem;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+        }
+        .tag-remove {
+            cursor: pointer;
+            color: var(--text-m);
+        }
+        .tag-remove:hover {
+            color: var(--danger);
+        }
+        .form-actions {
+            display: flex;
+            gap: .5rem;
+            margin-top: 1.5rem;
+        }
+        .btn {
+            padding: .5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-secondary {
+            background: var(--bg-mute);
+            color: var(--text);
+        }
         /* calendar */
         .calendar {
             display: none;
@@ -381,6 +591,28 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            transition: opacity .3s, transform .3s;
+        }
+        .cal-item.deleting {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        .cal-item:hover .cal-item-delete {
+            display: block;
+        }
+        .cal-item-delete {
+            display: none;
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,.3);
+            color: #fff;
+            border: none;
+            padding: 0 .2rem;
+            cursor: pointer;
+            font-size: .8rem;
+            border-radius: 3px;
         }
         .cal-item.ready {
             background: #4ade80;
@@ -517,6 +749,9 @@
             .p-controls {
                 justify-content: space-between;
             }
+            .edit-panel {
+                width: 100%;
+            }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
@@ -528,6 +763,47 @@
         <div id="totals" class="totals"></div>
         <div id="overview" class="grid"></div>
         <div id="views"></div>
+    </div>
+    
+    <!-- Edit Panel -->
+    <div id="editPanel" class="edit-panel">
+        <div class="edit-panel-header">
+            <h3 class="edit-panel-title">Edit Item</h3>
+            <button class="edit-panel-close" onclick="closeEditPanel()">×</button>
+        </div>
+        <div class="edit-panel-body">
+            <form id="editForm">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" id="editTitle" class="form-input" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Scheduled Date</label>
+                    <input type="date" id="editDate" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select id="editPriority" class="form-select">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags</label>
+                    <div id="editTags" class="tags-input"></div>
+                    <input type="text" id="editTagInput" class="form-input" placeholder="Add tag and press Enter" style="margin-top: .5rem;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="editNotes" class="form-textarea" placeholder="Add notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="saveEditPanel()">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditPanel()">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
     
     <script>
@@ -559,6 +835,10 @@
             return new Date().toISOString().slice(0, 10);
         }
         
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
         // ---------- demo data ----------
         var BRANDS = [
             {id: 'knf', name: 'KNF', desc: 'Personal brand & cultural criticism', status: 'active', accent: '#e63cff', reach: 125000, revenue: 15000, engage: 4.5},
@@ -570,60 +850,106 @@
             {id: 'indigo', name: 'Indigo Hour', desc: 'Intellectual salon series', status: 'planning', accent: '#532dff', events: 0, community: 0}
         ];
         
+        // Convert pipeline data to object structure
+        function createItem(title, stage, extra) {
+            return {
+                id: generateId(),
+                title: title,
+                created: new Date().toISOString(),
+                modified: new Date().toISOString(),
+                stage: stage,
+                scheduledDate: extra?.scheduledDate || '',
+                tags: extra?.tags || [],
+                priority: extra?.priority || 'medium',
+                notes: extra?.notes || '',
+                metrics: extra?.metrics || {views: 0, engagement: 0, revenue: 0}
+            };
+        }
+        
         var PIPELINES = {
             knf: {
-                ideas: ['Award season analysis', 'TikTok trends', 'Celebrity interviews'],
-                inProgress: ['Video: Nostalgia', 'Article: Fashion Politics'],
-                ready: ['Instagram posts', 'Tweet threads'],
-                published: ['Video: Representation', 'Newsletter: March']
+                ideas: [
+                    createItem('Award season analysis', 'ideas', {tags: ['culture', 'awards']}),
+                    createItem('TikTok trends', 'ideas', {tags: ['social', 'trends'], priority: 'high'}),
+                    createItem('Celebrity interviews', 'ideas', {tags: ['interview', 'celebrity']})
+                ],
+                inProgress: [
+                    createItem('Video: Nostalgia', 'inProgress', {tags: ['video', 'culture'], priority: 'high'}),
+                    createItem('Article: Fashion Politics', 'inProgress', {tags: ['article', 'fashion']})
+                ],
+                ready: [
+                    createItem('Instagram posts', 'ready', {tags: ['social'], scheduledDate: '2024-04-01'}),
+                    createItem('Tweet threads', 'ready', {tags: ['social'], scheduledDate: '2024-04-02'})
+                ],
+                published: [
+                    createItem('Video: Representation', 'published', {tags: ['video'], metrics: {views: 15000, engagement: 8.5}}),
+                    createItem('Newsletter: March', 'published', {tags: ['newsletter'], metrics: {views: 5000, engagement: 12}})
+                ]
             },
             fh: {
-                ideas: ['Feature: Black Tech', 'Interview: Scholar'],
-                inProgress: ['Video essay'],
+                ideas: [
+                    createItem('Feature: Black Tech', 'ideas', {tags: ['tech', 'feature']}),
+                    createItem('Interview: Scholar', 'ideas', {tags: ['interview', 'academic']})
+                ],
+                inProgress: [
+                    createItem('Video essay', 'inProgress', {tags: ['video', 'essay'], priority: 'high'})
+                ],
                 ready: [],
-                published: ['Op-ed']
+                published: [
+                    createItem('Op-ed', 'published', {tags: ['article'], metrics: {views: 8000}})
+                ]
             },
             mtih: {
-                ideas: ['Tool review video', 'Essay: Creative Burnout'],
+                ideas: [
+                    createItem('Tool review video', 'ideas', {tags: ['video', 'review']}),
+                    createItem('Essay: Creative Burnout', 'ideas', {tags: ['essay', 'mental-health'], priority: 'high'})
+                ],
                 inProgress: [],
-                ready: ['Podcast episode'],
-                published: ['Newsletter: April']
+                ready: [
+                    createItem('Podcast episode', 'ready', {tags: ['podcast'], scheduledDate: '2024-04-15'})
+                ],
+                published: [
+                    createItem('Newsletter: April', 'published', {tags: ['newsletter']})
+                ]
             },
             sss: {
-                ideas: ['Shade range critique'],
+                ideas: [createItem('Shade range critique', 'ideas', {tags: ['beauty', 'review']})],
                 inProgress: [],
                 ready: [],
                 published: []
             },
             tok: {
-                ideas: ['Lookbook concept'],
+                ideas: [createItem('Lookbook concept', 'ideas', {tags: ['fashion', 'lookbook']})],
                 inProgress: [],
                 ready: [],
                 published: []
             },
             bwitw: {
-                planning: ['Spring Hike (2024-04-15)'],
-                upcoming: ['June Mixer (2024-06-20)'],
-                marketing: ['IG Carousel'],
-                completed: ['January Brunch (2024-01-15)']
+                planning: [createItem('Spring Hike (2024-04-15)', 'planning', {scheduledDate: '2024-04-15', tags: ['outdoor', 'community']})],
+                upcoming: [createItem('June Mixer (2024-06-20)', 'upcoming', {scheduledDate: '2024-06-20', tags: ['networking', 'social']})],
+                marketing: [createItem('IG Carousel', 'marketing', {tags: ['social', 'promo']})],
+                completed: [createItem('January Brunch (2024-01-15)', 'completed', {scheduledDate: '2024-01-15', tags: ['food', 'community']})]
             },
             indigo: {
-                planning: ['Select panelists'],
+                planning: [createItem('Select panelists', 'planning', {tags: ['preparation']})],
                 upcoming: [],
                 marketing: [],
                 completed: []
             }
         };
         
-        // Calendar data and view states
+        // Global variables
         var CALENDAR_DATA = {};
-        var VIEW_STATES = {}; // tracks pipeline vs calendar view for each brand
-        var CURRENT_MONTH = {}; // tracks current month for each brand calendar
+        var VIEW_STATES = {};
+        var CURRENT_MONTH = {};
         var MULTI_BRAND_VIEW = false;
         var EVENT_BRANDS = ['bwitw', 'indigo'];
         var EDIT_STAGES = ['ideas', 'inProgress', 'ready', 'published'];
         var EVENT_STAGES = ['planning', 'upcoming', 'marketing', 'completed'];
         var brandOrder = BRANDS.map(function(b) { return b.id; });
+        var currentEditItem = null;
+        var currentEditBrand = null;
+        var sortableInstances = [];
         
         // Initialize calendar data and view states
         BRANDS.forEach(function(b) {
@@ -672,14 +998,7 @@
                 CALENDAR_DATA[brandId][dateStr] = [];
             }
             
-            var calItem = {
-                title: typeof item === 'string' ? item : item.title || item,
-                stage: stage || 'ready',
-                type: getContentType(typeof item === 'string' ? item : item.title || item),
-                id: Date.now() + Math.random()
-            };
-            
-            CALENDAR_DATA[brandId][dateStr].push(calItem);
+            CALENDAR_DATA[brandId][dateStr].push(item);
         }
         
         function removeFromCalendar(brandId, dateStr, itemId) {
@@ -699,8 +1018,171 @@
             if (lower.includes('article') || lower.includes('essay')) return 'article';
             if (lower.includes('newsletter')) return 'newsletter';
             if (lower.includes('post') || lower.includes('tweet') || lower.includes('instagram')) return 'social';
+            if (lower.includes('podcast')) return 'podcast';
             return 'article';
         }
+        
+        // ---------- item management ----------
+        function deleteItem(brandId, itemId, stage) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                // Find and remove from pipeline
+                var stages = EVENT_BRANDS.indexOf(brandId) === -1 ? EDIT_STAGES : EVENT_STAGES;
+                stages.forEach(function(s) {
+                    if (PIPELINES[brandId][s]) {
+                        PIPELINES[brandId][s] = PIPELINES[brandId][s].filter(function(item) {
+                            return item.id !== itemId;
+                        });
+                    }
+                });
+                
+                // Remove from calendar if exists
+                Object.keys(CALENDAR_DATA[brandId]).forEach(function(date) {
+                    removeFromCalendar(brandId, date, itemId);
+                });
+                
+                // Refresh view
+                if (VIEW_STATES[brandId] === 'calendar') {
+                    buildCalendar(brandId);
+                } else {
+                    var brand = BRANDS.find(function(b) { return b.id === brandId; });
+                    var pipelineView = qs('#pipeline-' + brandId);
+                    if (brand && pipelineView) {
+                        pipelineView.innerHTML = '';
+                        buildPipeline(brand, pipelineView);
+                    }
+                }
+                updateAll();
+            }
+        }
+        
+        function deleteCalendarItem(brandId, itemId, dateStr) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                removeFromCalendar(brandId, dateStr, itemId);
+                buildCalendar(brandId);
+                updateAll();
+            }
+        }
+        
+        function startInlineEdit(itemEl, item, brandId) {
+            var titleEl = itemEl.querySelector('.item-title');
+            var currentTitle = item.title;
+            
+            var editContainer = el('div', 'item-edit-inline');
+            var input = el('input', 'item-edit-input');
+            input.type = 'text';
+            input.value = currentTitle;
+            
+            var saveBtn = el('button', 'item-edit-btn item-edit-save', '✓');
+            var cancelBtn = el('button', 'item-edit-btn item-edit-cancel', '×');
+            
+            saveBtn.onclick = function() {
+                item.title = input.value;
+                item.modified = new Date().toISOString();
+                refreshView(brandId);
+            };
+            
+            cancelBtn.onclick = function() {
+                refreshView(brandId);
+            };
+            
+            input.onkeydown = function(e) {
+                if (e.key === 'Enter') saveBtn.click();
+                if (e.key === 'Escape') cancelBtn.click();
+            };
+            
+            editContainer.appendChild(input);
+            editContainer.appendChild(saveBtn);
+            editContainer.appendChild(cancelBtn);
+            
+            titleEl.replaceWith(editContainer);
+            input.focus();
+            input.select();
+        }
+        
+        function refreshView(brandId) {
+            if (VIEW_STATES[brandId] === 'calendar') {
+                buildCalendar(brandId);
+            } else {
+                var brand = BRANDS.find(function(b) { return b.id === brandId; });
+                var pipelineView = qs('#pipeline-' + brandId);
+                if (brand && pipelineView) {
+                    pipelineView.innerHTML = '';
+                    buildPipeline(brand, pipelineView);
+                }
+            }
+            updateAll();
+        }
+        
+        // ---------- edit panel ----------
+        window.openEditPanel = function(item, brandId) {
+            currentEditItem = item;
+            currentEditBrand = brandId;
+            
+            qs('#editTitle').value = item.title;
+            qs('#editDate').value = item.scheduledDate || '';
+            qs('#editPriority').value = item.priority || 'medium';
+            qs('#editNotes').value = item.notes || '';
+            
+            // Load tags
+            var tagsContainer = qs('#editTags');
+            tagsContainer.innerHTML = '';
+            (item.tags || []).forEach(function(tag) {
+                addTagToPanel(tag);
+            });
+            
+            qs('#editPanel').classList.add('open');
+        };
+        
+        window.closeEditPanel = function() {
+            qs('#editPanel').classList.remove('open');
+            currentEditItem = null;
+            currentEditBrand = null;
+        };
+        
+        window.saveEditPanel = function() {
+            if (currentEditItem && currentEditBrand) {
+                currentEditItem.title = qs('#editTitle').value;
+                currentEditItem.scheduledDate = qs('#editDate').value;
+                currentEditItem.priority = qs('#editPriority').value;
+                currentEditItem.notes = qs('#editNotes').value;
+                currentEditItem.modified = new Date().toISOString();
+                
+                // Update tags
+                currentEditItem.tags = [];
+                qsa('.tag', qs('#editTags')).forEach(function(tagEl) {
+                    var tagText = tagEl.textContent.replace('×', '').trim();
+                    if (tagText) currentEditItem.tags.push(tagText);
+                });
+                
+                refreshView(currentEditBrand);
+                closeEditPanel();
+            }
+        };
+        
+        function addTagToPanel(tagText) {
+            if (!tagText.trim()) return;
+            
+            var tagsContainer = qs('#editTags');
+            var tagEl = el('div', 'tag');
+            tagEl.appendChild(el('span', null, tagText));
+            
+            var removeBtn = el('span', 'tag-remove', '×');
+            removeBtn.onclick = function() {
+                tagEl.remove();
+            };
+            
+            tagEl.appendChild(removeBtn);
+            tagsContainer.appendChild(tagEl);
+        }
+        
+        // Tag input handler
+        qs('#editTagInput').onkeydown = function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTagToPanel(this.value);
+                this.value = '';
+            }
+        };
         
         // ---------- build UI ----------
         function buildNav() {
@@ -846,21 +1328,22 @@
                 col.appendChild(chead);
                 
                 var list = el('div', 'list');
-                (PIPELINES[brand.id][stage] || []).forEach(function(it) {
-                    list.appendChild(itemElem(it, stage));
+                (PIPELINES[brand.id][stage] || []).forEach(function(item) {
+                    list.appendChild(itemElem(item, stage, brand.id));
                 });
                 col.appendChild(list);
                 pipe.appendChild(col);
                 
                 // Enable drag and drop
                 if (typeof Sortable !== 'undefined') {
-                    new Sortable(list, {
+                    var sortable = new Sortable(list, {
                         group: brand.id,
                         animation: 150,
                         onEnd: function(evt) {
                             updateAll();
                         }
                     });
+                    sortableInstances.push(sortable);
                 }
             });
             
@@ -941,11 +1424,10 @@
                     BRANDS.forEach(function(b) {
                         if (CALENDAR_DATA[b.id] && CALENDAR_DATA[b.id][dateInfo.dateStr]) {
                             CALENDAR_DATA[b.id][dateInfo.dateStr].forEach(function(item) {
-                                itemsForDate.push({
-                                    ...item,
-                                    brandColor: b.accent,
-                                    brandId: b.id
-                                });
+                                var extItem = Object.assign({}, item);
+                                extItem.brandColor = b.accent;
+                                extItem.brandId = b.id;
+                                itemsForDate.push(extItem);
                             });
                         }
                     });
@@ -953,11 +1435,10 @@
                     // Show items only for current brand
                     if (CALENDAR_DATA[brandId] && CALENDAR_DATA[brandId][dateInfo.dateStr]) {
                         itemsForDate = CALENDAR_DATA[brandId][dateInfo.dateStr].map(function(item) {
-                            return {
-                                ...item,
-                                brandColor: brand.accent,
-                                brandId: brandId
-                            };
+                            var extItem = Object.assign({}, item);
+                            extItem.brandColor = brand.accent;
+                            extItem.brandId = brandId;
+                            return extItem;
                         });
                     }
                 }
@@ -965,14 +1446,27 @@
                 // Display items (max 3, then show "more")
                 var maxVisible = 3;
                 itemsForDate.slice(0, maxVisible).forEach(function(item) {
-                    var itemEl = el('div', 'cal-item ' + item.stage + ' type-' + item.type, item.title);
+                    var itemEl = el('div', 'cal-item ' + item.stage + ' type-' + getContentType(item.title), item.title);
                     itemEl.style.background = MULTI_BRAND_VIEW ? item.brandColor : brand.accent;
                     itemEl.dataset.itemId = item.id;
                     itemEl.dataset.brandId = item.brandId;
                     itemEl.dataset.date = dateInfo.dateStr;
                     
+                    // Add delete button
+                    var deleteBtn = el('button', 'cal-item-delete', '×');
+                    deleteBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        deleteCalendarItem(item.brandId, item.id, dateInfo.dateStr);
+                    };
+                    itemEl.appendChild(deleteBtn);
+                    
                     // Add tooltip
                     itemEl.title = item.title + ' (' + item.stage + ')';
+                    
+                    itemEl.onclick = function(e) {
+                        e.stopPropagation();
+                        openEditPanel(item, item.brandId);
+                    };
                     
                     itemsContainer.appendChild(itemEl);
                 });
@@ -1010,12 +1504,59 @@
             return b;
         }
         
-        function itemElem(txt, stage) {
+        function itemElem(item, stage, brandId) {
             var it = el('div', 'item ' + (stage || ''));
-            var span = el('span', null, txt);
-            it.appendChild(span);
-            it.dataset.title = txt;
+            
+            var content = el('div', 'item-content');
+            
+            // Priority badge
+            if (item.priority && item.priority !== 'medium') {
+                var priorityBadge = el('span', 'priority-badge priority-' + item.priority, 
+                                      item.priority === 'high' ? '!' : 
+                                      item.priority === 'low' ? '↓' : '');
+                content.appendChild(priorityBadge);
+            }
+            
+            // Title
+            var titleSpan = el('span', 'item-title', item.title);
+            titleSpan.ondblclick = function() {
+                startInlineEdit(it, item, brandId);
+            };
+            content.appendChild(titleSpan);
+            
+            // Scheduled date
+            if (item.scheduledDate) {
+                content.appendChild(el('span', 'item-date', item.scheduledDate));
+            }
+            
+            it.appendChild(content);
+            
+            // Action buttons
+            var actions = el('div', 'item-actions');
+            
+            var editBtn = el('button', 'item-action edit', '✏️');
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                openEditPanel(item, brandId);
+            };
+            actions.appendChild(editBtn);
+            
+            var deleteBtn = el('button', 'item-action delete', '×');
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                it.classList.add('deleting');
+                setTimeout(function() {
+                    deleteItem(brandId, item.id, stage);
+                }, 300);
+            };
+            actions.appendChild(deleteBtn);
+            
+            it.appendChild(actions);
+            
+            it.dataset.itemId = item.id;
+            it.dataset.title = item.title;
             it.dataset.stage = stage;
+            
             return it;
         }
         
@@ -1082,16 +1623,18 @@
             if (!txt) { return; }
             
             var stage = (EVENT_BRANDS.indexOf(bid) === -1) ? 'ideas' : 'planning';
+            var newItem = createItem(txt, stage);
             
             if (VIEW_STATES[bid] === 'calendar') {
                 // Add directly to today on calendar
                 var today = todayISO();
-                addToCalendar(bid, today, txt, stage);
+                newItem.scheduledDate = today;
+                addToCalendar(bid, today, newItem, stage);
                 buildCalendar(bid);
             } else {
                 // Add to pipeline
                 if (!PIPELINES[bid][stage]) { PIPELINES[bid][stage] = []; }
-                PIPELINES[bid][stage].push(txt);
+                PIPELINES[bid][stage].push(newItem);
                 
                 // Rebuild pipeline view
                 var brand = BRANDS.find(function(b) { return b.id === bid; });
@@ -1108,7 +1651,8 @@
         function addItemToDate(brandId, dateStr) {
             var title = prompt('Enter title for ' + dateStr + ':');
             if (title) {
-                addToCalendar(brandId, dateStr, title, 'planning');
+                var newItem = createItem(title, 'planning', {scheduledDate: dateStr});
+                addToCalendar(brandId, dateStr, newItem, 'planning');
                 buildCalendar(brandId);
                 updateAll();
             }
@@ -1129,9 +1673,8 @@
             BRANDS.forEach(function(b) {
                 var stages = (EVENT_BRANDS.indexOf(b.id) === -1) ? EDIT_STAGES : EVENT_STAGES;
                 stages.forEach(function(s) {
-                    var col = qs('.col[data-brand="' + b.id + '"][data-stage="' + s + '"]');
-                    if (col) {
-                        totalItems += col.querySelectorAll('.item').length;
+                    if (PIPELINES[b.id][s]) {
+                        totalItems += PIPELINES[b.id][s].length;
                     }
                 });
                 
