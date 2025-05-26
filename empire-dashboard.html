@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script>
+// Your Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+    authDomain: "productivity-tracker-knf13.firebaseapp.com",
+    projectId: "productivity-tracker-knf13",
+    storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+    messagingSenderId: "76203539357",
+    appId: "1:76203539357:web:7d474a6a57c631b80d96"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
     <!-- 
     =========================================================
     Empire Dashboard • Enhanced Edition v4.0.0
@@ -951,6 +967,58 @@
         var currentEditBrand = null;
         var sortableInstances = [];
         
+        // ---------- Firebase sync functions ----------
+        function saveToFirebase() {
+            // Save pipelines
+            Object.keys(PIPELINES).forEach(function(brandId) {
+                db.collection('empire-pipelines').doc(brandId).set({
+                    data: PIPELINES[brandId],
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function(error) {
+                    console.error('Error saving pipeline for ' + brandId, error);
+                });
+            });
+            
+            // Save calendar data
+            Object.keys(CALENDAR_DATA).forEach(function(brandId) {
+                db.collection('empire-calendar').doc(brandId).set({
+                    data: CALENDAR_DATA[brandId],
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function(error) {
+                    console.error('Error saving calendar for ' + brandId, error);
+                });
+            });
+        }
+
+        function loadFromFirebase() {
+            // Load pipelines
+            BRANDS.forEach(function(brand) {
+                db.collection('empire-pipelines').doc(brand.id).get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            PIPELINES[brand.id] = doc.data().data || PIPELINES[brand.id];
+                            updateAll();
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading pipeline for ' + brand.id, error);
+                    });
+            });
+            
+            // Load calendar data
+            BRANDS.forEach(function(brand) {
+                db.collection('empire-calendar').doc(brand.id).get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            CALENDAR_DATA[brand.id] = doc.data().data || {};
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading calendar for ' + brand.id, error);
+                    });
+            });
+        }
+        
         // Initialize calendar data and view states
         BRANDS.forEach(function(b) {
             CALENDAR_DATA[b.id] = {};
@@ -1052,6 +1120,7 @@
                     }
                 }
                 updateAll();
+                saveToFirebase();
             }
         }
         
@@ -1060,6 +1129,7 @@
                 removeFromCalendar(brandId, dateStr, itemId);
                 buildCalendar(brandId);
                 updateAll();
+                saveToFirebase();
             }
         }
         
@@ -1156,6 +1226,7 @@
                 
                 refreshView(currentEditBrand);
                 closeEditPanel();
+                saveToFirebase();
             }
         };
         
@@ -1646,6 +1717,7 @@
             }
             
             updateAll();
+            saveToFirebase();
         }
         
         function addItemToDate(brandId, dateStr) {
@@ -1655,6 +1727,7 @@
                 addToCalendar(brandId, dateStr, newItem, 'planning');
                 buildCalendar(brandId);
                 updateAll();
+                saveToFirebase();
             }
         }
         
@@ -1720,6 +1793,18 @@
         buildOverview();
         buildViews();
         show('overview');
+        loadFromFirebase();
+        // Real-time sync
+BRANDS.forEach(function(brand) {
+    // Listen for pipeline changes
+    db.collection('empire-pipelines').doc(brand.id)
+        .onSnapshot(function(doc) {
+            if (doc.exists && doc.metadata.hasPendingWrites === false) {
+                PIPELINES[brand.id] = doc.data().data || PIPELINES[brand.id];
+                refreshView(brand.id);
+            }
+        });
+});
     });
     </script>
 </body>
