@@ -2264,13 +2264,12 @@ show = function(id) {
     }
 };
 
-// Add this to your initialization
-buildAnalyticsView();
         // ---------- initialize ----------
         buildNav();
         buildOverview();
         buildViews();
         show('overview');
+        buildAnalyticsView();
         loadFromFirebase();
         // Real-time sync
 BRANDS.forEach(function(brand) {
