@@ -1,11 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empire Dashboard</title>
+    <title>Empire Operations - Creative Command Center</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
         
         * {
             margin: 0;
@@ -14,200 +15,370 @@
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --text-primary: #1a1a1a;
-            --text-secondary: #6c757d;
-            --border: #e9ecef;
-            --accent: #6b46c1;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --info: #3b82f6;
+            --empire-deep-purple: #1a0033;
+            --empire-purple: #4a148c;
+            --empire-violet: #7b1fa2;
+            --empire-gold: #ffd700;
+            --empire-rose-gold: #e8b4b8;
+            --empire-cream: #faf8f3;
+            --empire-black: #0a0a0a;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: var(--empire-black);
+            color: var(--empire-cream);
+            overflow-x: hidden;
             line-height: 1.6;
         }
 
-        /* Header */
-        .header {
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border);
-            padding: 1.5rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--empire-gold);
+            border-radius: 5px;
         }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        /* Navigation */
-        .nav {
+        /* Hero Header */
+        .hero-header {
+            position: relative;
+            min-height: 100vh;
             display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(ellipse at center, var(--empire-purple) 0%, var(--empire-deep-purple) 100%);
+            overflow: hidden;
         }
 
-        .nav-btn {
-            padding: 0.5rem 1rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.2s;
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,215,0,0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+            opacity: 0.3;
         }
 
-        .nav-btn:hover {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-30%, -70%) rotate(180deg); }
         }
 
-        .nav-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
+        .empire-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            text-align: center;
+            z-index: 10;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--empire-gold), var(--empire-rose-gold), var(--empire-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease-in-out infinite;
         }
 
-        /* Main Layout */
-        .main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        /* Overview Grid */
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+        .empire-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            opacity: 0.8;
+            z-index: 10;
             margin-bottom: 3rem;
         }
 
-        .brand-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .brand-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .brand-header {
+        .empire-stats {
             display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
+            gap: 4rem;
+            z-index: 10;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .brand-status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .status-active {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-launching {
-            background: #fed7aa;
-            color: #92400e;
-        }
-
-        .status-planning {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .brand-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .brand-metrics {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .metric {
+        .stat-item {
             text-align: center;
-            padding: 0.75rem;
-            background: var(--bg-secondary);
-            border-radius: 8px;
         }
 
-        .metric-value {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--accent);
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--empire-gold);
+            margin-bottom: 0.5rem;
         }
 
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+        .stat-label {
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1rem;
+            opacity: 0.7;
         }
 
-        /* Brand Detail View */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Navigation */
+        .luxury-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(26, 0, 51, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .brand-nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .brand-nav-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--empire-cream);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .brand-nav-btn:hover::before,
+        .brand-nav-btn.active::before {
+            opacity: 1;
+        }
+
+        .brand-nav-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-nav-btn:hover,
+        .brand-nav-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            border-color: transparent;
+        }
+
+        /* Main Content */
+        .empire-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* View Containers */
         .view-container {
             display: none;
+            animation: fadeIn 0.6s ease-out;
         }
 
         .view-container.active {
             display: block;
         }
 
-        .brand-detail-header {
-            margin-bottom: 2rem;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .brand-detail-header h2 {
+        /* Empire Overview Grid */
+        .empire-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .brand-luxury-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            min-height: 400px;
+        }
+
+        .brand-luxury-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .brand-luxury-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+        }
+
+        .brand-card-content {
+            position: relative;
+            z-index: 10;
+            padding: 2rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .brand-name {
+            font-family: 'Playfair Display', serif;
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
-        .brand-detail-header p {
-            color: var(--text-secondary);
+        .brand-tagline {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            flex-grow: 1;
         }
 
-        /* Pipeline/Events Section */
-        .pipeline-section {
-            background: var(--bg-secondary);
-            border-radius: 12px;
+        .brand-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mini-stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .mini-stat-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--empire-gold);
+        }
+
+        .mini-stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .brand-status-badge {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+        }
+
+        .status-active { border: 1px solid #4caf50; color: #4caf50; }
+        .status-launching { border: 1px solid #ff9800; color: #ff9800; }
+        .status-planning { border: 1px solid #2196f3; color: #2196f3; }
+
+        /* Brand Detail Views */
+        .brand-hero {
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 4rem;
+            border-radius: 30px;
+            overflow: hidden;
+        }
+
+        .brand-hero-content {
+            text-align: center;
+            z-index: 10;
             padding: 2rem;
-            margin-bottom: 2rem;
+        }
+
+        .brand-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-hero-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Content Pipeline */
+        .pipeline-luxury {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 3rem;
         }
 
         .pipeline-header {
@@ -217,150 +388,188 @@
             margin-bottom: 2rem;
         }
 
-        .pipeline-header h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
+        .pipeline-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
         }
 
-        .btn-primary {
-            padding: 0.75rem 1.5rem;
-            background: var(--accent);
-            color: white;
+        .add-content-luxury {
+            padding: 1rem 2rem;
+            background: var(--empire-gold);
+            color: var(--empire-black);
             border: none;
-            border-radius: 8px;
-            font-weight: 500;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
         }
 
-        .btn-primary:hover {
-            background: #553c9a;
+        .add-content-luxury:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
         }
 
-        .pipeline-grid {
+        .pipeline-flow {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        .pipeline-stage {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+        .pipeline-column {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
             padding: 1.5rem;
+            min-height: 300px;
         }
 
-        .stage-header {
+        .pipeline-column-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .stage-title {
-            font-weight: 600;
-        }
-
-        .stage-count {
-            background: var(--accent);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .content-item {
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            background: var(--bg-secondary);
-            border-radius: 6px;
-            font-size: 0.875rem;
-            cursor: move;
-            transition: all 0.2s;
-        }
-
-        .content-item:hover {
-            background: #e9ecef;
-        }
-
-        /* Performance Section */
-        .performance-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .performance-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .performance-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .performance-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-
-        .performance-label {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .performance-change {
-            margin-top: 0.5rem;
-            font-size: 0.75rem;
-            color: var(--success);
-        }
-
-        /* Cross-Brand Section */
-        .cross-brand-section {
-            margin-top: 3rem;
-        }
-
-        .cross-brand-section h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
             margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pipeline-column-title {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+        }
+
+        .pipeline-count {
+            background: var(--empire-gold);
+            color: var(--empire-black);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: move;
+            transition: all 0.3s;
+        }
+
+        .content-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.2);
+        }
+
+        /* Performance Metrics */
+        .metrics-luxury {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--empire-gold);
+        }
+
+        .metric-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--empire-gold), var(--empire-rose-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            opacity: 0.7;
+        }
+
+        .metric-change {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #4caf50;
+        }
+
+        /* Cross-Brand Opportunities */
+        .opportunities-section {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 30px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .opportunities-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, var(--empire-gold), var(--empire-rose-gold), var(--empire-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .opportunities-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .opportunity-card {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s;
+            cursor: pointer;
         }
 
         .opportunity-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+            border-color: var(--empire-gold);
+        }
+
+        .opportunity-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
         }
 
         .opportunity-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
         }
 
         .opportunity-description {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
 
         .opportunity-brands {
@@ -369,282 +578,426 @@
             flex-wrap: wrap;
         }
 
-        .brand-tag {
-            padding: 0.25rem 0.75rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
+        .brand-pill {
+            padding: 0.4rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
         }
 
-        /* Mobile */
+        /* Floating Action Menu */
+        .floating-menu {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .menu-toggle {
+            width: 60px;
+            height: 60px;
+            background: var(--empire-gold);
+            color: var(--empire-black);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .menu-items {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .menu-items.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .menu-item {
+            padding: 1rem 1.5rem;
+            background: rgba(26, 0, 51, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50px;
+            color: var(--empire-cream);
+            text-decoration: none;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: var(--empire-gold);
+            color: var(--empire-black);
+            transform: translateX(-10px);
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .overview-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .pipeline-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
+            .empire-title { font-size: 2.5rem; }
+            .empire-stats { flex-direction: column; gap: 2rem; }
+            .brand-nav { flex-direction: column; width: 100%; }
+            .brand-nav-btn { width: 100%; text-align: center; }
+            .empire-grid { grid-template-columns: 1fr; }
+            .pipeline-flow { grid-template-columns: 1fr; }
+            .metrics-luxury { grid-template-columns: 1fr; }
+            .hero-header { min-height: 70vh; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <h1>Empire Dashboard</h1>
-            <nav class="nav" id="navigation">
-                <button class="nav-btn active" onclick="showView('overview')">Overview</button>
-                <button class="nav-btn" onclick="showView('knf')">KNF</button>
-                <button class="nav-btn" onclick="showView('fh')">For Harriet</button>
-                <button class="nav-btn" onclick="showView('tss')">The Shallow Side</button>
-                <button class="nav-btn" onclick="showView('mtih')">MTiH</button>
-                <button class="nav-btn" onclick="showView('bwitw')">BWitW</button>
-                <button class="nav-btn" onclick="showView('tok')">Taste of Kimberly</button>
-                <button class="nav-btn" onclick="showView('indigo')">Indigo Hour</button>
-            </nav>
+    <!-- Hero Header -->
+    <div class="hero-header" id="hero">
+        <h1 class="empire-title">Creative Empire</h1>
+        <p class="empire-subtitle">Media Conglomerate Command Center</p>
+        <div class="empire-stats">
+            <div class="stat-item">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Active Brands</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalPipeline">127</div>
+                <div class="stat-label">Content Pipeline</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalRevenue">$87K</div>
+                <div class="stat-label">Monthly Revenue</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalReach">1.2M</div>
+                <div class="stat-label">Total Reach</div>
+            </div>
         </div>
-    </header>
+        <div class="scroll-indicator" onclick="document.getElementById('main-content').scrollIntoView({behavior: 'smooth'})">
+            <svg width="30" height="50" viewBox="0 0 30 50">
+                <rect x="10" y="10" width="10" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="15" cy="20" r="3" fill="currentColor">
+                    <animate attributeName="cy" from="15" to="25" dur="1s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Luxury Navigation -->
+    <nav class="luxury-nav" id="main-content">
+        <div class="nav-container">
+            <div class="brand-nav" id="brandNav">
+                <!-- Navigation buttons will be generated by JavaScript -->
+            </div>
+        </div>
+    </nav>
 
     <!-- Main Content -->
-    <main class="main">
-        <!-- Overview -->
+    <div class="empire-content">
+        <!-- Empire Overview -->
         <div id="overview-view" class="view-container active">
-            <div class="overview-grid" id="brandGrid">
-                <!-- Brand cards will be generated -->
+            <div class="empire-grid" id="empireGrid">
+                <!-- Brand cards will be generated by JavaScript -->
             </div>
 
-            <section class="cross-brand-section">
-                <h2>Cross-Brand Opportunities</h2>
+            <!-- Cross-Brand Opportunities -->
+            <div class="opportunities-section">
+                <h2 class="opportunities-title">✨ Cross-Brand Synergies</h2>
                 <div class="opportunities-grid" id="opportunitiesGrid">
-                    <!-- Opportunities will be generated -->
+                    <!-- Opportunities will be generated by JavaScript -->
                 </div>
-            </section>
+            </div>
         </div>
 
-        <!-- Brand Detail Views -->
-        <div id="brand-details">
-            <!-- Brand details will be generated -->
+        <!-- Individual Brand Views -->
+        <div id="brand-detail-container">
+            <!-- Brand detail views will be generated by JavaScript -->
         </div>
-    </main>
+    </div>
+
+    <!-- Floating Action Menu -->
+    <div class="floating-menu">
+        <button class="menu-toggle" onclick="toggleMenu()">+</button>
+        <div class="menu-items" id="menuItems">
+            <div class="menu-item" onclick="showAnalytics()">📊 Analytics</div>
+            <div class="menu-item" onclick="createContent()">✏️ Create</div>
+            <div class="menu-item" onclick="schedulePost()">📅 Schedule</div>
+            <div class="menu-item" onclick="manageTeam()">👥 Team</div>
+            <div class="menu-item" onclick="viewRevenue()">💰 Revenue</div>
+        </div>
+    </div>
 
     <script>
-        // Simplified brand data
-        const brands = {
+        // Brand data structure
+        const brandsData = {
             knf: {
                 name: 'KNF',
                 fullName: 'Kimberly Nicole Foster',
-                description: 'Personal brand & cultural criticism',
+                icon: '👑',
+                tagline: 'Personal brand empire - Pop culture authority & cultural criticism',
                 status: 'active',
-                type: 'content',
-                metrics: {
-                    content: 24,
+                gradient: 'linear-gradient(135deg, #ff1493, #ff69b4, #ffb6c1)',
+                stats: {
+                    pipeline: 24,
                     reach: '125K',
                     engagement: '8.5%',
                     revenue: '$15K'
                 },
-                pipeline: {
-                    ideas: ['Award season analysis', 'TikTok trends', 'Celebrity interviews', 'TV series critique'],
-                    production: ['Video: Nostalgia', 'Article: Fashion Politics', 'Podcast recording'],
-                    ready: ['Instagram posts', 'Tweet threads', 'TikTok'],
-                    published: ['Video: Representation', 'Newsletter: March']
+                content: {
+                    ideas: ['Pop culture analysis: Award season', 'TikTok trend deep dive', 'Celebrity interview prep', 'TV series cultural critique', 'Viral moment response', 'Fashion as political statement'],
+                    production: ['Video: "The Problem with Nostalgia"', 'Article: Fashion Politics', 'Podcast: Author Interview', 'Newsletter: Culture Weekly'],
+                    ready: ['Instagram: Award Show Looks', 'Tweet Thread: Oscar Analysis', 'TikTok: Quick Take'],
+                    published: ['Video: "Representation Matters"', 'Article: Black Renaissance', 'Newsletter: March Edition']
                 }
             },
             fh: {
                 name: 'For Harriet',
                 fullName: 'For Harriet',
-                description: 'Black feminist publication',
+                icon: '✊🏾',
+                tagline: 'Black feminist publication - Culture, politics & social justice',
                 status: 'active',
-                type: 'content',
-                metrics: {
-                    content: 32,
+                gradient: 'linear-gradient(135deg, #4a148c, #7b1fa2, #9c27b0)',
+                stats: {
+                    pipeline: 32,
                     reach: '250K',
                     engagement: '12%',
                     revenue: '$22K'
                 },
-                pipeline: {
-                    ideas: ['Health investigation', 'Director profiles', 'Voting analysis', 'Tech features'],
-                    production: ['Documentary', 'Podcast series', 'Editorial series'],
-                    ready: ['Event coverage', 'Special features'],
-                    published: ['Feature stories', 'Video content']
+                content: {
+                    ideas: ['Maternal health investigation', 'Rising Black directors profile', 'Voting legislation analysis', 'Black women in tech feature'],
+                    production: ['Documentary: "Black Women\'s Labor"', 'Series: Reproductive Justice', 'Podcast: Policy & Power'],
+                    ready: ['March event coverage', 'Women\'s History special'],
+                    published: ['Feature: "Cost of Being Strong"', 'Video: Panel recap']
                 }
             },
             tss: {
                 name: 'The Shallow Side',
                 fullName: 'The Shallow Side',
-                description: 'Fashion & beauty commentary',
+                icon: '💎',
+                tagline: 'Fashion & beauty commentary with cultural criticism lens',
                 status: 'launching',
-                type: 'content',
-                metrics: {
-                    content: 12,
+                gradient: 'linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffe4e1)',
+                stats: {
+                    pipeline: 12,
                     reach: '500',
-                    engagement: 'Launch',
-                    revenue: 'TBD'
+                    engagement: '15',
+                    revenue: '2'
                 },
-                pipeline: {
-                    ideas: ['Fashion Week', 'Beauty standards', 'Luxury access'],
-                    production: ['Launch video', 'Brand manifesto'],
-                    ready: ['Teaser campaign'],
-                    published: ['Brand identity']
+                content: {
+                    ideas: ['Fashion Week analysis', 'Beauty standards piece', 'Luxury accessibility', 'Street style docs'],
+                    production: ['Launch video', 'Brand manifesto', 'Instagram strategy'],
+                    ready: ['Teaser campaign', 'Launch week content'],
+                    published: ['Brand identity', 'Website design']
                 }
             },
             mtih: {
                 name: 'MTiH',
                 fullName: 'Making Things is Hard',
-                description: 'Tech & business for creatives',
+                icon: '🚀',
+                tagline: 'Tech & business insights for creative entrepreneurs',
                 status: 'active',
-                type: 'content',
-                metrics: {
-                    content: 18,
+                gradient: 'linear-gradient(135deg, #1e3c72, #2a5298, #3498db)',
+                stats: {
+                    pipeline: 18,
                     reach: '45K',
                     engagement: '15%',
                     revenue: '$8K'
                 },
-                pipeline: {
-                    ideas: ['AI tools', 'Revenue streams', 'Business models'],
-                    production: ['Course creation', 'Newsletter'],
-                    ready: ['Blog posts', 'Videos'],
-                    published: ['Guides', 'Case studies']
+                content: {
+                    ideas: ['AI tools for creators', 'Revenue diversification', 'Sustainable creative business'],
+                    production: ['Course: Content monetization', 'Newsletter: Tech reviews'],
+                    ready: ['Blog: Productivity tools', 'Video: Algorithm changes'],
+                    published: ['Guide: Email marketing', 'Case study: $10K month']
                 }
             },
             bwitw: {
                 name: 'BWitW',
                 fullName: 'Black Women in the Wild',
-                description: 'Community events & connections',
+                icon: '🌟',
+                tagline: 'Come solo, leave with a group chat - Community events',
                 status: 'active',
-                type: 'events',
-                metrics: {
-                    events: 6,
-                    community: '250+',
-                    satisfaction: '95%',
-                    connections: '12'
+                gradient: 'linear-gradient(135deg, #f39c12, #f1c40f, #ffd700)',
+                stats: {
+                    pipeline: 6,
+                    reach: '250+',
+                    engagement: '12',
+                    revenue: '95%'
                 },
-                pipeline: {
-                    planning: ['Summer Rooftop Mixer', 'Virtual Wine Night'],
-                    upcoming: ['May 18: Punch Social', 'May 18: Day Party'],
-                    marketing: ['Social campaigns', 'Email outreach'],
-                    completed: ['March Launch Event']
+                content: {
+                    ideas: ['Summer Rooftop Mixer', 'Virtual Wine & Connect'],
+                    production: ['May 18: Punch Social', 'May 18: After Hours'],
+                    ready: ['May 18: Day Party'],
+                    published: ['March: Launch Event']
                 }
             },
             tok: {
                 name: 'ToK',
                 fullName: 'Taste of Kimberly',
-                description: 'Personal style newsletter',
+                icon: '🌹',
+                tagline: 'Personal style & aesthetic curation newsletter',
                 status: 'planning',
-                type: 'content',
-                metrics: {
-                    content: 15,
-                    launch: 'Q2',
-                    price: '$29/mo',
-                    planning: '3mo'
+                gradient: 'linear-gradient(135deg, #e74c3c, #ff6347, #ff7f50)',
+                stats: {
+                    pipeline: 15,
+                    reach: 'Q2',
+                    engagement: '$29',
+                    revenue: '3'
                 },
-                pipeline: {
-                    ideas: ['Style evolution', 'Shopping guides', 'Mood boards'],
-                    production: ['Newsletter template', 'Welcome series'],
-                    ready: ['Brand guide', 'Timeline'],
+                content: {
+                    ideas: ['Personal style evolution', 'Shopping guides', 'Outfit posts', 'Mood boards'],
+                    production: ['Newsletter template', 'Welcome series', 'Pricing model'],
+                    ready: ['Brand guide', 'Launch timeline'],
                     published: ['Market research']
                 }
             },
             indigo: {
                 name: 'Indigo Hour',
                 fullName: 'The Indigo Hour',
-                description: 'Intellectual salon series',
+                icon: '🌙',
+                tagline: 'Intellectual salon series & curated conversations',
                 status: 'planning',
-                type: 'events',
-                metrics: {
-                    concepts: 5,
-                    venues: 2,
-                    capacity: 25,
-                    launch: 'Q2'
+                gradient: 'linear-gradient(135deg, #4b0082, #6a0dad, #7b68ee)',
+                stats: {
+                    pipeline: 5,
+                    reach: '2',
+                    engagement: '25',
+                    revenue: 'Q2'
                 },
-                pipeline: {
-                    concepts: ['Future of Media', 'Art as Resistance', 'Tech & Culture'],
-                    planning: ['Pilot event structure', 'Guest curation'],
-                    venues: ['Gallery spaces', 'Private venues'],
-                    ready: []
+                content: {
+                    ideas: ['Future of Black Media', 'Art as Resistance', 'Technology & Culture'],
+                    production: ['Pilot Event planning'],
+                    ready: ['Venue research'],
+                    published: []
                 }
             }
         };
 
+        // Cross-brand opportunities
         const opportunities = [
             {
+                icon: '🎬',
                 title: 'BWitW Documentary Series',
-                description: 'Document community events for content across KNF and For Harriet',
-                brands: ['BWitW', 'KNF', 'FH']
+                description: 'Transform community events into compelling video content across platforms',
+                brands: ['BWitW', 'KNF', 'For Harriet']
             },
             {
+                icon: '👗',
                 title: 'Fashion Week Coverage',
-                description: 'Multi-angle coverage across fashion, culture, and business perspectives',
+                description: 'Multi-angle coverage: fashion critique, cultural analysis, business insights',
                 brands: ['TSS', 'KNF', 'MTiH']
             },
             {
+                icon: '💡',
                 title: 'Creator Economy Summit',
-                description: 'Combine MTiH expertise with Indigo Hour format for industry event',
-                brands: ['MTiH', 'Indigo', 'BWitW']
+                description: 'Launch event combining MTiH expertise with Indigo Hour format',
+                brands: ['MTiH', 'Indigo Hour', 'BWitW']
             },
             {
-                title: 'Newsletter Cross-Promotion',
-                description: 'Leverage all brands to launch Taste of Kimberly successfully',
-                brands: ['ToK', 'KNF', 'TSS']
+                icon: '📚',
+                title: 'Book Launch Strategy',
+                description: 'Leverage all brands for maximum impact on upcoming publications',
+                brands: ['All Brands']
             }
         ];
 
-        // Initialize dashboard
-        function init() {
+        // Current view state
+        let currentView = 'overview';
+
+        // Initialize the dashboard
+        function initializeDashboard() {
+            createNavigation();
             createBrandCards();
             createOpportunities();
-            createBrandDetails();
+            createBrandDetailViews();
+            updateTotalStats();
         }
 
-        // Create brand cards
-        function createBrandCards() {
-            const grid = document.getElementById('brandGrid');
+        // Create navigation buttons
+        function createNavigation() {
+            const nav = document.getElementById('brandNav');
             
-            Object.entries(brands).forEach(([key, brand]) => {
+            // Overview button
+            const overviewBtn = document.createElement('button');
+            overviewBtn.className = 'brand-nav-btn active';
+            overviewBtn.innerHTML = '<span>🌟 Empire Overview</span>';
+            overviewBtn.onclick = () => showView('overview');
+            nav.appendChild(overviewBtn);
+            
+            // Brand buttons
+            Object.entries(brandsData).forEach(([key, brand]) => {
+                const btn = document.createElement('button');
+                btn.className = `brand-nav-btn ${key}`;
+                btn.innerHTML = `<span>${brand.name}</span>`;
+                btn.style.setProperty('--gradient', brand.gradient);
+                btn.onclick = () => showView(key);
+                
+                // Add gradient to pseudo element
+                const style = document.createElement('style');
+                style.textContent = `.brand-nav-btn.${key}::before { background: ${brand.gradient}; }`;
+                document.head.appendChild(style);
+                
+                nav.appendChild(btn);
+            });
+        }
+
+        // Create brand cards for overview
+        function createBrandCards() {
+            const grid = document.getElementById('empireGrid');
+            
+            Object.entries(brandsData).forEach(([key, brand]) => {
                 const card = document.createElement('div');
-                card.className = 'brand-card';
+                card.className = `brand-luxury-card ${key}`;
                 card.onclick = () => showView(key);
                 
-                const metricsHTML = brand.type === 'content' ? `
-                    <div class="metric">
-                        <div class="metric-value">${brand.metrics.content}</div>
-                        <div class="metric-label">Pipeline</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${brand.metrics.reach}</div>
-                        <div class="metric-label">Reach</div>
-                    </div>
-                ` : `
-                    <div class="metric">
-                        <div class="metric-value">${brand.metrics.events || brand.metrics.concepts}</div>
-                        <div class="metric-label">${brand.name === 'BWitW' ? 'Events' : 'Concepts'}</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-value">${brand.metrics.community || brand.metrics.capacity}</div>
-                        <div class="metric-label">${brand.name === 'BWitW' ? 'Community' : 'Capacity'}</div>
-                    </div>
-                `;
+                // Add gradient style
+                const style = document.createElement('style');
+                style.textContent = `.brand-luxury-card.${key}::before { background: ${brand.gradient}; }`;
+                document.head.appendChild(style);
                 
                 card.innerHTML = `
-                    <div class="brand-header">
-                        <h3 class="brand-title">${brand.name}</h3>
-                        <span class="brand-status status-${brand.status}">${brand.status}</span>
+                    <div class="brand-status-badge status-${brand.status}">${brand.status.toUpperCase()}</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">${brand.icon}</div>
+                        <h3 class="brand-name">${brand.name}</h3>
+                        <p class="brand-tagline">${brand.tagline}</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">${brand.stats.pipeline}</div>
+                                <div class="mini-stat-label">Pipeline</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">${brand.stats.reach}</div>
+                                <div class="mini-stat-label">Reach</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">${brand.stats.engagement}</div>
+                                <div class="mini-stat-label">Engagement</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">${brand.stats.revenue}</div>
+                                <div class="mini-stat-label">Revenue</div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="brand-description">${brand.description}</p>
-                    <div class="brand-metrics">${metricsHTML}</div>
                 `;
                 
                 grid.appendChild(card);
             });
         }
 
-        // Create opportunities
+        // Create opportunities cards
         function createOpportunities() {
             const grid = document.getElementById('opportunitiesGrid');
             
@@ -653,10 +1006,11 @@
                 card.className = 'opportunity-card';
                 
                 card.innerHTML = `
-                    <h4 class="opportunity-title">${opp.title}</h4>
+                    <div class="opportunity-icon">${opp.icon}</div>
+                    <h3 class="opportunity-title">${opp.title}</h3>
                     <p class="opportunity-description">${opp.description}</p>
                     <div class="opportunity-brands">
-                        ${opp.brands.map(b => `<span class="brand-tag">${b}</span>`).join('')}
+                        ${opp.brands.map(brand => `<span class="brand-pill">${brand}</span>`).join('')}
                     </div>
                 `;
                 
@@ -665,40 +1019,39 @@
         }
 
         // Create brand detail views
-        function createBrandDetails() {
-            const container = document.getElementById('brand-details');
+        function createBrandDetailViews() {
+            const container = document.getElementById('brand-detail-container');
             
-            Object.entries(brands).forEach(([key, brand]) => {
+            Object.entries(brandsData).forEach(([key, brand]) => {
                 const view = document.createElement('div');
                 view.id = `${key}-view`;
                 view.className = 'view-container';
                 
-                const pipelineHTML = brand.type === 'content' ? 
-                    createContentPipeline(brand.pipeline) : 
-                    createEventPipeline(brand.pipeline);
-                
-                const performanceHTML = brand.type === 'content' ?
-                    createContentPerformance(brand) :
-                    createEventPerformance(brand);
+                // Add gradient style for hero
+                const style = document.createElement('style');
+                style.textContent = `.brand-hero.${key} { background: ${brand.gradient}; }`;
+                document.head.appendChild(style);
                 
                 view.innerHTML = `
-                    <div class="brand-detail-header">
-                        <h2>${brand.fullName}</h2>
-                        <p>${brand.description}</p>
+                    <div class="brand-hero ${key}">
+                        <div class="brand-hero-content">
+                            <h1 class="brand-hero-title">${brand.fullName}</h1>
+                            <p class="brand-hero-subtitle">${brand.tagline}</p>
+                        </div>
                     </div>
-                    
-                    <div class="pipeline-section">
+
+                    <div class="pipeline-luxury">
                         <div class="pipeline-header">
-                            <h3>${brand.type === 'content' ? 'Content Pipeline' : 'Event Pipeline'}</h3>
-                            <button class="btn-primary">+ Add ${brand.type === 'content' ? 'Content' : 'Event'}</button>
+                            <h2 class="pipeline-title">Content Pipeline</h2>
+                            <button class="add-content-luxury" onclick="addContent('${key}')">+ Add Content</button>
                         </div>
-                        <div class="pipeline-grid">
-                            ${pipelineHTML}
+                        <div class="pipeline-flow">
+                            ${createPipelineColumns(brand.content)}
                         </div>
                     </div>
-                    
-                    <div class="performance-section">
-                        ${performanceHTML}
+
+                    <div class="metrics-luxury">
+                        ${createMetricCards(brand)}
                     </div>
                 `;
                 
@@ -706,142 +1059,160 @@
             });
         }
 
-        // Create content pipeline
-        function createContentPipeline(pipeline) {
+        // Create pipeline columns
+        function createPipelineColumns(content) {
             const stages = ['ideas', 'production', 'ready', 'published'];
             const stageNames = {
                 ideas: 'Ideas',
-                production: 'In Production',
-                ready: 'Ready to Publish',
+                production: 'Production',
+                ready: 'Ready',
                 published: 'Published'
             };
             
             return stages.map(stage => `
-                <div class="pipeline-stage">
-                    <div class="stage-header">
-                        <span class="stage-title">${stageNames[stage]}</span>
-                        <span class="stage-count">${pipeline[stage]?.length || 0}</span>
+                <div class="pipeline-column">
+                    <div class="pipeline-column-header">
+                        <span class="pipeline-column-title">${stageNames[stage]}</span>
+                        <span class="pipeline-count">${content[stage] ? content[stage].length : 0}</span>
                     </div>
-                    ${(pipeline[stage] || []).map(item => 
-                        `<div class="content-item">${item}</div>`
-                    ).join('')}
+                    ${content[stage] ? content[stage].map(item => 
+                        `<div class="content-card">${item}</div>`
+                    ).join('') : ''}
                 </div>
             `).join('');
         }
 
-        // Create event pipeline
-        function createEventPipeline(pipeline) {
-            const stages = Object.keys(pipeline);
-            const stageNames = {
-                planning: 'Planning',
-                upcoming: 'Upcoming',
-                marketing: 'Marketing',
-                completed: 'Completed',
-                concepts: 'Concepts',
-                venues: 'Venues',
-                ready: 'Ready'
-            };
+        // Create metric cards
+        function createMetricCards(brand) {
+            const metrics = [
+                { icon: '📊', label: 'Monthly Reach', value: brand.stats.reach, change: '↑ 12% from last month' },
+                { icon: '💰', label: 'Monthly Revenue', value: brand.stats.revenue, change: '↑ 8% from last month' },
+                { icon: '⚡', label: 'Engagement Rate', value: brand.stats.engagement, change: '↑ 2.3% from last month' }
+            ];
             
-            return stages.map(stage => `
-                <div class="pipeline-stage">
-                    <div class="stage-header">
-                        <span class="stage-title">${stageNames[stage] || stage}</span>
-                        <span class="stage-count">${pipeline[stage]?.length || 0}</span>
-                    </div>
-                    ${(pipeline[stage] || []).map(item => 
-                        `<div class="content-item">${item}</div>`
-                    ).join('')}
+            return metrics.map(metric => `
+                <div class="metric-card">
+                    <div class="metric-icon">${metric.icon}</div>
+                    <div class="metric-value">${metric.value}</div>
+                    <div class="metric-label">${metric.label}</div>
+                    <div class="metric-change">${metric.change}</div>
                 </div>
             `).join('');
         }
 
-        // Create content performance cards
-        function createContentPerformance(brand) {
-            return `
-                <div class="performance-card">
-                    <div class="performance-icon">📊</div>
-                    <div class="performance-value">${brand.metrics.reach}</div>
-                    <div class="performance-label">Monthly Reach</div>
-                    <div class="performance-change">↑ 12% from last month</div>
-                </div>
-                <div class="performance-card">
-                    <div class="performance-icon">💰</div>
-                    <div class="performance-value">${brand.metrics.revenue}</div>
-                    <div class="performance-label">Monthly Revenue</div>
-                    <div class="performance-change">↑ 8% from last month</div>
-                </div>
-                <div class="performance-card">
-                    <div class="performance-icon">⚡</div>
-                    <div class="performance-value">${brand.metrics.engagement}</div>
-                    <div class="performance-label">Engagement Rate</div>
-                    <div class="performance-change">↑ 2.3% from last month</div>
-                </div>
-            `;
+        // Update total stats
+        function updateTotalStats() {
+            let totalPipeline = 0;
+            let totalRevenue = 0;
+            
+            Object.values(brandsData).forEach(brand => {
+                totalPipeline += brand.stats.pipeline;
+                if (brand.stats.revenue.includes('$')) {
+                    totalRevenue += parseInt(brand.stats.revenue.replace(/[$K,]/g, '')) || 0;
+                }
+            });
+            
+            document.getElementById('totalPipeline').textContent = totalPipeline;
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue}K`;
         }
 
-        // Create event performance cards
-        function createEventPerformance(brand) {
-            if (brand.name === 'BWitW') {
-                return `
-                    <div class="performance-card">
-                        <div class="performance-icon">🎉</div>
-                        <div class="performance-value">${brand.metrics.events}</div>
-                        <div class="performance-label">Events This Year</div>
-                    </div>
-                    <div class="performance-card">
-                        <div class="performance-icon">👥</div>
-                        <div class="performance-value">${brand.metrics.community}</div>
-                        <div class="performance-label">Community Members</div>
-                    </div>
-                    <div class="performance-card">
-                        <div class="performance-icon">💬</div>
-                        <div class="performance-value">${brand.metrics.connections}</div>
-                        <div class="performance-label">Group Chats Formed</div>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div class="performance-card">
-                        <div class="performance-icon">💡</div>
-                        <div class="performance-value">${brand.metrics.concepts}</div>
-                        <div class="performance-label">Event Concepts</div>
-                    </div>
-                    <div class="performance-card">
-                        <div class="performance-icon">📍</div>
-                        <div class="performance-value">${brand.metrics.venues}</div>
-                        <div class="performance-label">Venue Options</div>
-                    </div>
-                    <div class="performance-card">
-                        <div class="performance-icon">🗓️</div>
-                        <div class="performance-value">${brand.metrics.launch}</div>
-                        <div class="performance-label">Target Launch</div>
-                    </div>
-                `;
+        // Show view function
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-container').forEach(view => {
+                view.classList.remove('active');
+            });
+
+            // Show selected view
+            setTimeout(() => {
+                const selectedView = document.getElementById(viewName + '-view');
+                if (selectedView) {
+                    selectedView.classList.add('active');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 300);
+
+            // Update navigation
+            document.querySelectorAll('.brand-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            const activeBtn = viewName === 'overview' 
+                ? document.querySelector('.brand-nav-btn:first-child')
+                : document.querySelector(`.brand-nav-btn.${viewName}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            currentView = viewName;
+            saveState();
+        }
+
+        // Menu functions
+        function toggleMenu() {
+            const menuItems = document.getElementById('menuItems');
+            menuItems.classList.toggle('active');
+            
+            const toggle = document.querySelector('.menu-toggle');
+            toggle.style.transform = menuItems.classList.contains('active') 
+                ? 'rotate(45deg)' 
+                : 'rotate(0deg)';
+        }
+
+        function showAnalytics() {
+            alert('Opening comprehensive analytics dashboard...');
+            toggleMenu();
+        }
+
+        function createContent() {
+            alert('Opening content creation suite...');
+            toggleMenu();
+        }
+
+        function schedulePost() {
+            alert('Opening social media scheduler...');
+            toggleMenu();
+        }
+
+        function manageTeam() {
+            alert('Opening team management portal...');
+            toggleMenu();
+        }
+
+        function viewRevenue() {
+            alert('Opening revenue analytics...');
+            toggleMenu();
+        }
+
+        function addContent(brand) {
+            alert(`Adding content to ${brandsData[brand].fullName}`);
+        }
+
+        // Save and load state
+        function saveState() {
+            localStorage.setItem('empireView', currentView);
+        }
+
+        function loadState() {
+            const savedView = localStorage.getItem('empireView');
+            if (savedView && savedView !== 'overview') {
+                showView(savedView);
             }
         }
 
-        // Show view
-        function showView(view) {
-            // Hide all views
-            document.querySelectorAll('.view-container').forEach(v => {
-                v.classList.remove('active');
-            });
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeDashboard();
+            loadState();
             
-            // Show selected view
-            document.getElementById(`${view}-view`).classList.add('active');
-            
-            // Update navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-        }
+            // Add smooth appearance
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                document.body.style.transition = 'opacity 0.6s ease-out';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
 
-        // Initialize
-        init();
+        // Save state periodically
+        setInterval(saveState, 30000);
     </script>
 </body>
 </html>
