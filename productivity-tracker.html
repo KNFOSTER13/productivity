@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
     <title>Daily Productivity Tracker</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💜</text></svg>">
+    
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     
     <script>
-    // Your Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
-        authDomain: "productivity-tracker-knf13.firebaseapp.com",
-        projectId: "productivity-tracker-knf13",
-        storageBucket: "productivity-tracker-knf13.firebasestorage.app",
-        messagingSenderId: "76203539357",
-        appId: "1:76203539357:web:7d474a6a57c631b80d96"
-    };
-    
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+            authDomain: "productivity-tracker-knf13.firebaseapp.com",
+            projectId: "productivity-tracker-knf13",
+            storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+            messagingSenderId: "76203539357",
+            appId: "1:76203539357:web:7d474a6a57c631b80d96"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
     </script>
     
     <style>
@@ -31,7 +31,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Georgia', serif;
             line-height: 1.6;
@@ -43,33 +43,33 @@
             -webkit-text-size-adjust: 100%;
             touch-action: manipulation;
         }
-
+        
         .header {
             text-align: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 2px solid #e8e8e8;
         }
-
+        
         .header h1 {
             font-size: 1.8em;
             color: #2c3e50;
             margin-bottom: 8px;
         }
-
+        
         .date {
             font-size: 1.1em;
             color: #7f8c8d;
             font-style: italic;
         }
-
+        
         .container {
             display: flex;
             flex-direction: column;
             gap: 15px;
             margin-bottom: 20px;
         }
-
+        
         .section {
             background: #fff;
             border-radius: 12px;
@@ -79,12 +79,12 @@
             transition: all 0.3s ease;
             margin-bottom: 10px;
         }
-
+        
         .section:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(255, 20, 147, 0.15);
         }
-
+        
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -94,7 +94,7 @@
             -webkit-user-select: none;
             padding: 5px 0;
         }
-
+        
         .section h2 {
             font-size: 1.3em;
             color: #2c3e50;
@@ -103,28 +103,28 @@
             align-items: center;
             gap: 8px;
         }
-
+        
         .collapse-icon {
             font-size: 1.2em;
             transition: transform 0.3s ease;
             color: #7f8c8d;
         }
-
+        
         .section.collapsed .collapse-icon {
             transform: rotate(-90deg);
         }
-
+        
         .section-content {
             overflow: hidden;
             transition: max-height 0.3s ease;
         }
-
+        
         .section.collapsed .section-content {
             max-height: 0;
             padding-top: 0;
             margin-top: 0;
         }
-
+        
         .section-description {
             color: #7f8c8d;
             font-size: 0.95em;
@@ -132,7 +132,7 @@
             font-style: italic;
             line-height: 1.4;
         }
-
+        
         .task-input {
             display: flex;
             margin-bottom: 15px;
@@ -140,38 +140,41 @@
             gap: 12px;
             padding: 8px 0;
         }
-
+        
         .task-input input[type="checkbox"] {
             width: 22px;
             height: 22px;
             cursor: pointer;
             flex-shrink: 0;
         }
-
-        .priority-select {
-            min-width: 120px;
-            padding: 8px;
-            border: 2px solid #ddd;
+        
+        .priority-buttons {
+            display: flex;
+            gap: 5px;
+            margin-right: 10px;
+        }
+        
+        .priority-btn {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
             border-radius: 5px;
+            cursor: pointer;
             font-size: 0.9em;
-            background: white;
+            transition: all 0.2s;
         }
-
-        .priority-empire {
-            border-color: #e74c3c !important;
-            background: #ffe5e5 !important;
+        
+        .priority-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-1px);
         }
-
-        .priority-high {
-            border-color: #f39c12 !important;
-            background: #fff5e5 !important;
+        
+        .priority-btn.active {
+            background: #e8e8e8;
+            border-color: #999;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
-
-        .priority-maintenance {
-            border-color: #95a5a6 !important;
-            background: #f5f5f5 !important;
-        }
-
+        
         .task-input input[type="text"] {
             flex: 1;
             padding: 12px 15px;
@@ -184,14 +187,48 @@
             min-height: 44px;
             box-sizing: border-box;
         }
-
+        
         .task-input input[type="text"]:focus {
             outline: none;
             border-color: #FF1493;
             box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
             background: white;
         }
-
+        
+        /* Empire Integration Inputs */
+        .empire-task-input {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .empire-task-input input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .empire-task-input input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            min-height: 44px;
+            box-sizing: border-box;
+        }
+        
+        .empire-task-input input[type="text"]:focus {
+            outline: none;
+            border-color: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+        
         .add-task-btn {
             background: linear-gradient(45deg, #7B3F8A, #9A5FB8) !important;
             color: white !important;
@@ -208,14 +245,34 @@
             font-weight: 600 !important;
             touch-action: manipulation !important;
         }
-
+        
         .add-task-btn:hover,
         .add-task-btn:active {
             background: linear-gradient(45deg, #8E4BA0, #B070D0) !important;
             transform: translateY(-2px) !important;
             box-shadow: 0 4px 12px rgba(123, 63, 138, 0.4) !important;
         }
-
+        
+        .empire-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+            transition: all 0.3s;
+            width: 100%;
+            min-height: 44px;
+            font-weight: 600;
+        }
+        
+        .empire-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
         .stats {
             position: sticky !important;
             top: 10px !important;
@@ -234,12 +291,12 @@
             margin-right: auto !important;
             border: 2px solid rgba(255, 255, 255, 0.2) !important;
         }
-
+        
         .completed-count {
             font-weight: bold !important;
             font-size: 1.2em !important;
         }
-
+        
         .sync-status {
             font-size: 0.8em !important;
             opacity: 0.95 !important;
@@ -251,343 +308,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             color: white !important;
         }
-
-        /* Empire Integration Styles */
-        .empire-integration {
-            background: linear-gradient(135deg, #D4A574 0%, #C19552 50%, #B8860B 100%) !important;
-            color: white !important;
-            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.4) !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            border-left: 5px solid #B8860B !important;
-        }
-
-        .empire-integration h2 {
-            color: white !important;
-        }
-
-        .empire-integration .section-description {
-            color: rgba(255, 255, 255, 0.9) !important;
-        }
-
-        .empire-subsection {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        .empire-subsection h3 {
-            color: white;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        /* Creative Streaks Styles */
-        .creative-streaks {
-            background: linear-gradient(135deg, #8B2C7A 0%, #B854A3 50%, #D066B8 100%) !important;
-            color: white !important;
-            box-shadow: 0 4px 20px rgba(139, 44, 122, 0.4) !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            border-left: 5px solid #8B2C7A !important;
-        }
-
-        .creative-streaks h2 {
-            color: white !important;
-        }
-
-        .creative-streaks .section-description {
-            color: rgba(255, 255, 255, 0.9) !important;
-        }
-
-        .streak-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .streak-card {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .streak-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: white;
-        }
-
-        .streak-label {
-            font-size: 0.9em;
-            margin-top: 5px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        /* Goal Milestones Styles */
-        .goal-milestones {
-            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 50%, #C44569 100%) !important;
-            color: white !important;
-            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4) !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            border-left: 5px solid #C44569 !important;
-        }
-
-        .goal-milestones h2 {
-            color: white !important;
-        }
-
-        .goal-milestones .section-description {
-            color: rgba(255, 255, 255, 0.9) !important;
-        }
-
-        .goal-card {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        .goal-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .milestone-item {
-            display: flex;
-            align-items: center;
-            margin: 8px 0;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-        }
-
-        .milestone-checkbox {
-            margin-right: 10px;
-        }
-
-        .milestone-text {
-            color: white;
-            flex: 1;
-        }
-
-        .progress-bar {
-            background: rgba(255, 255, 255, 0.3);
-            height: 20px;
-            border-radius: 10px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            background: linear-gradient(45deg, #4CAF50, #8BC34A);
-            height: 100%;
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-
-        .creative-workflow {
-            background: linear-gradient(135deg, #E6E6FA 0%, #DDA0DD 50%, #9370DB 100%);
-            color: white;
-            border-left: none;
-            box-shadow: 0 4px 20px rgba(221, 160, 221, 0.4);
-            margin-bottom: 15px;
-        }
-
-        .creative-workflow h2 {
-            color: white;
-            font-size: 1.8em;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .workflow-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .workflow-section {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-        }
-
-        .workflow-section h3 {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .workflow-section .examples {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-
-        /* Unstuck Suggestions Styles */
-        .unstuck-suggestions {
-            border-left-color: #6B2C91 !important;
-            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
-            color: white !important;
-            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
-        }
-
-        .unstuck-suggestions h2 {
-            color: white !important;
-        }
-
-        .unstuck-suggestions .section-description {
-            color: rgba(255, 255, 255, 0.9) !important;
-        }
-
-        .suggestion-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .suggestion-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 15px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-            min-height: 44px;
-            touch-action: manipulation;
-            width: 100%;
-        }
-
-        .suggestion-btn:hover,
-        .suggestion-btn:active {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .suggestion-btn.primary {
-            background: rgba(255, 255, 255, 0.95);
-            color: #6B2C91;
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-        }
-
-        .suggestion-btn.primary:hover,
-        .suggestion-btn.primary:active {
-            background: white;
-            color: #6B2C91;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
-        }
-
-        #categoryFilter {
-            padding: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1em;
-            backdrop-filter: blur(10px);
-            width: 100%;
-            min-height: 44px;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 12px;
-        }
-
-        #categoryFilter option {
-            background: #6B2C91;
-            color: white;
-        }
-
-        .current-suggestion {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 25px;
-            border-radius: 10px;
-            margin: 20px 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .suggestion-text {
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .suggestion-category {
-            font-size: 0.9em;
-            opacity: 0.8;
-            font-style: italic;
-            color: white;
-        }
-
-        .suggestion-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .action-btn {
-            background: linear-gradient(45deg, #9370DB, #DDA0DD);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(147, 112, 219, 0.3);
-            min-height: 44px;
-            font-weight: 600;
-            touch-action: manipulation;
-            width: 100%;
-        }
-
-        .action-btn:hover,
-        .action-btn:active {
-            background: linear-gradient(45deg, #BA55D3, #E6E6FA);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(147, 112, 219, 0.4);
-        }
-
-        .action-btn.secondary {
-            background: linear-gradient(45deg, #8A2BE2, #9370DB);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-        }
-
-        .action-btn.secondary:hover,
-        .action-btn.secondary:active {
-            background: linear-gradient(45deg, #9932CC, #BA55D3);
-        }
-
+        
         /* Yesterday's Review Styles */
         .yesterday-review {
             border-left-color: #6B2C91 !important;
@@ -596,18 +317,18 @@
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
             border: 2px solid rgba(255, 255, 255, 0.2) !important;
         }
-
+        
         .yesterday-review h2 {
             color: white !important;
             text-align: center !important;
             font-size: 1.8em !important;
             margin-bottom: 15px !important;
         }
-
+        
         .yesterday-review .section-description {
             color: rgba(255, 255, 255, 0.9) !important;
         }
-
+        
         .yesterday-stats {
             display: flex;
             justify-content: center;
@@ -615,7 +336,7 @@
             margin: 20px 0;
             flex-wrap: wrap;
         }
-
+        
         .stat-box {
             background: rgba(255, 255, 255, 0.2) !important;
             padding: 20px !important;
@@ -625,14 +346,14 @@
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
             min-width: 120px !important;
         }
-
+        
         .stat-number {
             font-size: 2.5em !important;
             font-weight: bold !important;
             color: white !important;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
         }
-
+        
         .stat-label {
             font-size: 0.9em !important;
             opacity: 0.9 !important;
@@ -641,7 +362,7 @@
             margin-top: 5px !important;
             color: white !important;
         }
-
+        
         .yesterday-tasks {
             background: rgba(255, 255, 255, 0.15) !important;
             padding: 20px !important;
@@ -652,7 +373,7 @@
             max-height: 300px !important;
             overflow-y: auto !important;
         }
-
+        
         .yesterday-task-item {
             background: rgba(255, 255, 255, 0.1) !important;
             padding: 12px 15px !important;
@@ -664,7 +385,7 @@
             gap: 10px !important;
             color: white !important;
         }
-
+        
         .task-category-badge {
             background: rgba(255, 255, 255, 0.3) !important;
             color: white !important;
@@ -675,7 +396,7 @@
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
         }
-
+        
         .motivational-btn {
             background: rgba(255, 255, 255, 0.95) !important;
             color: #6B2C91 !important;
@@ -697,7 +418,7 @@
             max-width: 300px !important;
             backdrop-filter: blur(10px) !important;
         }
-
+        
         .motivational-btn:hover,
         .motivational-btn:active {
             background: white !important;
@@ -706,7 +427,408 @@
             box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5) !important;
             border-color: rgba(255, 255, 255, 0.6) !important;
         }
-
+        
+        /* Empire Integration Points */
+        .empire-integration {
+            border-left-color: #B8860B !important;
+            background: linear-gradient(135deg, #B8860B 0%, #DAA520 50%, #FFD700 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(184, 134, 11, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        .empire-integration h2 {
+            color: white !important;
+            text-align: center !important;
+            font-size: 1.8em !important;
+            margin-bottom: 15px !important;
+        }
+        
+        .empire-integration .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-align: center !important;
+        }
+        
+        .empire-subsection {
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .empire-subsection h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Creative Streaks */
+        .creative-streaks {
+            border-left-color: #6B2C91 !important;
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .creative-streaks h2 {
+            color: white !important;
+            text-align: center !important;
+            font-size: 1.8em !important;
+            margin-bottom: 10px !important;
+        }
+        
+        .creative-streaks .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-align: center !important;
+        }
+        
+        .streak-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .streak-box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .streak-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .streak-label {
+            font-size: 0.9em;
+            margin-top: 5px;
+            color: white;
+            opacity: 0.9;
+        }
+        
+        .streak-emoji {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        
+        /* Unstuck Suggestions Styles */
+        .unstuck-suggestions {
+            border-left-color: #6B2C91 !important;
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .unstuck-suggestions h2 {
+            color: white !important;
+        }
+        
+        .unstuck-suggestions .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .suggestion-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .suggestion-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            min-height: 44px;
+            touch-action: manipulation;
+            width: 100%;
+        }
+        
+        .suggestion-btn:hover,
+        .suggestion-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .suggestion-btn.primary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #6B2C91;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .suggestion-btn.primary:hover,
+        .suggestion-btn.primary:active {
+            background: white;
+            color: #6B2C91;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+        }
+        
+        #categoryFilter {
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1em;
+            backdrop-filter: blur(10px);
+            width: 100%;
+            min-height: 44px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+        }
+        
+        #categoryFilter option {
+            background: #6B2C91;
+            color: white;
+        }
+        
+        .current-suggestion {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .suggestion-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .suggestion-category {
+            font-size: 0.9em;
+            opacity: 0.8;
+            font-style: italic;
+            color: white;
+        }
+        
+        .suggestion-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(45deg, #9370DB, #DDA0DD);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(147, 112, 219, 0.3);
+            min-height: 44px;
+            font-weight: 600;
+            touch-action: manipulation;
+            width: 100%;
+        }
+        
+        .action-btn:hover,
+        .action-btn:active {
+            background: linear-gradient(45deg, #BA55D3, #E6E6FA);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(147, 112, 219, 0.4);
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(45deg, #8A2BE2, #9370DB);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .action-btn.secondary:hover,
+        .action-btn.secondary:active {
+            background: linear-gradient(45deg, #9932CC, #BA55D3);
+        }
+        
+        /* Creative workflow */
+        .creative-workflow {
+            background: linear-gradient(135deg, #E6E6FA 0%, #DDA0DD 50%, #9370DB 100%);
+            color: white;
+            border-left: none;
+            box-shadow: 0 4px 20px rgba(221, 160, 221, 0.4);
+            margin-bottom: 15px;
+        }
+        
+        .creative-workflow h2 {
+            color: white;
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .workflow-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .workflow-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .workflow-section h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .workflow-section .examples {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        /* Goal Milestones */
+        .goal-milestones {
+            border-left-color: #6B2C91 !important;
+            background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+            color: white !important;
+            box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        .goal-milestones h2 {
+            color: white !important;
+            text-align: center !important;
+            font-size: 1.8em !important;
+            margin-bottom: 10px !important;
+        }
+        
+        .goal-milestones .section-description {
+            color: rgba(255, 255, 255, 0.9) !important;
+            text-align: center !important;
+        }
+        
+        .goal-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .goal-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .goal-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .progress-text {
+            font-size: 0.9em;
+            color: white;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: width 0.3s ease;
+        }
+        
+        .milestone-list {
+            list-style: none;
+        }
+        
+        .milestone-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: white;
+        }
+        
+        .milestone-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .milestone-text {
+            flex: 1;
+            font-size: 0.95em;
+        }
+        
+        .milestone-item.completed .milestone-text {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .add-milestone-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .add-milestone-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Brain dump */
         .brain-dump {
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
             border-left: 5px solid #6B2C91 !important;
@@ -715,15 +837,15 @@
             border: 2px solid rgba(255, 255, 255, 0.2) !important;
             border-left: 5px solid #6B2C91 !important;
         }
-
+        
         .brain-dump h2 {
             color: white !important;
         }
-
+        
         .brain-dump .section-description {
             color: rgba(255, 255, 255, 0.9) !important;
         }
-
+        
         .brain-dump textarea {
             width: 100%;
             min-height: 120px;
@@ -737,13 +859,13 @@
             color: #333;
             box-sizing: border-box;
         }
-
+        
         .brain-dump textarea:focus {
             outline: none;
             border-color: #FF1493;
             box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
         }
-
+        
         /* Daily Summary Styles */
         .daily-summary {
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
@@ -752,22 +874,22 @@
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
             border: 2px solid rgba(255, 255, 255, 0.2) !important;
         }
-
+        
         .daily-summary h2 {
             color: white !important;
         }
-
+        
         .daily-summary .section-description {
             color: rgba(255, 255, 255, 0.9) !important;
         }
-
+        
         .summary-controls {
             display: flex;
             flex-direction: column;
             gap: 15px;
             margin-bottom: 20px;
         }
-
+        
         .summary-btn {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -783,21 +905,21 @@
             touch-action: manipulation;
             width: 100%;
         }
-
+        
         .summary-btn:hover,
         .summary-btn:active {
             background: rgba(255, 255, 255, 0.3);
             border-color: rgba(255, 255, 255, 0.5);
             transform: translateY(-2px);
         }
-
+        
         .summary-btn.primary {
             background: rgba(255, 255, 255, 0.95);
             color: #6B2C91;
             box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.4);
         }
-
+        
         .summary-btn.primary:hover,
         .summary-btn.primary:active {
             background: white;
@@ -805,7 +927,7 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
         }
-
+        
         .summary-content {
             background: rgba(255, 255, 255, 0.15);
             padding: 25px;
@@ -816,17 +938,17 @@
             color: white;
             line-height: 1.6;
         }
-
+        
         .summary-placeholder {
             text-align: center;
             opacity: 0.8;
             font-style: italic;
         }
-
+        
         .summary-section {
             margin-bottom: 25px;
         }
-
+        
         .summary-section h3 {
             color: white;
             margin-bottom: 15px;
@@ -834,7 +956,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
             padding-bottom: 8px;
         }
-
+        
         .summary-stats {
             display: flex;
             justify-content: space-around;
@@ -842,7 +964,7 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-
+        
         .summary-stat {
             background: rgba(255, 255, 255, 0.2);
             padding: 15px;
@@ -851,24 +973,24 @@
             flex: 1;
             min-width: 80px;
         }
-
+        
         .summary-stat-number {
             font-size: 1.8em;
             font-weight: bold;
             color: white;
         }
-
+        
         .summary-stat-label {
             font-size: 0.9em;
             opacity: 0.9;
             margin-top: 5px;
         }
-
+        
         .summary-task-list {
             list-style: none;
             padding: 0;
         }
-
+        
         .summary-task-item {
             background: rgba(255, 255, 255, 0.1);
             padding: 10px 15px;
@@ -876,7 +998,7 @@
             border-radius: 6px;
             border-left: 3px solid rgba(255, 255, 255, 0.4);
         }
-
+        
         .summary-brain-dump {
             background: rgba(255, 255, 255, 0.1);
             padding: 15px;
@@ -885,81 +1007,49 @@
             white-space: pre-wrap;
             font-style: italic;
         }
-
+        
         /* Category-specific colors - Unicorn Palette */
-        .work {
-            border-left-color: #FF1493;
-        }
-
-        /* Hot Pink */
-        .education {
-            border-left-color: #FF6347;
-        }
-
-        /* Coral */
-        .relationships {
-            border-left-color: #FFD700;
-        }
-
-        /* Bright Gold */
-        .money {
-            border-left-color: #00FF7F;
-        }
-
-        /* Spring Green */
-        .business {
-            border-left-color: #32CD32;
-        }
-
-        /* Lime Green */
-        .leisure {
-            border-left-color: #00BFFF;
-        }
-
-        /* Deep Sky Blue */
-        .vanity {
-            border-left-color: #4169E1;
-        }
-
-        /* Royal Blue */
-        .health {
-            border-left-color: #DDA0DD;
-        }
-
-        /* Plum */
-        .home {
-            border-left-color: #9932CC;
-        }
-
-        /* Dark Orchid */
-
+        .work { border-left-color: #FF1493; } /* Hot Pink */
+        .education { border-left-color: #FF6347; } /* Coral */
+        .relationships { border-left-color: #FFD700; } /* Bright Gold */
+        .money { border-left-color: #00FF7F; } /* Spring Green */
+        .business { border-left-color: #32CD32; } /* Lime Green */
+        .leisure { border-left-color: #00BFFF; } /* Deep Sky Blue */
+        .vanity { border-left-color: #4169E1; } /* Royal Blue */
+        .health { border-left-color: #DDA0DD; } /* Plum */
+        .home { border-left-color: #9932CC; } /* Dark Orchid */
+        
         /* Mobile-specific responsive adjustments */
         @media (max-width: 768px) {
             .yesterday-stats {
                 flex-direction: column;
                 gap: 15px;
             }
-
+            
             .stat-box {
                 min-width: auto;
                 width: 100%;
                 max-width: 200px;
                 margin: 0 auto;
             }
-
+            
             .workflow-section h3 {
                 font-size: 1.2em;
             }
-
+            
             .suggestion-controls {
                 gap: 12px;
             }
-
+            
             .streak-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
+            }
+            
+            .priority-buttons {
+                flex-wrap: wrap;
             }
         }
-
+        
         /* Larger mobile screens */
         @media (min-width: 769px) and (max-width: 1024px) {
             .container {
@@ -969,17 +1059,15 @@
                 max-width: 800px;
                 margin: 0 auto;
             }
-
+            
             .creative-workflow,
             .brain-dump,
             .daily-summary,
-            .empire-integration,
-            .creative-streaks,
             .goal-milestones {
                 grid-column: 1 / -1;
             }
         }
-
+        
         /* Desktop */
         @media (min-width: 1025px) {
             body {
@@ -987,22 +1075,20 @@
                 margin: 0 auto;
                 padding: 20px;
             }
-
+            
             .container {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 30px;
             }
-
+            
             .creative-workflow,
             .brain-dump,
             .daily-summary,
-            .empire-integration,
-            .creative-streaks,
             .goal-milestones {
                 grid-column: 1 / -1;
             }
-
+            
             .stats {
                 position: fixed;
                 top: 20px;
@@ -1012,21 +1098,20 @@
         }
     </style>
 </head>
-
 <body>
     <div class="stats">
         <div>Tasks Completed</div>
         <div class="completed-count" id="completedCount">0</div>
-        <div class="sync-status" id="syncStatus">Ready to Track</div>
+        <div class="sync-status" id="syncStatus">☁ Cloud Loaded</div>
     </div>
-
+    
     <div class="header">
         <h1>Daily Productivity Tracker</h1>
         <div class="date" id="currentDate"></div>
     </div>
-
+    
     <!-- Yesterday's Review Section -->
-    <div class="section yesterday-review" id="yesterdaySection" style="margin-bottom: 30px; display: none;">
+    <div class="section yesterday-review" id="yesterdaySection" style="display: none; margin-bottom: 30px;">
         <h2>🌟 Yesterday's Wins</h2>
         <div class="section-description">Look at all the amazing things you accomplished yesterday!</div>
         <div class="yesterday-stats">
@@ -1044,87 +1129,94 @@
         </div>
         <button class="motivational-btn" onclick="hideYesterdayReview()">Let's Build on This Success! 🚀</button>
     </div>
-
+    
     <!-- Empire Integration Points Section -->
     <div class="section empire-integration" style="margin-bottom: 30px;">
-        <h2>👑 Empire Integration Points</h2>
+        <h2>✨ Empire Integration Points</h2>
         <div class="section-description">Strategic overview of your empire-building priorities</div>
         
         <div class="empire-subsection">
             <h3>🎯 Empire Priorities This Week</h3>
             <div id="empire-priorities"></div>
-            <button class="add-task-btn" onclick="addEmpireTask('empire-priorities')">+ Add Priority</button>
+            <button class="empire-btn" onclick="addEmpireTask('empire-priorities')">+ Add Priority</button>
         </div>
         
         <div class="empire-subsection">
             <h3>📅 Major Business Deadlines</h3>
-            <div id="business-deadlines"></div>
-            <button class="add-task-btn" onclick="addEmpireTask('business-deadlines')">+ Add Deadline</button>
+            <div id="empire-deadlines"></div>
+            <button class="empire-btn" onclick="addEmpireTask('empire-deadlines')">+ Add Deadline</button>
         </div>
         
         <div class="empire-subsection">
             <h3>💰 Revenue-Critical Tasks</h3>
-            <div id="revenue-tasks"></div>
-            <button class="add-task-btn" onclick="addEmpireTask('revenue-tasks')">+ Add Revenue Task</button>
+            <div id="empire-revenue"></div>
+            <button class="empire-btn" onclick="addEmpireTask('empire-revenue')">+ Add Revenue Task</button>
         </div>
         
         <div class="empire-subsection">
             <h3>🔄 Cross-Brand Opportunities</h3>
-            <div id="cross-brand"></div>
-            <button class="add-task-btn" onclick="addEmpireTask('cross-brand')">+ Add Opportunity</button>
+            <div id="empire-opportunities"></div>
+            <button class="empire-btn" onclick="addEmpireTask('empire-opportunities')">+ Add Opportunity</button>
         </div>
     </div>
-
+    
     <!-- Creative Streaks Section -->
     <div class="section creative-streaks" style="margin-bottom: 30px;">
         <h2>🔥 Creative Streaks</h2>
         <div class="section-description">Build momentum with consistent creative habits</div>
         <div class="streak-grid">
-            <div class="streak-card">
+            <div class="streak-box">
                 <div class="streak-number" id="writingStreak">0</div>
                 <div class="streak-label">Writing Streak</div>
+                <div class="streak-emoji">✍️</div>
             </div>
-            <div class="streak-card">
+            <div class="streak-box">
                 <div class="streak-number" id="submissionStreak">0</div>
                 <div class="streak-label">Submission Streak</div>
+                <div class="streak-emoji">📮</div>
             </div>
-            <div class="streak-card">
+            <div class="streak-box">
                 <div class="streak-number" id="authorityStreak">0</div>
                 <div class="streak-label">Authority Building</div>
+                <div class="streak-emoji">👑</div>
             </div>
-            <div class="streak-card">
+            <div class="streak-box">
                 <div class="streak-number" id="newsletterStreak">0</div>
                 <div class="streak-label">Newsletter Consistency</div>
+                <div class="streak-emoji">📬</div>
             </div>
         </div>
     </div>
-
+    
     <!-- Unstuck Suggestions Section -->
     <div class="section unstuck-suggestions" style="margin-bottom: 30px;">
-        <h2>💡 Feeling Stuck? Try This</h2>
+        <h2>✨ Feeling Stuck? Try This</h2>
         <div class="section-description">Goal-aligned suggestions to get you moving when motivation is low</div>
+        
         <div class="suggestion-controls">
-            <button class="suggestion-btn primary" onclick="getRandomSuggestion()">✨ Get Random Suggestion</button>
+            <button class="suggestion-btn primary" onclick="getRandomSuggestion()">🎲 Get Random Suggestion</button>
             <select id="categoryFilter" onchange="getSuggestionByCategory()">
                 <option value="">Choose a focus area...</option>
-                <option value="career">🎬 Career & Creativity</option>
-                <option value="wealth">💸 Wealth & Business</option>
+                <option value="career">📝 Career & Creativity</option>
+                <option value="wealth">💼 Wealth & Business</option>
                 <option value="growth">📚 Growth & Learning</option>
-                <option value="home">🏠 Home & Environment</option>
-                <option value="wellness">💆 Wellness & Health</option>
+                <option value="home">🏡 Home & Environment</option>
+                <option value="wellness">🌱 Wellness & Health</option>
                 <option value="vanity">✨ Vanity & Visibility</option>
-                <option value="relationships">💝 Relationships & Community</option>
+                <option value="relationships">💕 Relationships & Community</option>
             </select>
         </div>
+        
         <div class="current-suggestion" id="currentSuggestion">
             <div class="suggestion-text">Click "Get Random Suggestion" to start!</div>
         </div>
+        
         <div class="suggestion-actions">
             <button class="action-btn" onclick="addSuggestionAsTask()">+ Add as Task</button>
             <button class="action-btn secondary" onclick="getAnotherSuggestion()">↻ Another Suggestion</button>
         </div>
     </div>
-
+    
     <div class="container">
         <!-- Life Areas Grid -->
         <div class="section work">
@@ -1133,144 +1225,138 @@
             <div id="work-tasks"></div>
             <button class="add-task-btn" onclick="addTask('work')">+ Add Task</button>
         </div>
-
+        
         <div class="section education">
             <h2>📚 Education</h2>
             <div class="section-description">Reading, researching, or watching intellectually nourishing media</div>
             <div id="education-tasks"></div>
             <button class="add-task-btn" onclick="addTask('education')">+ Add Task</button>
         </div>
-
+        
         <div class="section relationships">
             <h2>💝 Relationships</h2>
             <div class="section-description">Connection, communication, and check-ins with your circle</div>
             <div id="relationships-tasks"></div>
             <button class="add-task-btn" onclick="addTask('relationships')">+ Add Task</button>
         </div>
-
+        
         <div class="section money">
             <h2>💰 Money</h2>
             <div class="section-description">Tracking finances, pitching, promoting, or strategizing</div>
             <div id="money-tasks"></div>
             <button class="add-task-btn" onclick="addTask('money')">+ Add Task</button>
         </div>
-
+        
         <div class="section business">
             <h2>🚀 Business</h2>
             <div class="section-description">Growth, audience engagement, product building</div>
             <div id="business-tasks"></div>
             <button class="add-task-btn" onclick="addTask('business')">+ Add Task</button>
         </div>
-
+        
         <div class="section leisure">
             <h2>🎨 Leisure</h2>
             <div class="section-description">Intentional play, consuming media, and exploring joy</div>
             <div id="leisure-tasks"></div>
             <button class="add-task-btn" onclick="addTask('leisure')">+ Add Task</button>
         </div>
-
+        
         <div class="section vanity">
             <h2>💅 Vanity</h2>
             <div class="section-description">Skincare, fashion, and beauty rituals that fuel confidence</div>
             <div id="vanity-tasks"></div>
             <button class="add-task-btn" onclick="addTask('vanity')">+ Add Task</button>
         </div>
-
+        
         <div class="section health">
-            <h2>🏃 Health</h2>
+            <h2>🌿 Health</h2>
             <div class="section-description">Movement, mindfulness, meals, or rest</div>
             <div id="health-tasks"></div>
             <button class="add-task-btn" onclick="addTask('health')">+ Add Task</button>
         </div>
-
+        
         <div class="section home">
             <h2>🏡 Home</h2>
             <div class="section-description">Tidying, organizing, decorating, or improving your space</div>
             <div id="home-tasks"></div>
             <button class="add-task-btn" onclick="addTask('home')">+ Add Task</button>
         </div>
-
+        
         <!-- Creative Workflow Section -->
         <div class="section creative-workflow">
             <h2>✨ Creative Flow: PRODUCE • RECOVER • DISCOVER</h2>
             <div class="workflow-grid">
                 <div class="workflow-section">
                     <h3>🎬 PRODUCE</h3>
-                    <div class="examples">Create something new: Record a video, draft a post, write a script, build a
-                        graphic</div>
+                    <div class="examples">Create something new: Record a video, draft a post, write a script, build a graphic</div>
                     <div id="produce-tasks"></div>
                     <button class="add-task-btn" onclick="addTask('produce')">+ Add Task</button>
                 </div>
+                
                 <div class="workflow-section">
                     <h3>♻️ RECOVER</h3>
-                    <div class="examples">Revisit unfinished ideas: Finish an outline, revise a blog post, turn notes
-                        into content</div>
+                    <div class="examples">Revisit unfinished ideas: Finish an outline, revise a blog post, turn notes into content</div>
                     <div id="recover-tasks"></div>
                     <button class="add-task-btn" onclick="addTask('recover')">+ Add Task</button>
                 </div>
+                
                 <div class="workflow-section">
                     <h3>🔍 DISCOVER</h3>
-                    <div class="examples">Feed the pipeline: Read articles, watch videos for inspiration, research
-                        trends</div>
+                    <div class="examples">Feed the pipeline: Read articles, watch videos for inspiration, research trends</div>
                     <div id="discover-tasks"></div>
                     <button class="add-task-btn" onclick="addTask('discover')">+ Add Task</button>
                 </div>
             </div>
         </div>
-
+        
         <!-- Goal Milestones Section -->
         <div class="section goal-milestones">
             <h2>🎯 Goal Milestones</h2>
             <div class="section-description">Track progress toward your major creative objectives</div>
-            <div id="goals-container">
-                <!-- Goals will be dynamically generated here -->
-            </div>
+            <div id="goals-container"></div>
         </div>
-
+        
         <!-- Brain Dump Section -->
         <div class="section brain-dump">
             <h2>🧠 Brain Dump</h2>
             <div class="section-description">Capture any thoughts, ideas, or random notes here</div>
             <textarea placeholder="Let your thoughts flow here..."></textarea>
         </div>
-
+        
         <!-- Daily Summary Section -->
         <div class="section daily-summary">
             <h2>📊 Daily Summary</h2>
             <div class="section-description">Review your day's progress and accomplishments</div>
+            
             <div class="summary-controls">
-                <button class="summary-btn primary" onclick="generateDailySummary()">📈 Generate Today's Summary</button>
+                <button class="summary-btn primary" onclick="generateDailySummary()">📋 Generate Today's Summary</button>
                 <button class="summary-btn" onclick="exportSummary()">💾 Export Summary</button>
             </div>
+            
             <div class="summary-content" id="summaryContent">
                 <div class="summary-placeholder">Click "Generate Today's Summary" to see your daily progress!</div>
             </div>
         </div>
     </div>
-
+    
     <script>
         // Set current date
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
         });
-
+        
         let taskCounter = 0;
         let currentSuggestion = null;
-        let streakData = {
-            writing: 0,
-            submission: 0,
-            authority: 0,
-            newsletter: 0
-        };
-
+        let currentPriorities = {};
+        
         // Initialize with one task per category
         const categories = ['work', 'education', 'relationships', 'money', 'business', 'leisure', 'vanity', 'health', 'home', 'produce', 'recover', 'discover'];
-        const empireCategories = ['empire-priorities', 'business-deadlines', 'revenue-tasks', 'cross-brand'];
-
-        // Default goals data
+        const empireCategories = ['empire-priorities', 'empire-deadlines', 'empire-revenue', 'empire-opportunities'];
+        
+        // Default goals
         const defaultGoals = [
             {
                 id: 'new-yorker',
@@ -1278,63 +1364,63 @@
                 milestones: [
                     { text: 'Study 10 recent New Yorker pieces in my genre', completed: false },
                     { text: 'Draft 3 potential submission pieces', completed: false },
-                    { text: 'Get feedback from writing group or mentor', completed: false },
-                    { text: 'Polish and submit my best piece', completed: false },
-                    { text: 'Follow up after 3 months if no response', completed: false }
+                    { text: 'Get feedback from trusted critics', completed: false },
+                    { text: 'Submit polished piece to New Yorker', completed: false },
+                    { text: 'Follow up on submission', completed: false }
                 ]
             },
             {
                 id: 'cultural-authority',
                 title: 'Build Cultural Criticism Authority',
                 milestones: [
-                    { text: 'Launch Taste of Kimberly newsletter', completed: false },
-                    { text: 'Publish 20 cultural criticism pieces', completed: false },
+                    { text: 'Launch newsletter with consistent schedule', completed: false },
+                    { text: 'Publish 20 high-quality criticism pieces', completed: false },
                     { text: 'Build audience of 1000+ engaged subscribers', completed: false },
-                    { text: 'Get quoted as cultural expert in major publication', completed: false },
-                    { text: 'Book speaking engagement at cultural event', completed: false }
+                    { text: 'Get quoted as expert in major publication', completed: false },
+                    { text: 'Book speaking opportunities at conferences', completed: false }
                 ]
             },
             {
                 id: 'creative-empire',
                 title: 'Build Creative Empire Business',
                 milestones: [
-                    { text: 'Launch flagship content series', completed: false },
+                    { text: 'Launch signature content series', completed: false },
                     { text: 'Create premium subscription tiers', completed: false },
                     { text: 'Secure 3 brand partnerships', completed: false },
                     { text: 'Develop online course or workshop', completed: false },
-                    { text: 'Hit $10K/month recurring revenue', completed: false }
+                    { text: 'Hit $10K/month revenue goal', completed: false }
                 ]
             },
             {
                 id: 'book-deal',
                 title: 'Secure Book Deal',
                 milestones: [
-                    { text: 'Complete book proposal with sample chapters', completed: false },
-                    { text: 'Research and list 20 potential agents', completed: false },
-                    { text: 'Send query letters to top 5 agents', completed: false },
-                    { text: 'Secure literary representation', completed: false },
-                    { text: 'Sign book deal with publisher', completed: false }
+                    { text: 'Complete book proposal', completed: false },
+                    { text: 'Write 3 sample chapters', completed: false },
+                    { text: 'Research and list target agents', completed: false },
+                    { text: 'Submit to 10 literary agents', completed: false },
+                    { text: 'Sign with agent and publisher', completed: false }
                 ]
             }
         ];
-
+        
         function updateSyncStatus(message) {
             const statusEl = document.getElementById('syncStatus');
             if (statusEl) {
                 statusEl.textContent = message;
             }
         }
-
+        
         function getDateString(date = new Date()) {
             return date.toDateString();
         }
-
+        
         function getYesterdayString() {
             const yesterday = new Date();
             yesterday.setDate(yesterday.getDate() - 1);
             return yesterday.toDateString();
         }
-
+        
         function saveData() {
             try {
                 updateSyncStatus('🔄 Syncing...');
@@ -1351,21 +1437,22 @@
                         lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
                     })
                     .then(() => {
-                        updateSyncStatus('☁️ Cloud Synced');
+                        updateSyncStatus('☁ Cloud Synced');
                         setTimeout(() => {
                             updateSyncStatus('Ready to Track');
                         }, 2000);
                     })
                     .catch((error) => {
                         console.error('Firebase save error:', error);
-                        updateSyncStatus('⚠️ Local Only');
+                        updateSyncStatus('⚠ Local Only');
                     });
+                    
             } catch (error) {
                 console.error('Save error:', error);
                 updateSyncStatus('❌ Save failed');
             }
         }
-
+        
         function loadData(date = getDateString()) {
             try {
                 updateSyncStatus('📥 Loading...');
@@ -1378,7 +1465,7 @@
                             const data = doc.data();
                             delete data.lastUpdated; // Remove Firebase timestamp
                             loadDataIntoUI(data);
-                            updateSyncStatus('☁️ Cloud Loaded');
+                            updateSyncStatus('☁ Cloud Loaded');
                             
                             // Update localStorage with cloud data
                             localStorage.setItem(date, JSON.stringify(data));
@@ -1408,13 +1495,14 @@
                             updateSyncStatus('Ready to Track');
                         }
                     });
+                    
             } catch (error) {
                 console.error('Load error:', error);
                 initializeEmptyTasks();
                 updateSyncStatus('❌ Load failed');
             }
         }
-
+        
         function loadYesterdayReview() {
             try {
                 const yesterdayKey = getYesterdayString();
@@ -1442,44 +1530,50 @@
                         console.error('Yesterday review error:', error);
                         hideYesterdayReview();
                     });
+                    
             } catch (error) {
                 console.error('Error loading yesterday data:', error);
                 hideYesterdayReview();
             }
         }
-
+        
         function getCurrentDayData() {
             const data = {};
             
-            // Regular categories
+            // Get regular category tasks
             categories.forEach(category => {
                 const container = document.getElementById(category + '-tasks');
                 const tasks = [];
+                
                 if (container) {
                     container.querySelectorAll('.task-input').forEach(taskDiv => {
                         const checkbox = taskDiv.querySelector('input[type="checkbox"]');
                         const textInput = taskDiv.querySelector('input[type="text"]');
-                        const prioritySelect = taskDiv.querySelector('.priority-select');
+                        const priority = taskDiv.dataset.priority || 'none';
+                        
                         if (textInput && textInput.value.trim()) {
                             tasks.push({
                                 text: textInput.value,
                                 completed: checkbox.checked,
-                                priority: prioritySelect ? prioritySelect.value : 'maintenance'
+                                priority: priority
                             });
                         }
                     });
                 }
+                
                 data[category] = tasks;
             });
             
-            // Empire categories
+            // Get empire integration tasks
             empireCategories.forEach(category => {
                 const container = document.getElementById(category);
                 const tasks = [];
+                
                 if (container) {
-                    container.querySelectorAll('.task-input').forEach(taskDiv => {
+                    container.querySelectorAll('.empire-task-input').forEach(taskDiv => {
                         const checkbox = taskDiv.querySelector('input[type="checkbox"]');
                         const textInput = taskDiv.querySelector('input[type="text"]');
+                        
                         if (textInput && textInput.value.trim()) {
                             tasks.push({
                                 text: textInput.value,
@@ -1488,24 +1582,30 @@
                         }
                     });
                 }
+                
                 data[category] = tasks;
             });
             
-            // Brain dump
+            // Get brain dump
             const brainDump = document.querySelector('.brain-dump textarea');
             data.brainDump = brainDump ? brainDump.value : '';
             
-            // Goals
+            // Get goals
             data.goals = getCurrentGoalData();
             
-            // Streaks
-            data.streaks = streakData;
+            // Get streaks
+            data.streaks = {
+                writing: parseInt(document.getElementById('writingStreak').textContent) || 0,
+                submission: parseInt(document.getElementById('submissionStreak').textContent) || 0,
+                authority: parseInt(document.getElementById('authorityStreak').textContent) || 0,
+                newsletter: parseInt(document.getElementById('newsletterStreak').textContent) || 0
+            };
             
             return data;
         }
-
+        
         function loadDataIntoUI(data) {
-            // Load regular categories
+            // Load regular tasks
             categories.forEach(category => {
                 if (data[category] && Array.isArray(data[category])) {
                     const container = document.getElementById(category + '-tasks');
@@ -1513,32 +1613,17 @@
                         container.innerHTML = '';
                         data[category].forEach(task => {
                             if (task.text && task.text.trim()) {
-                                const taskDiv = document.createElement('div');
-                                taskDiv.className = 'task-input';
-                                taskDiv.innerHTML = `
-                                    <input type="checkbox" id="task-${taskCounter}" 
-                                           ${task.completed ? 'checked' : ''}
-                                           onchange="updateCompletedCount(); updateStreaks(); saveData();">
-                                    <select class="priority-select ${getPriorityClass(task.priority)}"
-                                            onchange="updatePriority(this); saveData();">
-                                        <option value="empire" ${task.priority === 'empire' ? 'selected' : ''}>Empire Critical</option>
-                                        <option value="high" ${task.priority === 'high' ? 'selected' : ''}>High Impact</option>
-                                        <option value="maintenance" ${task.priority === 'maintenance' || !task.priority ? 'selected' : ''}>Maintenance</option>
-                                    </select>
-                                    <input type="text" value="${task.text}"
-                                           onkeypress="handleEnter(event, '${category}')"
-                                           onchange="saveData()">
-                                `;
+                                const taskDiv = createTaskElement(category, task.text, task.completed, task.priority);
                                 container.appendChild(taskDiv);
-                                taskCounter++;
                             }
                         });
+                        // Add an empty task
                         addTask(category);
                     }
                 }
             });
             
-            // Load empire categories
+            // Load empire tasks
             empireCategories.forEach(category => {
                 if (data[category] && Array.isArray(data[category])) {
                     const container = document.getElementById(category);
@@ -1546,20 +1631,11 @@
                         container.innerHTML = '';
                         data[category].forEach(task => {
                             if (task.text && task.text.trim()) {
-                                const taskDiv = document.createElement('div');
-                                taskDiv.className = 'task-input';
-                                taskDiv.innerHTML = `
-                                    <input type="checkbox" id="task-${taskCounter}" 
-                                           ${task.completed ? 'checked' : ''}
-                                           onchange="updateCompletedCount(); saveData();">
-                                    <input type="text" value="${task.text}"
-                                           onkeypress="handleEnter(event, '${category}')"
-                                           onchange="saveData()">
-                                `;
+                                const taskDiv = createEmpireTaskElement(category, task.text, task.completed);
                                 container.appendChild(taskDiv);
-                                taskCounter++;
                             }
                         });
+                        // Add an empty task
                         addEmpireTask(category);
                     }
                 }
@@ -1577,19 +1653,20 @@
             // Load goals
             if (data.goals) {
                 loadGoalData(data.goals);
-            } else {
-                initializeGoals();
             }
             
             // Load streaks
             if (data.streaks) {
-                streakData = data.streaks;
-                updateStreakDisplay();
+                document.getElementById('writingStreak').textContent = data.streaks.writing || 0;
+                document.getElementById('submissionStreak').textContent = data.streaks.submission || 0;
+                document.getElementById('authorityStreak').textContent = data.streaks.authority || 0;
+                document.getElementById('newsletterStreak').textContent = data.streaks.newsletter || 0;
             }
             
             updateCompletedCount();
+            updateStreaks();
         }
-
+        
         function initializeEmptyTasks() {
             categories.forEach(category => {
                 const container = document.getElementById(category + '-tasks');
@@ -1605,101 +1682,146 @@
                 }
             });
             
+            // Initialize goals
             initializeGoals();
         }
-
+        
+        function createTaskElement(category, text = '', completed = false, priority = 'none') {
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'task-input';
+            taskDiv.dataset.priority = priority;
+            
+            const priorityEmojis = {
+                'empire': '🏛⚡',
+                'high': '🚀💥',
+                'maintenance': '🔧🛠',
+                'none': ''
+            };
+            
+            taskDiv.innerHTML = `
+                <input type="checkbox" id="task-${taskCounter}" ${completed ? 'checked' : ''} 
+                    onchange="updateCompletedCount(); updateStreaks(); saveData();">
+                <div class="priority-buttons">
+                    <button class="priority-btn ${priority === 'empire' ? 'active' : ''}" 
+                        onclick="setPriority(this, 'empire')" title="Empire Critical">🏛⚡</button>
+                    <button class="priority-btn ${priority === 'high' ? 'active' : ''}" 
+                        onclick="setPriority(this, 'high')" title="High Impact">🚀💥</button>
+                    <button class="priority-btn ${priority === 'maintenance' ? 'active' : ''}" 
+                        onclick="setPriority(this, 'maintenance')" title="Maintenance">🔧🛠</button>
+                </div>
+                <input type="text" placeholder="Enter your task here..." 
+                    value="${text}"
+                    onkeypress="handleEnter(event, '${category}')"
+                    onchange="saveData()">
+            `;
+            
+            taskCounter++;
+            return taskDiv;
+        }
+        
+        function createEmpireTaskElement(category, text = '', completed = false) {
+            const taskDiv = document.createElement('div');
+            taskDiv.className = 'empire-task-input';
+            
+            taskDiv.innerHTML = `
+                <input type="checkbox" id="empire-task-${taskCounter}" ${completed ? 'checked' : ''} 
+                    onchange="updateCompletedCount(); saveData();">
+                <input type="text" placeholder="Enter your task here..." 
+                    value="${text}"
+                    onkeypress="handleEmpireEnter(event, '${category}')"
+                    onchange="saveData()">
+            `;
+            
+            taskCounter++;
+            return taskDiv;
+        }
+        
         function addTask(category) {
             const container = document.getElementById(category + '-tasks');
-            const taskDiv = document.createElement('div');
-            taskDiv.className = 'task-input';
-            taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" 
-                       onchange="updateCompletedCount(); updateStreaks(); saveData();">
-                <select class="priority-select" onchange="updatePriority(this); saveData();">
-                    <option value="empire">Empire Critical</option>
-                    <option value="high">High Impact</option>
-                    <option value="maintenance" selected>Maintenance</option>
-                </select>
-                <input type="text" placeholder="Enter your task here..."
-                       onkeypress="handleEnter(event, '${category}')"
-                       onchange="saveData()">
-            `;
+            const taskDiv = createTaskElement(category);
             container.appendChild(taskDiv);
+            
             const inputs = taskDiv.querySelectorAll('input[type="text"]');
             inputs[inputs.length - 1].focus();
-            taskCounter++;
         }
-
+        
         function addEmpireTask(category) {
             const container = document.getElementById(category);
-            const taskDiv = document.createElement('div');
-            taskDiv.className = 'task-input';
-            taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" 
-                       onchange="updateCompletedCount(); saveData();">
-                <input type="text" placeholder="Enter your task here..."
-                       onkeypress="handleEnter(event, '${category}')"
-                       onchange="saveData()">
-            `;
+            const taskDiv = createEmpireTaskElement(category);
             container.appendChild(taskDiv);
+            
             const inputs = taskDiv.querySelectorAll('input[type="text"]');
             inputs[inputs.length - 1].focus();
-            taskCounter++;
         }
-
+        
         function handleEnter(event, category) {
             if (event.key === 'Enter') {
-                if (empireCategories.includes(category)) {
-                    addEmpireTask(category);
-                } else {
-                    addTask(category);
-                }
+                addTask(category);
             }
         }
-
-        function getPriorityClass(priority) {
-            switch (priority) {
-                case 'empire':
-                    return 'priority-empire';
-                case 'high':
-                    return 'priority-high';
-                default:
-                    return 'priority-maintenance';
+        
+        function handleEmpireEnter(event, category) {
+            if (event.key === 'Enter') {
+                addEmpireTask(category);
             }
         }
-
-        function updatePriority(selectElement) {
-            selectElement.className = 'priority-select ' + getPriorityClass(selectElement.value);
+        
+        function setPriority(button, priority) {
+            const taskDiv = button.closest('.task-input');
+            const priorityButtons = taskDiv.querySelectorAll('.priority-btn');
+            
+            // Toggle off if clicking the same priority
+            if (button.classList.contains('active')) {
+                button.classList.remove('active');
+                taskDiv.dataset.priority = 'none';
+            } else {
+                // Remove active from all buttons
+                priorityButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active to clicked button
+                button.classList.add('active');
+                taskDiv.dataset.priority = priority;
+            }
+            
+            saveData();
         }
-
+        
         function updateCompletedCount() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            // Get only today's data
+            const todayData = getCurrentDayData();
+            let completed = 0;
+            
+            // Count completed tasks only from today's data
+            Object.keys(todayData).forEach(category => {
+                if (category !== 'brainDump' && category !== 'goals' && category !== 'streaks' && Array.isArray(todayData[category])) {
+                    completed += todayData[category].filter(task => task.completed).length;
+                }
+            });
+            
             document.getElementById('completedCount').textContent = completed;
         }
-
+        
         function updateStreaks() {
-            const todayKey = getDateString();
-            const data = getCurrentDayData();
+            const todayData = getCurrentDayData();
             
-            // Check for completed empire critical tasks
+            // Update streaks based on completed Empire Critical tasks
             let hasWriting = false;
             let hasSubmission = false;
             let hasAuthority = false;
             let hasNewsletter = false;
             
-            categories.forEach(category => {
-                if (data[category]) {
-                    data[category].forEach(task => {
+            Object.keys(todayData).forEach(category => {
+                if (Array.isArray(todayData[category])) {
+                    todayData[category].forEach(task => {
                         if (task.completed && task.priority === 'empire') {
                             const taskText = task.text.toLowerCase();
-                            if (taskText.includes('write') || taskText.includes('draft') || taskText.includes('create')) {
+                            
+                            if (taskText.includes('write') || taskText.includes('draft') || taskText.includes('blog')) {
                                 hasWriting = true;
                             }
                             if (taskText.includes('submit') || taskText.includes('pitch') || taskText.includes('send')) {
                                 hasSubmission = true;
                             }
-                            if (taskText.includes('network') || taskText.includes('connect') || taskText.includes('authority')) {
+                            if (taskText.includes('post') || taskText.includes('tweet') || taskText.includes('comment')) {
                                 hasAuthority = true;
                             }
                             if (taskText.includes('newsletter') || taskText.includes('email') || taskText.includes('subscriber')) {
@@ -1710,22 +1832,25 @@
                 }
             });
             
-            // Update streak counts (simple increment for demo)
-            if (hasWriting) streakData.writing++;
-            if (hasSubmission) streakData.submission++;
-            if (hasAuthority) streakData.authority++;
-            if (hasNewsletter) streakData.newsletter++;
-            
-            updateStreakDisplay();
+            // Update streak displays (simplified for demo)
+            if (hasWriting) {
+                const current = parseInt(document.getElementById('writingStreak').textContent) || 0;
+                document.getElementById('writingStreak').textContent = current + 1;
+            }
+            if (hasSubmission) {
+                const current = parseInt(document.getElementById('submissionStreak').textContent) || 0;
+                document.getElementById('submissionStreak').textContent = current + 1;
+            }
+            if (hasAuthority) {
+                const current = parseInt(document.getElementById('authorityStreak').textContent) || 0;
+                document.getElementById('authorityStreak').textContent = current + 1;
+            }
+            if (hasNewsletter) {
+                const current = parseInt(document.getElementById('newsletterStreak').textContent) || 0;
+                document.getElementById('newsletterStreak').textContent = current + 1;
+            }
         }
-
-        function updateStreakDisplay() {
-            document.getElementById('writingStreak').textContent = streakData.writing;
-            document.getElementById('submissionStreak').textContent = streakData.submission;
-            document.getElementById('authorityStreak').textContent = streakData.authority;
-            document.getElementById('newsletterStreak').textContent = streakData.newsletter;
-        }
-
+        
         // Goal-aligned suggestions
         const suggestions = {
             career: [
@@ -1820,7 +1945,6 @@
                 "Practice your signature pose or expression in the mirror",
                 "Choose accessories that elevate your daily look",
                 "Plan your outfit for tomorrow with intention",
-                "Create an inspiration board for your personal style evolution",
                 "Write a sample 'Shallow Side' newsletter issue to test your format",
                 "Write a LinkedIn post about your unique perspective on aesthetics",
                 "Create a mood board that demonstrates your aesthetic eye"
@@ -1844,43 +1968,46 @@
                 "Comment thoughtfully on 5 posts by established cultural critics"
             ]
         };
-
+        
         function getRandomSuggestion() {
             const allSuggestions = Object.values(suggestions).flat();
             const allCategories = Object.keys(suggestions);
+            
             const randomSuggestion = allSuggestions[Math.floor(Math.random() * allSuggestions.length)];
             const category = allCategories.find(cat => suggestions[cat].includes(randomSuggestion));
+            
             displaySuggestion(randomSuggestion, category);
         }
-
+        
         function getSuggestionByCategory() {
             const selectedCategory = document.getElementById('categoryFilter').value;
             if (!selectedCategory) return;
+            
             const categorySuggestions = suggestions[selectedCategory];
             const randomSuggestion = categorySuggestions[Math.floor(Math.random() * categorySuggestions.length)];
+            
             displaySuggestion(randomSuggestion, selectedCategory);
         }
-
+        
         function displaySuggestion(text, category) {
             const categoryNames = {
-                career: '🎬 Career & Creativity',
-                wealth: '💸 Wealth & Business',
+                career: '📝 Career & Creativity',
+                wealth: '💼 Wealth & Business',
                 growth: '📚 Growth & Learning',
-                home: '🏠 Home & Environment',
-                wellness: '💆 Wellness & Health',
+                home: '🏡 Home & Environment',
+                wellness: '🌱 Wellness & Health',
                 vanity: '✨ Vanity & Visibility',
-                relationships: '💝 Relationships & Community'
+                relationships: '💕 Relationships & Community'
             };
-            currentSuggestion = {
-                text,
-                category
-            };
+            
+            currentSuggestion = { text, category };
+            
             document.getElementById('currentSuggestion').innerHTML = `
                 <div class="suggestion-text">${text}</div>
                 <div class="suggestion-category">${categoryNames[category]}</div>
             `;
         }
-
+        
         function getAnotherSuggestion() {
             const filter = document.getElementById('categoryFilter').value;
             if (filter) {
@@ -1889,9 +2016,10 @@
                 getRandomSuggestion();
             }
         }
-
+        
         function addSuggestionAsTask() {
             if (!currentSuggestion) return;
+            
             const categoryMap = {
                 career: 'work',
                 wealth: 'business',
@@ -1901,28 +2029,35 @@
                 vanity: 'vanity',
                 relationships: 'relationships'
             };
+            
             const targetCategory = categoryMap[currentSuggestion.category];
             if (!targetCategory) return;
             
             const container = document.getElementById(targetCategory + '-tasks');
-            const taskDiv = document.createElement('div');
-            taskDiv.className = 'task-input';
-            taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" 
-                       onchange="updateCompletedCount(); updateStreaks(); saveData();">
-                <select class="priority-select priority-empire" onchange="updatePriority(this); saveData();">
-                    <option value="empire" selected>Empire Critical</option>
-                    <option value="high">High Impact</option>
-                    <option value="maintenance">Maintenance</option>
-                </select>
-                <input type="text" value="${currentSuggestion.text}"
-                       onkeypress="handleEnter(event, '${targetCategory}')"
-                       onchange="saveData()">
-            `;
-            container.appendChild(taskDiv);
-            taskCounter++;
+            const taskDiv = createTaskElement(targetCategory, currentSuggestion.text, false, 'empire');
+            
+            // Find the last task input
+            const existingTasks = container.querySelectorAll('.task-input');
+            if (existingTasks.length > 0) {
+                const lastTask = existingTasks[existingTasks.length - 1];
+                const lastInput = lastTask.querySelector('input[type="text"]');
+                
+                // If the last task is empty, replace it
+                if (!lastInput.value.trim()) {
+                    container.replaceChild(taskDiv, lastTask);
+                } else {
+                    container.appendChild(taskDiv);
+                }
+            } else {
+                container.appendChild(taskDiv);
+            }
+            
+            // Add an empty task for the next input
+            addTask(targetCategory);
+            
             saveData();
             
+            // Visual feedback
             const suggestionEl = document.getElementById('currentSuggestion');
             const originalBg = suggestionEl.style.background;
             suggestionEl.style.background = 'rgba(46, 204, 113, 0.3)';
@@ -1930,7 +2065,7 @@
                 suggestionEl.style.background = originalBg;
             }, 1000);
         }
-
+        
         function displayYesterdayReview(data) {
             const categoryNames = {
                 work: '💼 Work',
@@ -1940,11 +2075,18 @@
                 business: '🚀 Business',
                 leisure: '🎨 Leisure',
                 vanity: '💅 Vanity',
-                health: '🏃 Health',
+                health: '🌿 Health',
                 home: '🏡 Home',
                 produce: '🎬 Produce',
                 recover: '♻️ Recover',
                 discover: '🔍 Discover'
+            };
+            
+            const priorityLabels = {
+                'empire': '🏛⚡',
+                'high': '🚀💥',
+                'maintenance': '🔧🛠',
+                'none': ''
             };
             
             let completedTasks = [];
@@ -1952,12 +2094,14 @@
             
             Object.keys(data).forEach(category => {
                 if (category === 'brainDump' || category === 'lastUpdated' || category === 'goals' || category === 'streaks') return;
+                
                 if (Array.isArray(data[category])) {
                     data[category].forEach(task => {
                         if (task.completed && task.text && typeof task.text === 'string' && task.text.trim()) {
                             completedTasks.push({
                                 text: task.text,
-                                category: categoryNames[category] || category
+                                category: categoryNames[category] || category,
+                                priority: task.priority || 'none'
                             });
                             totalCompleted++;
                         }
@@ -1974,6 +2118,7 @@
                 tasksContainer.innerHTML = completedTasks.map(task => `
                     <div class="yesterday-task-item">
                         <span class="task-category-badge">${task.category}</span>
+                        ${task.priority !== 'none' ? `<span>${priorityLabels[task.priority]}</span>` : ''}
                         <span>${task.text}</span>
                     </div>
                 `).join('');
@@ -1983,156 +2128,125 @@
                 hideYesterdayReview();
             }
         }
-
+        
         function calculateStreak() {
-            // Simple streak calculation - could be enhanced
-            return Math.floor(Math.random() * 10) + 1;
+            // Simple streak calculation - in a real app, this would check consecutive days
+            return Math.floor(Math.random() * 7) + 1;
         }
-
+        
         function hideYesterdayReview() {
             document.getElementById('yesterdaySection').style.display = 'none';
         }
-
+        
         // Goal Milestones Functions
         function initializeGoals() {
             const container = document.getElementById('goals-container');
             container.innerHTML = '';
+            
             defaultGoals.forEach(goal => {
-                container.innerHTML += createGoalCard(goal);
+                const goalCard = createGoalCard(goal);
+                container.appendChild(goalCard);
             });
         }
-
+        
         function createGoalCard(goal) {
-            const completedCount = goal.milestones.filter(m => m.completed).length;
-            const totalCount = goal.milestones.length;
-            const progressPercent = (completedCount / totalCount) * 100;
+            const completed = goal.milestones.filter(m => m.completed).length;
+            const total = goal.milestones.length;
+            const percentage = (completed / total) * 100;
             
-            return `
-                <div class="goal-card" data-goal-id="${goal.id}">
+            const card = document.createElement('div');
+            card.className = 'goal-card';
+            card.id = `goal-${goal.id}`;
+            
+            card.innerHTML = `
+                <div class="goal-header">
                     <div class="goal-title">${goal.title}</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${progressPercent}%">
-                            ${completedCount}/${totalCount}
-                        </div>
+                    <div class="goal-progress">
+                        <span class="progress-text">${completed}/${total}</span>
                     </div>
-                    ${goal.milestones.map((milestone, index) => `
-                        <div class="milestone-item">
-                            <input type="checkbox" 
-                                   class="milestone-checkbox" 
-                                   ${milestone.completed ? 'checked' : ''}
-                                   onchange="updateMilestone('${goal.id}', ${index})">
-                            <div class="milestone-text">${milestone.text}</div>
-                        </div>
-                    `).join('')}
                 </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                </div>
+                <ul class="milestone-list">
+                    ${goal.milestones.map((milestone, index) => `
+                        <li class="milestone-item ${milestone.completed ? 'completed' : ''}">
+                            <input type="checkbox" class="milestone-checkbox" 
+                                ${milestone.completed ? 'checked' : ''}
+                                onchange="updateGoalProgress('${goal.id}', ${index}); saveData();">
+                            <span class="milestone-text">${milestone.text}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+                <button class="add-milestone-btn" onclick="addMilestone('${goal.id}')">+ Add Milestone</button>
             `;
+            
+            return card;
         }
-
-        function updateMilestone(goalId, milestoneIndex) {
-            const goalData = defaultGoals.find(g => g.id === goalId);
-            if (goalData) {
-                goalData.milestones[milestoneIndex].completed = !goalData.milestones[milestoneIndex].completed;
-                saveData();
-                initializeGoals();
+        
+        function updateGoalProgress(goalId, milestoneIndex) {
+            const goal = defaultGoals.find(g => g.id === goalId);
+            if (goal && goal.milestones[milestoneIndex]) {
+                goal.milestones[milestoneIndex].completed = !goal.milestones[milestoneIndex].completed;
+                
+                // Recreate the goal card
+                const container = document.getElementById('goals-container');
+                const oldCard = document.getElementById(`goal-${goalId}`);
+                const newCard = createGoalCard(goal);
+                container.replaceChild(newCard, oldCard);
             }
         }
-
+        
+        function addMilestone(goalId) {
+            const goal = defaultGoals.find(g => g.id === goalId);
+            if (goal) {
+                const text = prompt('Enter new milestone:');
+                if (text && text.trim()) {
+                    goal.milestones.push({ text: text.trim(), completed: false });
+                    
+                    // Recreate the goal card
+                    const container = document.getElementById('goals-container');
+                    const oldCard = document.getElementById(`goal-${goalId}`);
+                    const newCard = createGoalCard(goal);
+                    container.replaceChild(newCard, oldCard);
+                    
+                    saveData();
+                }
+            }
+        }
+        
         function getCurrentGoalData() {
             return defaultGoals;
         }
-
+        
         function loadGoalData(goals) {
             if (goals && Array.isArray(goals)) {
-                defaultGoals.forEach((defaultGoal, index) => {
-                    if (goals[index]) {
-                        defaultGoal.milestones = goals[index].milestones || defaultGoal.milestones;
+                // Update defaultGoals with loaded data
+                goals.forEach(loadedGoal => {
+                    const defaultGoal = defaultGoals.find(g => g.id === loadedGoal.id);
+                    if (defaultGoal) {
+                        defaultGoal.milestones = loadedGoal.milestones;
                     }
                 });
+                
+                // Reinitialize goals display
+                initializeGoals();
             }
-            initializeGoals();
         }
-
-        // Collapsible section functionality
-        function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            section.classList.toggle('collapsed');
-        }
-
-        function makeCollapsible() {
-            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump):not(.daily-summary):not(.empire-integration):not(.creative-streaks):not(.goal-milestones)');
-            sections.forEach(section => {
-                const h2 = section.querySelector('h2');
-                if (h2) {
-                    const sectionId = section.id || 'section-' + Math.random().toString(36).substr(2, 9);
-                    section.id = sectionId;
-                    const header = document.createElement('div');
-                    header.className = 'section-header';
-                    header.onclick = () => toggleSection(sectionId);
-                    const collapseIcon = document.createElement('span');
-                    collapseIcon.className = 'collapse-icon';
-                    collapseIcon.innerHTML = '▼';
-                    h2.parentNode.insertBefore(header, h2);
-                    header.appendChild(h2);
-                    header.appendChild(collapseIcon);
-                    const content = document.createElement('div');
-                    content.className = 'section-content';
-                    const nextSibling = h2.nextSibling;
-                    while (nextSibling) {
-                        const temp = nextSibling.nextSibling;
-                        content.appendChild(nextSibling);
-                        nextSibling = temp;
-                    }
-                    section.appendChild(content);
-                }
-            });
-        }
-
-        // Initialize the app
-        window.addEventListener('load', async function() {
-            loadYesterdayReview();
-            loadData();
-            makeCollapsible();
-            
-            // Set up brain dump auto-save
-            const textarea = document.querySelector('.brain-dump textarea');
-            if (textarea) {
-                textarea.addEventListener('input', saveData);
-            }
-            
-            // Real-time sync listener
-            const todayKey = getDateString();
-            db.collection('productivity').doc(todayKey)
-                .onSnapshot((doc) => {
-                    if (doc.exists && doc.metadata.hasPendingWrites === false) {
-                        const data = doc.data();
-                        delete data.lastUpdated;
-                        loadDataIntoUI(data);
-                        updateSyncStatus('☁️ Synced from another device!');
-                        setTimeout(() => {
-                            updateSyncStatus('☁️ Cloud Synced');
-                        }, 3000);
-                    }
-                });
-        });
-
-        // Auto-save every 30 seconds
-        setInterval(saveData, 30000);
-
-        // Save before page unload
-        window.addEventListener('beforeunload', saveData);
-
+        
         // Daily Summary Functions
         function generateDailySummary() {
             const data = getCurrentDayData();
-            const today = new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+            const today = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
             });
             
             let completedTasks = [];
             let totalCompleted = 0;
+            
             const categoryNames = {
                 work: '💼 Work',
                 education: '📚 Education',
@@ -2141,20 +2255,30 @@
                 business: '🚀 Business',
                 leisure: '🎨 Leisure',
                 vanity: '💅 Vanity',
-                health: '🏃 Health',
+                health: '🌿 Health',
                 home: '🏡 Home',
                 produce: '🎬 Produce',
                 recover: '♻️ Recover',
                 discover: '🔍 Discover'
             };
             
+            const priorityLabels = {
+                'empire': '🏛⚡ Empire Critical',
+                'high': '🚀💥 High Impact',
+                'maintenance': '🔧🛠 Maintenance',
+                'none': ''
+            };
+            
             // Analyze tasks by category
             const categoryStats = {};
+            
             Object.keys(data).forEach(category => {
                 if (category === 'brainDump' || category === 'goals' || category === 'streaks') return;
+                
                 if (Array.isArray(data[category])) {
                     const tasks = data[category].filter(task => task.text && task.text.trim());
                     const completed = tasks.filter(task => task.completed);
+                    
                     if (tasks.length > 0) {
                         categoryStats[category] = {
                             name: categoryNames[category] || category,
@@ -2162,12 +2286,15 @@
                             completed: completed.length,
                             tasks: tasks
                         };
+                        
                         totalCompleted += completed.length;
+                        
                         // Add completed tasks to list
                         completed.forEach(task => {
                             completedTasks.push({
                                 text: task.text,
-                                category: categoryNames[category] || category
+                                category: categoryNames[category] || category,
+                                priority: task.priority || 'none'
                             });
                         });
                     }
@@ -2179,12 +2306,14 @@
                 <div class="summary-section">
                     <h3>📅 ${today}</h3>
                 </div>
+                
                 <div class="summary-stats">
                     <div class="summary-stat">
                         <div class="summary-stat-number">${totalCompleted}</div>
                         <div class="summary-stat-label">Tasks Completed</div>
                     </div>
                 </div>
+                
                 <div class="summary-section">
                     <h3>💫 Today's Wins</h3>
                     <p>${getEncouragementMessage(totalCompleted)}</p>
@@ -2200,6 +2329,7 @@
                             ${completedTasks.map(task => `
                                 <li class="summary-task-item">
                                     <strong>${task.category}:</strong> ${task.text}
+                                    ${task.priority !== 'none' ? ` (${priorityLabels[task.priority]})` : ''}
                                 </li>
                             `).join('')}
                         </ul>
@@ -2233,7 +2363,7 @@
             
             document.getElementById('summaryContent').innerHTML = summaryHTML;
         }
-
+        
         function getEncouragementMessage(completedTasks) {
             if (completedTasks >= 10) {
                 return "🌟 Incredible! You accomplished so much today!";
@@ -2244,10 +2374,10 @@
             } else if (completedTasks >= 1) {
                 return "✨ Every task completed is a step forward. Well done!";
             } else {
-                return "🌅 Tomorrow is a fresh start with endless possibilities!";
+                return "🌱 Tomorrow is a fresh start with endless possibilities!";
             }
         }
-
+        
         function exportSummary() {
             const summaryContent = document.getElementById('summaryContent');
             if (summaryContent.querySelector('.summary-placeholder')) {
@@ -2256,11 +2386,11 @@
             }
             
             const data = getCurrentDayData();
-            const today = new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+            const today = new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
             });
             
             let exportText = `DAILY PRODUCTIVITY SUMMARY\n`;
@@ -2271,6 +2401,7 @@
             let totalCompleted = 0;
             Object.keys(data).forEach(category => {
                 if (category === 'brainDump' || category === 'goals' || category === 'streaks') return;
+                
                 if (Array.isArray(data[category])) {
                     const completed = data[category].filter(task => task.completed && task.text && task.text.trim());
                     totalCompleted += completed.length;
@@ -2282,6 +2413,7 @@
             
             // Completed tasks
             exportText += `ACCOMPLISHMENTS:\n`;
+            
             const categoryNames = {
                 work: 'Work',
                 education: 'Education',
@@ -2297,14 +2429,24 @@
                 discover: 'Discover'
             };
             
+            const priorityLabels = {
+                'empire': '🏛⚡ Empire Critical',
+                'high': '🚀💥 High Impact',
+                'maintenance': '🔧🛠 Maintenance',
+                'none': ''
+            };
+            
             Object.keys(data).forEach(category => {
                 if (category === 'brainDump' || category === 'goals' || category === 'streaks') return;
+                
                 if (Array.isArray(data[category])) {
                     const completed = data[category].filter(task => task.completed && task.text && task.text.trim());
+                    
                     if (completed.length > 0) {
                         exportText += `\n${categoryNames[category] || category}:\n`;
                         completed.forEach(task => {
-                            exportText += `  ✓ ${task.text}\n`;
+                            const priorityText = task.priority && task.priority !== 'none' ? ` (${priorityLabels[task.priority]})` : '';
+                            exportText += `  ✓ ${task.text}${priorityText}\n`;
                         });
                     }
                 }
@@ -2327,6 +2469,119 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
+        
+        // Collapsible section functionality
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.classList.toggle('collapsed');
+        }
+        
+        function makeCollapsible() {
+            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.empire-integration):not(.creative-streaks):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump):not(.daily-summary):not(.goal-milestones)');
+            
+            sections.forEach(section => {
+                const h2 = section.querySelector('h2');
+                if (h2) {
+                    const sectionId = section.id || 'section-' + Math.random().toString(36).substr(2, 9);
+                    section.id = sectionId;
+                    
+                    const header = document.createElement('div');
+                    header.className = 'section-header';
+                    header.onclick = () => toggleSection(sectionId);
+                    
+                    const collapseIcon = document.createElement('span');
+                    collapseIcon.className = 'collapse-icon';
+                    collapseIcon.innerHTML = '▼';
+                    
+                    h2.parentNode.insertBefore(header, h2);
+                    header.appendChild(h2);
+                    header.appendChild(collapseIcon);
+                    
+                    const content = document.createElement('div');
+                    content.className = 'section-content';
+                    
+                    const nextSibling = h2.nextSibling;
+                    while (nextSibling) {
+                        const temp = nextSibling.nextSibling;
+                        content.appendChild(nextSibling);
+                        nextSibling = temp;
+                    }
+                    
+                    section.appendChild(content);
+                }
+            });
+        }
+        
+        // Real-time sync setup
+        function setupRealtimeSync() {
+            const todayKey = getDateString();
+            
+            db.collection('productivity').doc(todayKey)
+                .onSnapshot((doc) => {
+                    if (doc.exists && doc.metadata.hasPendingWrites === false) {
+                        const data = doc.data();
+                        delete data.lastUpdated;
+                        loadDataIntoUI(data);
+                        updateSyncStatus('☁ Synced from another device!');
+                        setTimeout(() => {
+                            updateSyncStatus('☁ Cloud Synced');
+                        }, 3000);
+                    }
+                });
+        }
+        
+        // Debug function
+        function debugDateIssue() {
+            console.log('Today string:', getDateString());
+            console.log('Yesterday string:', getYesterdayString());
+            console.log('Current date:', new Date());
+            console.log('Today\'s data:', getCurrentDayData());
+            
+            // Check what's in localStorage
+            const todayKey = getDateString();
+            const localData = localStorage.getItem(todayKey);
+            console.log('LocalStorage data for today:', localData);
+        }
+        
+        // Initialize the app
+        window.addEventListener('load', async function() {
+            debugDateIssue(); // Debug info
+            loadYesterdayReview();
+            loadData();
+            makeCollapsible();
+            setupRealtimeSync();
+            
+            // Set up brain dump auto-save
+            const textarea = document.querySelector('.brain-dump textarea');
+            if (textarea) {
+                textarea.addEventListener('input', saveData);
+            }
+        });
+        
+        // Auto-save every 30 seconds
+        setInterval(saveData, 30000);
+        
+        // Save before page unload
+        window.addEventListener('beforeunload', saveData);
+        
+        // Backup initialization
+        setTimeout(() => {
+            const allContainers = [...categories, ...empireCategories].map(cat => {
+                if (empireCategories.includes(cat)) {
+                    return document.getElementById(cat);
+                } else {
+                    return document.getElementById(cat + '-tasks');
+                }
+            });
+            
+            const hasAnyTasks = allContainers.some(container => 
+                container && container.children.length > 0
+            );
+            
+            if (!hasAnyTasks) {
+                initializeEmptyTasks();
+            }
+        }, 100);
     </script>
 </body>
 </html>
