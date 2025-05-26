@@ -2,149 +2,132 @@
 <html lang="en">
 <head>
   <!-- =========================================================
-       Empire Dashboard – Pro (Light‑Luxe)
-       v2.3.1 |  Fix brandOrder chaining bug (TypeError)
+       Empire Dashboard • Preview‑Only Build (FULL)
+       v3.0.2  |  Complete, self‑contained, preview‑safe code
        ---------------------------------------------------------
-       * Replaced   brandOrder.slice().unshift('overview').forEach(...)
-         with       [ 'overview', ...brandOrder ].forEach(...)
-         because Array.prototype.unshift returns a number (new length),
-         breaking the chain and throwing “forEach is not a function”.
-       * No other functional changes.
+       • Inline demo data (edit BRANDS and PIPELINES below)
+       • ES5‑only JS (safe in any sandbox)
+       • Works inside ChatGPT canvas, file://, GitHub preview
+       • Features:
+         – Overview cards + empire totals
+         – Per‑brand view with full pipeline
+         – Drag‑and‑drop (SortableJS) with live column counts
+         – “Add Content” (editorial) / “Add Event” (events w/ date)
   ========================================================= -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Empire Dashboard – Pro</title>
-  <!-- Fonts -->
+  <title>Empire Dashboard — Preview</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <!-- SortableJS (drag & drop) -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <!-- Chart.js (sparklines) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    :root{
-      --bg:#fff;--bg-muted:#f8f8fc;--border:#e6e6f0;--text:#1a1a1a;--text-muted:#6e6e82;--accent:#8245ff;
-      --accent-knf:#e63cff;--accent-fh:#652399;--accent-mtih:#006aff;--accent-sss:#ff5880;--accent-tok:#9e2fff;--accent-bwitw:#ffb600;--accent-indigo:#532dff;
-      --card-shadow:0 2px 6px rgba(0,0,0,.05);
-    }
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
-    body{background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:4rem;}
-    h1{font-family:'Playfair Display',serif;font-weight:700;font-size:1.9rem;margin-bottom:1rem;}
-    h2{font-family:'Playfair Display',serif;font-weight:700;font-size:1.45rem;margin-bottom:.3rem;}
-    .container{max-width:1260px;margin:auto;padding:1.6rem;}
+    :root{--bg:#fff;--bg-mute:#f6f7fb;--border:#e3e5ee;--text:#1a1a1a;--text-m:#6e6e82;--accent:#8245ff;--shadow:0 2px 6px rgba(0,0,0,.06);}    *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+    body{background:var(--bg);color:var(--text);line-height:1.55;padding-bottom:4rem;}
+    h1{font-family:'Playfair Display',serif;font-size:1.9rem;margin:1.4rem 0 1rem;}
+    h2{font-family:'Playfair Display',serif;font-size:1.4rem;margin:1rem 0 .4rem;}
+    .wrap{max-width:1280px;margin:auto;padding:0 1.4rem;}
     /* nav */
-    .nav{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:1.35rem;}
-    .nav-btn{padding:.45rem .95rem;border:1px solid var(--border);border-radius:7px;font-weight:600;font-size:.875rem;cursor:pointer;transition:.2s;background:var(--bg-muted);}    
+    .nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.6rem;}
+    .nav-btn{padding:.45rem .9rem;border:1px solid var(--border);border-radius:7px;font-size:.84rem;font-weight:600;background:var(--bg-mute);cursor:pointer;transition:.2s;}
     .nav-btn.active,.nav-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}    
     /* totals */
-    .totals{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.2rem;}
-    .total-box{flex:1 1 160px;background:var(--bg-muted);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;box-shadow:var(--card-shadow);}    
-    .total-val{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--accent);font-weight:700;}
-    .total-label{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.45px;}
-    /* overview cards */
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.6rem;}
-    .card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:1.25rem;box-shadow:var(--card-shadow);transition:transform .25s,box-shadow .25s;cursor:pointer;}    
-    .card:hover{transform:translateY(-4px) rotate(.4deg);box-shadow:0 6px 16px rgba(0,0,0,.08);}    
-    .card[data-brand]{border-top:6px solid var(--accent);} /* accent overridden per brand */
-    .card[data-brand="knf"]{--accent:var(--accent-knf);}   
-    .card[data-brand="fh"]{--accent:var(--accent-fh);}    
-    .card[data-brand="mtih"]{--accent:var(--accent-mtih);}  
-    .card[data-brand="sss"]{--accent:var(--accent-sss);}   
-    .card[data-brand="tok"]{--accent:var(--accent-tok);}   
-    .card[data-brand="bwitw"]{--accent:var(--accent-bwitw);} 
-    .card[data-brand="indigo"]{--accent:var(--accent-indigo);} 
-    .badge{padding:.15rem .55rem;border-radius:999px;font-size:.7rem;font-weight:600;text-transform:lowercase;color:#fff;display:inline-block;}
+    .totals{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.1rem;}
+    .tot{flex:1 1 160px;background:var(--bg-mute);border:1px solid var(--border);border-radius:10px;text-align:center;padding:1rem;box-shadow:var(--shadow);}
+    .tot-val{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--accent);font-weight:700;}
+    .tot-lbl{font-size:.7rem;color:var(--text-m);text-transform:uppercase;letter-spacing:.4px;}
+    /* overview */
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.4rem;}
+    .card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:1.1rem;box-shadow:var(--shadow);cursor:pointer;transition:transform .25s,box-shadow .25s;}
+    .card:hover{transform:translateY(-4px);}    
+    .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.66rem;font-weight:600;color:#fff;text-transform:lowercase;}
     .badge.active{background:#4ade80;}.badge.launching{background:#f97316;}.badge.planning{background:#60a5fa;}
-    .brand-title{font-family:'Playfair Display',serif;font-size:1.25rem;margin-bottom:.25rem;}
-    .brand-desc{font-size:.85rem;color:var(--text-muted);margin-bottom:1.25rem;}
-    .metrics{display:flex;gap:.75rem;flex-wrap:wrap;}
-    .metric-box{flex:1 1 100px;text-align:center;background:var(--bg-muted);padding:.7rem;border-radius:8px;border:1px solid var(--border);}    
-    .metric-val{font-weight:700;color:var(--accent);} .metric-label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.4px;}
-    .spark{width:100%;height:32px;margin-top:.35rem;}
-    /* views & columns */
+    .brand{font-family:'Playfair Display',serif;font-size:1.23rem;margin:.2rem 0 .4rem;}
+    .desc{font-size:.82rem;color:var(--text-m);margin-bottom:1rem;}
+    .metrics{display:flex;gap:.6rem;flex-wrap:wrap;}
+    .mbox{flex:1 1 90px;background:var(--bg-mute);border:1px solid var(--border);border-radius:8px;padding:.6rem;text-align:center;}
+    .mval{font-weight:700;color:var(--accent);} .mlbl{font-size:.68rem;color:var(--text-m);text-transform:uppercase;}
+    /* view */
     .view{display:none;} .view.active{display:block;}
-    .pipeline-wrap{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;gap:1rem;flex-wrap:wrap;}
-    .add-btn{padding:.45rem .9rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:.3rem;}
-    .add-btn svg{width:18px;height:18px;}
-    .pipeline{display:flex;gap:1rem;overflow-x:auto;}
-    .column{min-width:220px;background:var(--bg-muted);border:1px solid var(--border);border-radius:9px;padding:1rem;flex:1 0 220px;}
-    .column-header{font-weight:600;margin-bottom:.75rem;font-size:.9rem;display:flex;justify-content:space-between;align-items:center;}
-    .column-count{background:var(--accent);color:#fff;font-size:.65rem;padding:.15rem .45rem;border-radius:6px;}
-    .item{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:.5rem;font-size:.82rem;margin-bottom:.5rem;cursor:grab;transition:transform .2s;display:flex;justify-content:space-between;align-items:center;gap:.5rem;}
-    .item:hover{transform:translateY(-2px);} .ghost{opacity:.3;border-style:dashed;}
-    .item:focus{outline:2px solid var(--accent);} /* keyboard */
-    .item-date{font-size:.7rem;color:var(--text-muted);}    
+    .p-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+    .pipeline{display:flex;gap:1rem;overflow-x:auto;margin-bottom:2rem;}
+    .col{min-width:220px;background:var(--bg-mute);border:1px solid var(--border);border-radius:9px;padding:1rem;flex:1 0 220px;display:flex;flex-direction:column;}
+    .c-head{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:.88rem;margin-bottom:.65rem;}
+    .c-count{background:var(--accent);color:#fff;font-size:.65rem;border-radius:6px;padding:.15rem .45rem;}
+    .list{flex:1 1 auto;}
+    .item{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:.45rem;font-size:.8rem;margin-bottom:.5rem;cursor:grab;display:flex;justify-content:space-between;align-items:center;}
+    .item-date{font-size:.68rem;color:var(--text-m);margin-left:.4rem;}
+    .add{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.4rem .8rem;font-size:.78rem;font-weight:600;cursor:pointer;}
     /* brand metrics grid */
-    .brand-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;}
-    .brand-mbox{background:var(--bg-muted);border:1px solid var(--border);border-radius:12px;padding:1.4rem;text-align:center;box-shadow:var(--card-shadow);}    
-    .brand-mval{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--accent);} .brand-mlabel{margin-top:.25rem;font-size:.85rem;color:var(--text-muted);}    
-    /* modal */
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;justify-content:center;align-items:center;z-index:1000;}
-    .modal-card{background:var(--bg);padding:1.5rem 2rem;border-radius:12px;width:90%;max-width:380px;box-shadow:0 8px 20px rgba(0,0,0,.15);}    
-    .modal-card h3{font-size:1.15rem;font-weight:600;margin-bottom:1rem;}
-    .modal-card label{font-size:.8rem;font-weight:600;color:var(--text-muted);display:block;margin-top:.75rem;margin-bottom:.25rem;}
-    .modal-card input{width:100%;padding:.55rem .6rem;border:1px solid var(--border);border-radius:8px;font-size:.85rem;}
-    .modal-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1.2rem;}
-    .btn{padding:.45rem 1rem;border:none;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;}
-    .btn.primary{background:var(--accent);color:#fff;}
-    .btn.secondary{background:var(--bg-muted);}    
+    .brand-metrics{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+    .brand-mbox{flex:1 1 140px;background:var(--bg-mute);border:1px solid var(--border);border-radius:10px;text-align:center;padding:.7rem;box-shadow:var(--shadow);}
+    .brand-mval{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--accent);font-weight:700;}
+    .brand-mlabel{font-size:.7rem;color:var(--text-m);text-transform:uppercase;letter-spacing:.4px;}
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap">
     <h1>Empire Dashboard</h1>
     <div id="nav" class="nav"></div>
-    <div id="empireTotals" class="totals"></div>
-    <div id="overviewGrid" class="grid"></div>
+    <div id="totals" class="totals"></div>
+    <div id="overview" class="grid"></div>
     <div id="views"></div>
   </div>
-<!-- JS after content to avoid blocking paint -->
-<script>
-(function(){
-'use strict';
-var REFRESH_MS=15*60*1000;
-var STAGES_EDITORIAL=['ideas','inProgress','ready','published'];
-var STAGES_EVENT=['planning','upcoming','marketing','completed'];
+<script>(function(){'use strict';
+// ---------- helpers ----------
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls){e.className=cls;}if(txt!==undefined){e.textContent=txt;}return e;}
+function qs(sel,scope){return (scope||document).querySelector(sel);} // quick selector
+function fmt(n){if(typeof n==='string'){return n;}return (n>=1e6?Math.round(n/1e5)/10+'M':n>=1e3?Math.round(n/1e2)/10+'K':n);} // short format
+function todayISO(){return new Date().toISOString().slice(0,10);} // yyyy‑mm‑dd
+// ---------- demo data ----------
+var BRANDS=[
+  {id:'knf',name:'KNF',desc:'Personal brand & cultural criticism',status:'active',accent:'#e63cff',reach:125000,revenue:15000,engage:4.5},
+  {id:'fh',name:'For Harriet',desc:'Black feminist publication',status:'active',accent:'#652399',reach:250000,revenue:22000,engage:5.1},
+  {id:'mtih',name:'Making Things is Hard',desc:'Tech & business for creatives',status:'active',accent:'#006aff',reach:45000,revenue:8000,engage:6.2},
+  {id:'sss',name:'The Shallow Side',desc:'Fashion & beauty commentary',status:'launching',accent:'#ff5880',reach:500,revenue:0,engage:0},
+  {id:'tok',name:'Taste of Kimberly',desc:'Personal style newsletter',status:'planning',accent:'#9e2fff',reach:0,revenue:0,engage:0},
+  {id:'bwitw',name:'Black Women in the Wild',desc:'Community events & connections',status:'active',accent:'#ffb600',events:6,community:250},
+  {id:'indigo',name:'Indigo Hour',desc:'Intellectual salon series',status:'planning',accent:'#532dff',events:0,community:0}
+];
+var PIPELINES={
+  knf:{ideas:['Award season analysis','TikTok trends','Celebrity interviews'],inProgress:['Video: Nostalgia','Article: Fashion Politics'],ready:['Instagram posts','Tweet threads'],published:['Video: Representation','Newsletter: March']},
+  fh:{ideas:['Feature: Black Tech','Interview: Scholar'],inProgress:['Video essay'],ready:[],published:['Op‑ed']},
+  mtih:{ideas:['Tool review video','Essay: Creative Burnout'],inProgress:[],ready:['Podcast episode'],published:['Newsletter: April']},
+  sss:{ideas:['Shade range critique'],inProgress:[],ready:[],published:[]},
+  tok:{ideas:['Lookbook concept'],inProgress:[],ready:[],published:[]},
+  bwitw:{planning:['Spring Hike'],upcoming:['June Mixer'],marketing:['IG Carousel'],completed:['January Brunch']},
+  indigo:{planning:['Select panelists'],upcoming:[],marketing:[],completed:[]}
+};
 var EVENT_BRANDS=['bwitw','indigo'];
-var metrics={},goals={},pipelines={};
-function fmt(n){return n>=1000?Intl.NumberFormat('en',{notation:'compact'}).format(n):n;}
-function qs(sel){return document.querySelector(sel);} // safe helper
-function seed(){['knf','fh','mtih','sss','tok','bwitw','indigo'].forEach(function(id){var st=EVENT_BRANDS.indexOf(id)>-1?STAGES_EVENT:STAGES_EDITORIAL;pipelines[id]={};st.forEach(function(s){pipelines[id][s]=[];});});
-  pipelines.knf.ideas=[{title:'Award season analysis'},{title:'TikTok trends'}];
-  pipelines.bwitw.planning=[{title:'Summer Rooftop Mixer',date:'2025-07-15'}];
-}
-var demoMetrics={knf:{name:'Kimberly Nicole Foster',status:'active',desc:'Personal brand & cultural criticism',pipeline:24,reach:125000,revenue:15000,engagement:8.5},fh:{name:'For Harriet',status:'active',desc:'Black feminist publication',pipeline:32,reach:250000,revenue:22000,engagement:12},mtih:{name:'Making Things is Hard',status:'active',desc:'Tech & business for creatives',pipeline:18,reach:45000,revenue:8000,engagement:15},sss:{name:'The Shallow Side',status:'launching',desc:'Fashion & beauty commentary',pipeline:12,reach:500,revenue:0,engagement:0},tok:{name:'Taste of Kimberly',status:'planning',desc:'Personal style newsletter',pipeline:15,reach:0,revenue:0,engagement:0},bwitw:{name:'Black Women in the Wild',status:'active',desc:'Community events & connections',events:6,community:250,groups:12},indigo:{name:'The Indigo Hour',status:'planning',desc:'Intellectual salon series',concepts:5,capacity:25}};
-var demoGoals={knf:{reach:150000,revenue:20000},fh:{reach:300000,revenue:25000}};
-var brandOrder=['knf','fh','mtih','sss','tok','bwitw','indigo'];
-/* DOM refs */
-var elNav,elTotals,elGrid,elViews;
-/* NAV */
-function makeNav(){[ 'overview' ].concat(brandOrder).forEach(function(id){var b=document.createElement('button');b.className='nav-btn';b.dataset.view=id;b.textContent=id==='overview'?'Overview':metrics[id].name;b.addEventListener('click',function(){showView(id);});elNav.appendChild(b);});}
-function navActive(id){[].forEach.call(elNav.querySelectorAll('.nav-btn'),function(b){b.classList.toggle('active',b.dataset.view===id);});}
-/* TOTALS */
-function buildTotals(){var totP=0,totR=0,totRev=0;brandOrder.forEach(function(id){var m=metrics[id];totP+=(m.pipeline||0);totR+=(m.reach||0);totRev+=(m.revenue||0);});
-  elTotals.innerHTML='';
-  var add=function(v,l){var box=document.createElement('div');box.className='total-box';box.innerHTML='<div class="total-val">'+v+'</div><div class="total-label">'+l+'</div>';elTotals.appendChild(box);}  ;
-  add(fmt(totP),'PIPELINE');add(fmt(totR),'REACH');add('$'+fmt(totRev),'REVENUE');
-}
-/* OVERVIEW */
-function metric(val,label){return '<div class="metric-box"><div class="metric-val">'+val+'</div><div class="metric-label">'+label+'</div></div>';}
-function buildOverview(){elGrid.innerHTML='';brandOrder.forEach(function(id){var m=metrics[id];var c=document.createElement('div');c.className='card';c.dataset.brand=id;
-    c.innerHTML='<div class="badge '+m.status+'">'+m.status+'</div><div class="brand-title">'+m.name+'</div><div class="brand-desc">'+(m.desc||'')+'</div><div class="metrics"></div>';
-    var met=c.querySelector('.metrics');if(m.pipeline)met.insertAdjacentHTML('beforeend',metric(fmt(m.pipeline),'pipeline'));if(m.reach)met.insertAdjacentHTML('beforeend',metric(fmt(m.reach),'reach'));if(m.engagement)met.insertAdjacentHTML('beforeend',metric(m.engagement+'%','engagement'));if(m.revenue)met.insertAdjacentHTML('beforeend',metric('$'+fmt(m.revenue),'revenue'));if(m.events)met.insertAdjacentHTML('beforeend',metric(m.events,'events'));c.addEventListener('click',function(){showView(id);});elGrid.appendChild(c);});}
-/* VIEWS & PIPELINES (simplified preview build) */
-function buildViews(){elViews.innerHTML='';brandOrder.forEach(function(id){var m=metrics[id];var view=document.createElement('div');view.className='view';view.id='view-'+id;view.dataset.brand=id;
-    view.innerHTML='<h2>'+m.name+'</h2><p style="color:var(--text-muted);margin-bottom:1.5rem;">'+(m.desc||'')+'</p><p style="font-size:.9rem;color:#f43f5e;">Detailed pipeline hidden in preview‑safe build.</p>';
-    elViews.appendChild(view);});}
-function showView(id){navActive(id);if(id==='overview'){elGrid.style.display='grid';elTotals.style.display='flex';[].forEach.call(elViews.children,function(v){v.classList.remove('active');});return;}
-  elGrid.style.display='none';elTotals.style.display='none';[].forEach.call(elViews.children,function(v){v.classList.toggle('active',v.id==='view-'+id);});}
-/* DATA LOADERS */
-function loadJSON(url,cb){var xhr=new XMLHttpRequest();xhr.open('GET',url,true);xhr.onreadystatechange=function(){if(xhr.readyState===4){if(xhr.status===200){try{cb(JSON.parse(xhr.responseText));}catch(e){cb(null);} }else cb(null);} };xhr.send();}
-function refresh(){loadJSON('data/metrics.json',function(data){if(data){metrics=data;buildTotals();buildOverview();}});}
-/* INIT */
-function init(){elNav=qs('#nav');elTotals=qs('#empireTotals');elGrid=qs('#overviewGrid');elViews=qs('#views');
-  seed();metrics=demoMetrics;goals=demoGoals;makeNav();buildTotals();buildOverview();buildViews();showView('overview');setInterval(refresh,REFRESH_MS);}
-if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
-})();
-</script>
+var EDIT_STAGES=['ideas','inProgress','ready','published'];
+var EVENT_STAGES=['planning','upcoming','marketing','completed'];
+var brandOrder=BRANDS.map(function(b){return b.id;});
+// ---------- build UI ----------
+function buildNav(){var nav=qs('#nav');nav.innerHTML='';['overview'].concat(brandOrder).forEach(function(id){var b=(id==='overview')?{name:'Overview',id:'overview'}:BRANDS.filter(function(br){return br.id===id;})[0];var btn=el('button','nav-btn',b.name);btn.dataset.id=id;btn.onclick=function(){show(id);};nav.appendChild(btn);});}
+function buildOverview(){var grid=qs('#overview');grid.innerHTML='';BRANDS.forEach(function(b){var c=el('div','card');c.onclick=function(){show(b.id);};c.style.borderColor=b.accent;c.appendChild(el('span','badge '+b.status,b.status));c.appendChild(el('div','brand',b.name));c.appendChild(el('div','desc',b.desc));var mrow=el('div','metrics');if(EVENT_BRANDS.indexOf(b.id)===-1){mrow.appendChild(metricBox(fmt(b.reach),'Reach'));mrow.appendChild(metricBox('$'+fmt(b.revenue),'Revenue'));mrow.appendChild(metricBox(b.engage+'%','Engage'));}else{mrow.appendChild(metricBox(b.events,'Events'));mrow.appendChild(metricBox(b.community,'Community'));}
+c.appendChild(mrow);grid.appendChild(c);});}
+function metricBox(val,lbl){var box=el('div','mbox');box.appendChild(el('div','mval',val));box.appendChild(el('div','mlbl',lbl));return box;}
+function buildViews(){var wrap=qs('#views');wrap.innerHTML='';BRANDS.forEach(function(b){var v=el('div','view');v.id='view-'+b.id;
+  // header
+  var head=el('div','p-head');head.appendChild(el('h2',null,b.name));var addBtn=el('button','add',(EVENT_BRANDS.indexOf(b.id)===-1)?'+ Add Content':'+ Add Event');addBtn.style.background=b.accent;addBtn.onclick=function(){addItem(b.id);};head.appendChild(addBtn);v.appendChild(head);
+  // brand metric boxes
+  var bm=el('div','brand-metrics');if(EVENT_BRANDS.indexOf(b.id)===-1){bm.appendChild(brandBox(fmt(b.reach),'Reach'));bm.appendChild(brandBox('$'+fmt(b.revenue),'Revenue'));bm.appendChild(brandBox(b.engage+'%','Engage'));}else{bm.appendChild(brandBox(b.events,'Events'));bm.appendChild(brandBox(b.community,'Community'));}
+  v.appendChild(bm);
+  // pipeline columns
+  var pipe=el('div','pipeline');var stages=(EVENT_BRANDS.indexOf(b.id)===-1)?EDIT_STAGES:EVENT_STAGES;stages.forEach(function(stage){var col=el('div','col');col.dataset.brand=b.id;col.dataset.stage=stage;var chead=el('div','c-head');chead.appendChild(el('span',null,stage.replace(/([A-Z])/g,' $1').replace(/^./,function(ch){return ch.toUpperCase();})));var count=el('span','c-count','0');chead.appendChild(count);col.appendChild(chead);var list=el('div','list');(PIPELINES[b.id][stage]||[]).forEach(function(it){list.appendChild(itemElem(it));});col.appendChild(list);pipe.appendChild(col);
+    Sortable.create(list,{group:b.id,Animation:150,onAdd:updateAll,onUpdate:updateAll});});v.appendChild(pipe);
+  wrap.appendChild(v);} );}
+function brandBox(val,lbl){var b=el('div','brand-mbox');b.appendChild(el('div','brand-mval',val));b.appendChild(el('div','brand-mlabel',lbl));return b;}
+function itemElem(txt){var it=el('div','item');var span=el('span',null,txt);it.appendChild(span);return it;}
+// ---------- interactions ----------
+function show(id){['overview'].concat(brandOrder).forEach(function(bid){qs('.nav-btn[data-id="'+bid+'"]').classList[bid===id?'add':'remove']('active');});qs('#overview').style.display=(id==='overview')?'grid':'none';
+  Array.prototype.forEach.call(qs('#views').children,function(v){v.classList.remove('active');});if(id!=='overview'){qs('#view-'+id).classList.add('active');}
+  updateAll();}
+function addItem(bid){var txt=prompt('Enter title');if(!txt){return;}var stage=(EVENT_BRANDS.indexOf(bid)===-1)?'ideas':'planning';var list=qs('.col[data-brand="'+bid+'"][data-stage="'+stage+'"] .list');list.appendChild(itemElem(txt+(EVENT_BRANDS.indexOf(bid)!==-1?' ('+todayISO()+')':'')));updateAll();}
+function updateCounts(){Array.prototype.forEach.call(document.querySelectorAll('.col'),function(col){var cnt=col.querySelectorAll('.item').length;var badge=col.querySelector('.c-count');if(badge){badge.textContent=cnt;}});} 
+function updateTotals(){var totalItems=0,totalReach=0,totalRevenue=0,totalEvents=0;BRANDS.forEach(function(b){var stages=(EVENT_BRANDS.indexOf(b.id)===-1)?EDIT_STAGES:EVENT_STAGES;stages.forEach(function(s){totalItems+=qs('.col[data-brand="'+b.id+'"][data-stage="'+s+'"] .item')?qs('.col[data-brand="'+b.id+'"][data-stage="'+s+'"] .item').parentNode.children.length:0;});if(EVENT_BRANDS.indexOf(b.id)===-1){totalReach+=b.reach;totalRevenue+=b.revenue;}else{totalEvents+=b.events;}});
+  var totals=qs('#totals');totals.innerHTML='';totals.appendChild(totalBox(totalItems,'Pipeline Items'));totals.appendChild(totalBox(fmt(totalReach),'Total Reach'));totals.appendChild(totalBox('$'+fmt(totalRevenue),'Total Revenue'));totals.appendChild(totalBox(totalEvents,'Total Events'));}
+function totalBox(val,lbl){var t=el('div','tot');t.appendChild(el('div','tot-val',val));t.appendChild(el('div','tot-lbl',lbl));return t;}
+function updateAll(){updateCounts();updateTotals();}
+// ---------- boot ----------
+buildNav();buildOverview();buildViews();show('overview');})();</script>
 </body>
 </html>
