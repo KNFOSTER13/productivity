@@ -4,7 +4,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <script>
-// Your Firebase configuration
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Your Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
     authDomain: "productivity-tracker-knf13.firebaseapp.com",
@@ -1911,7 +1913,360 @@ const db = firebase.firestore();
             updateCounts();
             updateTotals();
         }
+        // ---------- Analytics Dashboard ----------
+var ANALYTICS_CHARTS = {};
+var CURRENT_DATE_RANGE = '30d';
+
+function buildAnalyticsView() {
+    // Add analytics to navigation
+    var nav = qs('#nav');
+    var analyticsBtn = el('button', 'nav-btn', 'Analytics');
+    analyticsBtn.dataset.id = 'analytics';
+    analyticsBtn.onclick = function() { showAnalytics(); };
+    // Insert after Overview button
+    nav.insertBefore(analyticsBtn, nav.children[1]);
+    
+    // Create analytics view container
+    var views = qs('#views');
+    var analyticsView = el('div', 'analytics-view');
+    analyticsView.id = 'analytics-view';
+    
+    // Header with date range selector
+    var header = el('div', 'analytics-header');
+    header.appendChild(el('h2', null, 'Analytics Dashboard'));
+    
+    var dateRange = el('div', 'date-range-selector');
+    ['7d', '30d', '90d', 'All'].forEach(function(range) {
+        var btn = el('button', 'date-range-btn', range === '7d' ? '7 Days' : 
+                                                  range === '30d' ? '30 Days' : 
+                                                  range === '90d' ? '90 Days' : 'All Time');
+        btn.dataset.range = range;
+        if (range === '30d') btn.classList.add('active');
+        btn.onclick = function() {
+            qsa('.date-range-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            CURRENT_DATE_RANGE = range;
+            updateAnalytics();
+        };
+        dateRange.appendChild(btn);
+    });
+    header.appendChild(dateRange);
+    analyticsView.appendChild(header);
+    
+    // Metrics grid
+    var metricsGrid = el('div', 'analytics-grid');
+    
+    // Total Content card
+    var totalCard = createMetricCard('Total Content', calculateTotalContent(), '+12% from last period');
+    metricsGrid.appendChild(totalCard);
+    
+    // Total Views card
+    var viewsCard = createMetricCard('Total Views', calculateTotalViews(), '+25% from last period');
+    metricsGrid.appendChild(viewsCard);
+    
+    // Average Engagement card
+    var engageCard = createMetricCard('Avg Engagement', calculateAvgEngagement() + '%', '+3.2% from last period');
+    metricsGrid.appendChild(engageCard);
+    
+    // Revenue card
+    var revenueCard = createMetricCard('Total Revenue', '$' + calculateTotalRevenue(), '+18% from last period');
+    metricsGrid.appendChild(revenueCard);
+    
+    analyticsView.appendChild(metricsGrid);
+    
+    // Charts grid
+    var chartsGrid = el('div', 'analytics-grid');
+    
+    // Content over time chart
+    var contentChartCard = el('div', 'analytics-card');
+    contentChartCard.style.gridColumn = 'span 2';
+    var contentChartHeader = el('div', 'analytics-card-header');
+    contentChartHeader.appendChild(el('h3', 'analytics-card-title', 'Content Production Over Time'));
+    contentChartCard.appendChild(contentChartHeader);
+    var contentChartContainer = el('div', 'chart-container');
+    contentChartContainer.innerHTML = '<canvas id="contentChart"></canvas>';
+    contentChartCard.appendChild(contentChartContainer);
+    chartsGrid.appendChild(contentChartCard);
+    
+    // Brand performance chart
+    var brandChartCard = el('div', 'analytics-card');
+    var brandChartHeader = el('div', 'analytics-card-header');
+    brandChartHeader.appendChild(el('h3', 'analytics-card-title', 'Brand Performance'));
+    brandChartCard.appendChild(brandChartHeader);
+    var brandChartContainer = el('div', 'chart-container');
+    brandChartContainer.innerHTML = '<canvas id="brandChart"></canvas>';
+    brandChartCard.appendChild(brandChartContainer);
+    chartsGrid.appendChild(brandChartCard);
+    
+    analyticsView.appendChild(chartsGrid);
+    
+    // Additional insights
+    var insightsGrid = el('div', 'analytics-grid');
+    
+    // Top performing content
+    var topContentCard = el('div', 'analytics-card');
+    var topContentHeader = el('div', 'analytics-card-header');
+    topContentHeader.appendChild(el('h3', 'analytics-card-title', 'Top Performing Content'));
+    topContentCard.appendChild(topContentHeader);
+    var topContentList = el('ul', 'top-content-list');
+    getTopContent().forEach(function(item) {
+        var li = el('li', 'top-content-item');
+        li.appendChild(el('span', 'content-title', item.title));
+        li.appendChild(el('span', 'content-metric', fmt(item.views) + ' views'));
+        topContentList.appendChild(li);
+    });
+    topContentCard.appendChild(topContentList);
+    insightsGrid.appendChild(topContentCard);
+    
+    // Brand breakdown
+    var brandBreakdownCard = el('div', 'analytics-card');
+    var brandBreakdownHeader = el('div', 'analytics-card-header');
+    brandBreakdownHeader.appendChild(el('h3', 'analytics-card-title', 'Brand Breakdown'));
+    brandBreakdownCard.appendChild(brandBreakdownHeader);
+    var brandPerfGrid = el('div', 'brand-performance-grid');
+    BRANDS.forEach(function(brand) {
+        if (EVENT_BRANDS.indexOf(brand.id) === -1) {
+            var perfCard = el('div', 'brand-perf-card');
+            perfCard.style.borderTop = '3px solid ' + brand.accent;
+            perfCard.appendChild(el('div', 'brand-perf-name', brand.name));
+            perfCard.appendChild(el('div', 'brand-perf-value', getPublishedCount(brand.id)));
+            perfCard.appendChild(el('div', 'analytics-trend', 'Published'));
+            brandPerfGrid.appendChild(perfCard);
+        }
+    });
+    brandBreakdownCard.appendChild(brandPerfGrid);
+    insightsGrid.appendChild(brandBreakdownCard);
+    
+    analyticsView.appendChild(insightsGrid);
+    
+    views.appendChild(analyticsView);
+}
+
+function createMetricCard(title, value, trend) {
+    var card = el('div', 'analytics-card');
+    card.appendChild(el('div', 'analytics-card-title', title));
+    card.appendChild(el('div', 'analytics-metric', value));
+    var trendEl = el('div', 'analytics-trend ' + (trend.includes('+') ? 'trend-up' : 'trend-down'), trend);
+    card.appendChild(trendEl);
+    return card;
+}
+
+function calculateTotalContent() {
+    var total = 0;
+    BRANDS.forEach(function(brand) {
+        var stages = EVENT_BRANDS.indexOf(brand.id) === -1 ? EDIT_STAGES : EVENT_STAGES;
+        stages.forEach(function(stage) {
+            if (PIPELINES[brand.id][stage]) {
+                total += PIPELINES[brand.id][stage].length;
+            }
+        });
+    });
+    return total;
+}
+
+function calculateTotalViews() {
+    var total = 0;
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                total += item.metrics.views || 0;
+            });
+        }
+    });
+    return fmt(total);
+}
+
+function calculateAvgEngagement() {
+    var totalEngagement = 0;
+    var count = 0;
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                if (item.metrics.engagement) {
+                    totalEngagement += item.metrics.engagement;
+                    count++;
+                }
+            });
+        }
+    });
+    return count > 0 ? (totalEngagement / count).toFixed(1) : '0';
+}
+
+function calculateTotalRevenue() {
+    var total = 0;
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                total += item.metrics.revenue || 0;
+            });
+        }
+    });
+    return fmt(total);
+}
+
+function getTopContent() {
+    var allContent = [];
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                allContent.push({
+                    title: item.title,
+                    views: item.metrics.views || 0,
+                    brand: brand.name
+                });
+            });
+        }
+    });
+    return allContent.sort(function(a, b) { return b.views - a.views; }).slice(0, 5);
+}
+
+function getPublishedCount(brandId) {
+    return PIPELINES[brandId].published ? PIPELINES[brandId].published.length : 0;
+}
+
+function initializeCharts() {
+    // Content over time chart
+    var contentCtx = document.getElementById('contentChart');
+    if (contentCtx) {
+        ANALYTICS_CHARTS.content = new Chart(contentCtx, {
+            type: 'line',
+            data: {
+                labels: getLast30Days(),
+                datasets: [{
+                    label: 'Content Published',
+                    data: getContentTimeSeriesData(),
+                    borderColor: '#8245ff',
+                    backgroundColor: 'rgba(130, 69, 255, 0.1)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+    
+    // Brand performance chart
+    var brandCtx = document.getElementById('brandChart');
+    if (brandCtx) {
+        var brandData = BRANDS.filter(function(b) { 
+            return EVENT_BRANDS.indexOf(b.id) === -1; 
+        }).map(function(b) {
+            return getPublishedCount(b.id);
+        });
         
+        var brandLabels = BRANDS.filter(function(b) { 
+            return EVENT_BRANDS.indexOf(b.id) === -1; 
+        }).map(function(b) { return b.name; });
+        
+        var brandColors = BRANDS.filter(function(b) { 
+            return EVENT_BRANDS.indexOf(b.id) === -1; 
+        }).map(function(b) { return b.accent; });
+        
+        ANALYTICS_CHARTS.brand = new Chart(brandCtx, {
+            type: 'doughnut',
+            data: {
+                labels: brandLabels,
+                datasets: [{
+                    data: brandData,
+                    backgroundColor: brandColors
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+}
+
+function getLast30Days() {
+    var dates = [];
+    for (var i = 29; i >= 0; i--) {
+        var d = new Date();
+        d.setDate(d.getDate() - i);
+        dates.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    return dates;
+}
+
+function getContentTimeSeriesData() {
+    // Generate sample data - in real implementation, calculate from actual publish dates
+    return Array(30).fill(0).map(function() { 
+        return Math.floor(Math.random() * 10) + 1; 
+    });
+}
+
+function showAnalytics() {
+    // Update navigation
+    qsa('.nav-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    var analyticsBtn = qs('.nav-btn[data-id="analytics"]');
+    if (analyticsBtn) analyticsBtn.classList.add('active');
+    
+    // Hide other views
+    var overview = qs('#overview');
+    if (overview) overview.style.display = 'none';
+    
+    qsa('.view').forEach(function(v) {
+        v.classList.remove('active');
+    });
+    
+    // Show analytics
+    var analyticsView = qs('#analytics-view');
+    if (analyticsView) {
+        analyticsView.classList.add('active');
+        
+        // Initialize or update charts
+        setTimeout(function() {
+            if (!ANALYTICS_CHARTS.content) {
+                initializeCharts();
+            } else {
+                updateAnalytics();
+            }
+        }, 100);
+    }
+}
+
+function updateAnalytics() {
+    // Update metrics based on date range
+    // Update charts
+    if (ANALYTICS_CHARTS.content) {
+        ANALYTICS_CHARTS.content.update();
+    }
+    if (ANALYTICS_CHARTS.brand) {
+        ANALYTICS_CHARTS.brand.update();
+    }
+}
+
+// Update your existing show() function to handle analytics
+var originalShow = show;
+show = function(id) {
+    if (id === 'analytics') {
+        showAnalytics();
+    } else {
+        // Hide analytics if showing something else
+        var analyticsView = qs('#analytics-view');
+        if (analyticsView) analyticsView.classList.remove('active');
+        originalShow(id);
+    }
+};
+
+// Add this to your initialization
+buildAnalyticsView();
         // ---------- initialize ----------
         buildNav();
         buildOverview();
