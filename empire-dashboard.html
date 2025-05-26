@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
     <title>Empire Operations - Creative Command Center</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
@@ -22,6 +21,14 @@
             --empire-rose-gold: #e8b4b8;
             --empire-cream: #faf8f3;
             --empire-black: #0a0a0a;
+            
+            --knf-gradient: linear-gradient(135deg, #ff1493, #ff69b4, #ffb6c1);
+            --fh-gradient: linear-gradient(135deg, #4a148c, #7b1fa2, #9c27b0);
+            --tss-gradient: linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffe4e1);
+            --mtih-gradient: linear-gradient(135deg, #1e3c72, #2a5298, #3498db);
+            --bwitw-gradient: linear-gradient(135deg, #f39c12, #f1c40f, #ffd700);
+            --tok-gradient: linear-gradient(135deg, #e74c3c, #ff6347, #ff7f50);
+            --indigo-gradient: linear-gradient(135deg, #4b0082, #6a0dad, #7b68ee);
         }
 
         body {
@@ -32,13 +39,15 @@
             line-height: 1.6;
         }
 
-        /* Scrollbar */
+        /* Scrollbar Styling */
         ::-webkit-scrollbar {
             width: 10px;
         }
+
         ::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
         }
+
         ::-webkit-scrollbar-thumb {
             background: var(--empire-gold);
             border-radius: 5px;
@@ -104,8 +113,6 @@
             gap: 4rem;
             z-index: 10;
             margin-bottom: 3rem;
-            flex-wrap: wrap;
-            justify-content: center;
         }
 
         .stat-item {
@@ -156,13 +163,15 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .brand-nav {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            justify-content: center;
         }
 
         .brand-nav-btn {
@@ -189,6 +198,14 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
+
+        .brand-nav-btn.knf::before { background: var(--knf-gradient); }
+        .brand-nav-btn.fh::before { background: var(--fh-gradient); }
+        .brand-nav-btn.tss::before { background: var(--tss-gradient); }
+        .brand-nav-btn.mtih::before { background: var(--mtih-gradient); }
+        .brand-nav-btn.bwitw::before { background: var(--bwitw-gradient); }
+        .brand-nav-btn.tok::before { background: var(--tok-gradient); }
+        .brand-nav-btn.indigo::before { background: var(--indigo-gradient); }
 
         .brand-nav-btn:hover::before,
         .brand-nav-btn.active::before {
@@ -259,6 +276,14 @@
             opacity: 0.8;
             transition: opacity 0.3s;
         }
+
+        .brand-luxury-card.knf::before { background: var(--knf-gradient); }
+        .brand-luxury-card.fh::before { background: var(--fh-gradient); }
+        .brand-luxury-card.tss::before { background: var(--tss-gradient); }
+        .brand-luxury-card.mtih::before { background: var(--mtih-gradient); }
+        .brand-luxury-card.bwitw::before { background: var(--bwitw-gradient); }
+        .brand-luxury-card.tok::before { background: var(--tok-gradient); }
+        .brand-luxury-card.indigo::before { background: var(--indigo-gradient); }
 
         .brand-luxury-card:hover {
             transform: translateY(-10px) scale(1.02);
@@ -338,7 +363,7 @@
         .status-launching { border: 1px solid #ff9800; color: #ff9800; }
         .status-planning { border: 1px solid #2196f3; color: #2196f3; }
 
-        /* Brand Detail Views */
+        /* Individual Brand Views */
         .brand-hero {
             position: relative;
             min-height: 400px;
@@ -349,6 +374,14 @@
             border-radius: 30px;
             overflow: hidden;
         }
+
+        .brand-hero.knf { background: var(--knf-gradient); }
+        .brand-hero.fh { background: var(--fh-gradient); }
+        .brand-hero.tss { background: var(--tss-gradient); }
+        .brand-hero.mtih { background: var(--mtih-gradient); }
+        .brand-hero.bwitw { background: var(--bwitw-gradient); }
+        .brand-hero.tok { background: var(--tok-gradient); }
+        .brand-hero.indigo { background: var(--indigo-gradient); }
 
         .brand-hero-content {
             text-align: center;
@@ -371,7 +404,7 @@
             margin: 0 auto;
         }
 
-        /* Content Pipeline */
+        /* Content Pipeline Luxury */
         .pipeline-luxury {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
@@ -464,7 +497,7 @@
             box-shadow: 0 5px 20px rgba(255, 215, 0, 0.2);
         }
 
-        /* Performance Metrics */
+        /* Performance Metrics Visualization */
         .metrics-luxury {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -481,6 +514,23 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--empire-gold) 0%, transparent 70%);
+            opacity: 0.05;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .metric-icon {
@@ -520,6 +570,16 @@
             margin-bottom: 3rem;
             position: relative;
             overflow: hidden;
+        }
+
+        .opportunities-section::before {
+            content: '✨';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            top: -50px;
+            right: -50px;
+            transform: rotate(-15deg);
         }
 
         .opportunities-title {
@@ -640,7 +700,6 @@
             transition: all 0.3s;
             white-space: nowrap;
             font-weight: 500;
-            cursor: pointer;
         }
 
         .menu-item:hover {
@@ -651,14 +710,36 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .empire-title { font-size: 2.5rem; }
-            .empire-stats { flex-direction: column; gap: 2rem; }
-            .brand-nav { flex-direction: column; width: 100%; }
-            .brand-nav-btn { width: 100%; text-align: center; }
-            .empire-grid { grid-template-columns: 1fr; }
-            .pipeline-flow { grid-template-columns: 1fr; }
-            .metrics-luxury { grid-template-columns: 1fr; }
-            .hero-header { min-height: 70vh; }
+            .empire-title {
+                font-size: 2.5rem;
+            }
+            
+            .empire-stats {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .brand-nav {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .brand-nav-btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .empire-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pipeline-flow {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-luxury {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -673,15 +754,15 @@
                 <div class="stat-label">Active Brands</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="totalPipeline">127</div>
+                <div class="stat-number">127</div>
                 <div class="stat-label">Content Pipeline</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="totalRevenue">$87K</div>
+                <div class="stat-number">$87K</div>
                 <div class="stat-label">Monthly Revenue</div>
             </div>
             <div class="stat-item">
-                <div class="stat-number" id="totalReach">1.2M</div>
+                <div class="stat-number">1.2M</div>
                 <div class="stat-label">Total Reach</div>
             </div>
         </div>
@@ -698,8 +779,31 @@
     <!-- Luxury Navigation -->
     <nav class="luxury-nav" id="main-content">
         <div class="nav-container">
-            <div class="brand-nav" id="brandNav">
-                <!-- Navigation buttons will be generated by JavaScript -->
+            <div class="brand-nav">
+                <button class="brand-nav-btn active" onclick="showView('overview')">
+                    <span>🌟 Empire Overview</span>
+                </button>
+                <button class="brand-nav-btn knf" onclick="showView('knf')">
+                    <span>KNF</span>
+                </button>
+                <button class="brand-nav-btn fh" onclick="showView('fh')">
+                    <span>For Harriet</span>
+                </button>
+                <button class="brand-nav-btn tss" onclick="showView('tss')">
+                    <span>The Shallow Side</span>
+                </button>
+                <button class="brand-nav-btn mtih" onclick="showView('mtih')">
+                    <span>Making Things is Hard</span>
+                </button>
+                <button class="brand-nav-btn bwitw" onclick="showView('bwitw')">
+                    <span>BWitW</span>
+                </button>
+                <button class="brand-nav-btn tok" onclick="showView('tok')">
+                    <span>Taste of Kimberly</span>
+                </button>
+                <button class="brand-nav-btn indigo" onclick="showView('indigo')">
+                    <span>The Indigo Hour</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -708,422 +812,487 @@
     <div class="empire-content">
         <!-- Empire Overview -->
         <div id="overview-view" class="view-container active">
-            <div class="empire-grid" id="empireGrid">
-                <!-- Brand cards will be generated by JavaScript -->
+            <div class="empire-grid">
+                <!-- KNF Card -->
+                <div class="brand-luxury-card knf" onclick="showView('knf')">
+                    <div class="brand-status-badge status-active">Active</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">👑</div>
+                        <h3 class="brand-name">KNF</h3>
+                        <p class="brand-tagline">Personal brand empire - Pop culture authority & cultural criticism</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">24</div>
+                                <div class="mini-stat-label">Pipeline</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">125K</div>
+                                <div class="mini-stat-label">Reach</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">8.5%</div>
+                                <div class="mini-stat-label">Engagement</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">$15K</div>
+                                <div class="mini-stat-label">Revenue</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- For Harriet Card -->
+                <div class="brand-luxury-card fh" onclick="showView('fh')">
+                    <div class="brand-status-badge status-active">Active</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">✊🏾</div>
+                        <h3 class="brand-name">For Harriet</h3>
+                        <p class="brand-tagline">Black feminist publication - Culture, politics & social justice</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">32</div>
+                                <div class="mini-stat-label">Pipeline</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">250K</div>
+                                <div class="mini-stat-label">Reach</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">12%</div>
+                                <div class="mini-stat-label">Engagement</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">$22K</div>
+                                <div class="mini-stat-label">Revenue</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Shallow Side Card -->
+                <div class="brand-luxury-card tss" onclick="showView('tss')">
+                    <div class="brand-status-badge status-launching">Launching</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">💎</div>
+                        <h3 class="brand-name">The Shallow Side</h3>
+                        <p class="brand-tagline">Fashion & beauty commentary with cultural criticism lens</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">12</div>
+                                <div class="mini-stat-label">Pipeline</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">500</div>
+                                <div class="mini-stat-label">Pre-Launch</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">15</div>
+                                <div class="mini-stat-label">Days Left</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">2</div>
+                                <div class="mini-stat-label">Partners</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Making Things is Hard Card -->
+                <div class="brand-luxury-card mtih" onclick="showView('mtih')">
+                    <div class="brand-status-badge status-active">Active</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">🚀</div>
+                        <h3 class="brand-name">Making Things is Hard</h3>
+                        <p class="brand-tagline">Tech & business insights for creative entrepreneurs</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">18</div>
+                                <div class="mini-stat-label">Pipeline</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">45K</div>
+                                <div class="mini-stat-label">Reach</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">15%</div>
+                                <div class="mini-stat-label">Conversion</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">$8K</div>
+                                <div class="mini-stat-label">Revenue</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Black Women in the Wild Card -->
+                <div class="brand-luxury-card bwitw" onclick="showView('bwitw')">
+                    <div class="brand-status-badge status-active">Active</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">🌟</div>
+                        <h3 class="brand-name">Black Women in the Wild</h3>
+                        <p class="brand-tagline">Come solo, leave with a group chat - Community events</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">6</div>
+                                <div class="mini-stat-label">Events</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">250+</div>
+                                <div class="mini-stat-label">Community</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">12</div>
+                                <div class="mini-stat-label">Group Chats</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">95%</div>
+                                <div class="mini-stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Taste of Kimberly Card -->
+                <div class="brand-luxury-card tok" onclick="showView('tok')">
+                    <div class="brand-status-badge status-planning">Planning</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">🌹</div>
+                        <h3 class="brand-name">Taste of Kimberly</h3>
+                        <p class="brand-tagline">Personal style & aesthetic curation newsletter</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">15</div>
+                                <div class="mini-stat-label">Ideas</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">Q2</div>
+                                <div class="mini-stat-label">Launch</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">$29</div>
+                                <div class="mini-stat-label">Price/Mo</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">3</div>
+                                <div class="mini-stat-label">Months</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Indigo Hour Card -->
+                <div class="brand-luxury-card indigo" onclick="showView('indigo')">
+                    <div class="brand-status-badge status-planning">Planning</div>
+                    <div class="brand-card-content">
+                        <div class="brand-icon">🌙</div>
+                        <h3 class="brand-name">The Indigo Hour</h3>
+                        <p class="brand-tagline">Intellectual salon series & curated conversations</p>
+                        <div class="brand-stats-grid">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">5</div>
+                                <div class="mini-stat-label">Concepts</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">2</div>
+                                <div class="mini-stat-label">Venues</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">25</div>
+                                <div class="mini-stat-label">Capacity</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">Q2</div>
+                                <div class="mini-stat-label">Launch</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Cross-Brand Opportunities -->
             <div class="opportunities-section">
                 <h2 class="opportunities-title">✨ Cross-Brand Synergies</h2>
-                <div class="opportunities-grid" id="opportunitiesGrid">
-                    <!-- Opportunities will be generated by JavaScript -->
+                <div class="opportunities-grid">
+                    <div class="opportunity-card">
+                        <div class="opportunity-icon">🎬</div>
+                        <h3 class="opportunity-title">BWitW Documentary Series</h3>
+                        <p class="opportunity-description">Transform community events into compelling video content across platforms</p>
+                        <div class="opportunity-brands">
+                            <span class="brand-pill">BWitW</span>
+                            <span class="brand-pill">KNF</span>
+                            <span class="brand-pill">For Harriet</span>
+                        </div>
+                    </div>
+                    <div class="opportunity-card">
+                        <div class="opportunity-icon">👗</div>
+                        <h3 class="opportunity-title">Fashion Week Coverage</h3>
+                        <p class="opportunity-description">Multi-angle coverage: fashion critique, cultural analysis, business insights</p>
+                        <div class="opportunity-brands">
+                            <span class="brand-pill">TSS</span>
+                            <span class="brand-pill">KNF</span>
+                            <span class="brand-pill">MTiH</span>
+                        </div>
+                    </div>
+                    <div class="opportunity-card">
+                        <div class="opportunity-icon">💡</div>
+                        <h3 class="opportunity-title">Creator Economy Summit</h3>
+                        <p class="opportunity-description">Launch event combining MTiH expertise with Indigo Hour format</p>
+                        <div class="opportunity-brands">
+                            <span class="brand-pill">MTiH</span>
+                            <span class="brand-pill">Indigo Hour</span>
+                            <span class="brand-pill">BWitW</span>
+                        </div>
+                    </div>
+                    <div class="opportunity-card">
+                        <div class="opportunity-icon">📚</div>
+                        <h3 class="opportunity-title">Book Launch Strategy</h3>
+                        <p class="opportunity-description">Leverage all brands for maximum impact on upcoming publications</p>
+                        <div class="opportunity-brands">
+                            <span class="brand-pill">All Brands</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Individual Brand Views -->
-        <div id="brand-detail-container">
-            <!-- Brand detail views will be generated by JavaScript -->
+        <!-- KNF Detail View -->
+        <div id="knf-view" class="view-container">
+            <div class="brand-hero knf">
+                <div class="brand-hero-content">
+                    <h1 class="brand-hero-title">KNF</h1>
+                    <p class="brand-hero-subtitle">Personal Brand & Pop Culture Authority</p>
+                </div>
+            </div>
+
+            <div class="pipeline-luxury">
+                <div class="pipeline-header">
+                    <h2 class="pipeline-title">Content Pipeline</h2>
+                    <button class="add-content-luxury" onclick="alert('Adding content to KNF')">+ Add Content</button>
+                </div>
+                <div class="pipeline-flow">
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Ideas</span>
+                            <span class="pipeline-count">6</span>
+                        </div>
+                        <div class="content-card">Pop culture analysis: Award season</div>
+                        <div class="content-card">TikTok trend deep dive</div>
+                        <div class="content-card">Celebrity interview prep</div>
+                        <div class="content-card">TV series cultural critique</div>
+                        <div class="content-card">Viral moment response</div>
+                        <div class="content-card">Fashion as political statement</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Production</span>
+                            <span class="pipeline-count">4</span>
+                        </div>
+                        <div class="content-card">Video: "The Problem with Nostalgia"</div>
+                        <div class="content-card">Article: Fashion Politics</div>
+                        <div class="content-card">Podcast: Author Interview</div>
+                        <div class="content-card">Newsletter: Culture Weekly</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Ready</span>
+                            <span class="pipeline-count">3</span>
+                        </div>
+                        <div class="content-card">Instagram: Award Show Looks</div>
+                        <div class="content-card">Tweet Thread: Oscar Analysis</div>
+                        <div class="content-card">TikTok: Quick Take</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Published</span>
+                            <span class="pipeline-count">11</span>
+                        </div>
+                        <div class="content-card">Video: "Representation Matters"</div>
+                        <div class="content-card">Article: Black Renaissance</div>
+                        <div class="content-card">Newsletter: March Edition</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-luxury">
+                <div class="metric-card">
+                    <div class="metric-icon">📊</div>
+                    <div class="metric-value">125K</div>
+                    <div class="metric-label">Monthly Reach</div>
+                    <div class="metric-change">↑ 12% from last month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">💰</div>
+                    <div class="metric-value">$15K</div>
+                    <div class="metric-label">Monthly Revenue</div>
+                    <div class="metric-change">↑ 8% from last month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚡</div>
+                    <div class="metric-value">8.5%</div>
+                    <div class="metric-label">Engagement Rate</div>
+                    <div class="metric-change">↑ 2.3% from last month</div>
+                </div>
+            </div>
         </div>
+
+        <!-- For Harriet Detail View -->
+        <div id="fh-view" class="view-container">
+            <div class="brand-hero fh">
+                <div class="brand-hero-content">
+                    <h1 class="brand-hero-title">For Harriet</h1>
+                    <p class="brand-hero-subtitle">Black Feminist Publication & Cultural Authority</p>
+                </div>
+            </div>
+
+            <div class="pipeline-luxury">
+                <div class="pipeline-header">
+                    <h2 class="pipeline-title">Editorial Pipeline</h2>
+                    <button class="add-content-luxury" onclick="alert('Adding content to For Harriet')">+ Add Content</button>
+                </div>
+                <div class="pipeline-flow">
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Pitches</span>
+                            <span class="pipeline-count">8</span>
+                        </div>
+                        <div class="content-card">Maternal health investigation</div>
+                        <div class="content-card">Rising Black directors profile</div>
+                        <div class="content-card">Voting legislation analysis</div>
+                        <div class="content-card">Black women in tech feature</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">In Progress</span>
+                            <span class="pipeline-count">5</span>
+                        </div>
+                        <div class="content-card">Documentary: "Black Women's Labor"</div>
+                        <div class="content-card">Series: Reproductive Justice</div>
+                        <div class="content-card">Podcast: Policy & Power</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Editing</span>
+                            <span class="pipeline-count">4</span>
+                        </div>
+                        <div class="content-card">March event coverage</div>
+                        <div class="content-card">Women's History special</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Live</span>
+                            <span class="pipeline-count">15</span>
+                        </div>
+                        <div class="content-card">Feature: "Cost of Being Strong"</div>
+                        <div class="content-card">Video: Panel recap</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-luxury">
+                <div class="metric-card">
+                    <div class="metric-icon">🌍</div>
+                    <div class="metric-value">250K</div>
+                    <div class="metric-label">Monthly Reach</div>
+                    <div class="metric-change">↑ 18% from last month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">💸</div>
+                    <div class="metric-value">$22K</div>
+                    <div class="metric-label">Monthly Revenue</div>
+                    <div class="metric-change">↑ 15% from last month</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">💬</div>
+                    <div class="metric-value">12%</div>
+                    <div class="metric-label">Engagement Rate</div>
+                    <div class="metric-change">↑ 3.5% from last month</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Shallow Side Detail View -->
+        <div id="tss-view" class="view-container">
+            <div class="brand-hero tss">
+                <div class="brand-hero-content">
+                    <h1 class="brand-hero-title">The Shallow Side</h1>
+                    <p class="brand-hero-subtitle">Fashion & Beauty Through a Cultural Lens</p>
+                </div>
+            </div>
+
+            <div class="pipeline-luxury">
+                <div class="pipeline-header">
+                    <h2 class="pipeline-title">Launch Pipeline</h2>
+                    <button class="add-content-luxury" onclick="alert('Adding content to The Shallow Side')">+ Add Content</button>
+                </div>
+                <div class="pipeline-flow">
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Concepts</span>
+                            <span class="pipeline-count">4</span>
+                        </div>
+                        <div class="content-card">Fashion Week analysis</div>
+                        <div class="content-card">Beauty standards piece</div>
+                        <div class="content-card">Luxury accessibility</div>
+                        <div class="content-card">Street style docs</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Creating</span>
+                            <span class="pipeline-count">3</span>
+                        </div>
+                        <div class="content-card">Launch video</div>
+                        <div class="content-card">Brand manifesto</div>
+                        <div class="content-card">Instagram strategy</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Scheduled</span>
+                            <span class="pipeline-count">2</span>
+                        </div>
+                        <div class="content-card">Teaser campaign</div>
+                        <div class="content-card">Launch week content</div>
+                    </div>
+                    <div class="pipeline-column">
+                        <div class="pipeline-column-header">
+                            <span class="pipeline-column-title">Complete</span>
+                            <span class="pipeline-count">3</span>
+                        </div>
+                        <div class="content-card">Brand identity</div>
+                        <div class="content-card">Website design</div>
+                        <div class="content-card">Partner outreach</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other brand views would follow similar patterns... -->
     </div>
 
     <!-- Floating Action Menu -->
     <div class="floating-menu">
         <button class="menu-toggle" onclick="toggleMenu()">+</button>
         <div class="menu-items" id="menuItems">
-            <div class="menu-item" onclick="showAnalytics()">📊 Analytics</div>
-            <div class="menu-item" onclick="createContent()">✏️ Create</div>
-            <div class="menu-item" onclick="schedulePost()">📅 Schedule</div>
-            <div class="menu-item" onclick="manageTeam()">👥 Team</div>
-            <div class="menu-item" onclick="viewRevenue()">💰 Revenue</div>
+            <a href="#" class="menu-item" onclick="alert('Opening analytics')">📊 Analytics</a>
+            <a href="#" class="menu-item" onclick="alert('Creating content')">✏️ Create</a>
+            <a href="#" class="menu-item" onclick="alert('Scheduling posts')">📅 Schedule</a>
+            <a href="#" class="menu-item" onclick="alert('Managing team')">👥 Team</a>
+            <a href="#" class="menu-item" onclick="alert('Viewing revenue')">💰 Revenue</a>
         </div>
     </div>
 
     <script>
-        // Brand data structure
-        const brandsData = {
-            knf: {
-                name: 'KNF',
-                fullName: 'Kimberly Nicole Foster',
-                icon: '👑',
-                tagline: 'Personal brand empire - Pop culture authority & cultural criticism',
-                status: 'active',
-                gradient: 'linear-gradient(135deg, #ff1493, #ff69b4, #ffb6c1)',
-                stats: {
-                    pipeline: 24,
-                    reach: '125K',
-                    engagement: '8.5%',
-                    revenue: '$15K'
-                },
-                content: {
-                    ideas: ['Pop culture analysis: Award season', 'TikTok trend deep dive', 'Celebrity interview prep', 'TV series cultural critique', 'Viral moment response', 'Fashion as political statement'],
-                    production: ['Video: "The Problem with Nostalgia"', 'Article: Fashion Politics', 'Podcast: Author Interview', 'Newsletter: Culture Weekly'],
-                    ready: ['Instagram: Award Show Looks', 'Tweet Thread: Oscar Analysis', 'TikTok: Quick Take'],
-                    published: ['Video: "Representation Matters"', 'Article: Black Renaissance', 'Newsletter: March Edition']
-                }
-            },
-            fh: {
-                name: 'For Harriet',
-                fullName: 'For Harriet',
-                icon: '✊🏾',
-                tagline: 'Black feminist publication - Culture, politics & social justice',
-                status: 'active',
-                gradient: 'linear-gradient(135deg, #4a148c, #7b1fa2, #9c27b0)',
-                stats: {
-                    pipeline: 32,
-                    reach: '250K',
-                    engagement: '12%',
-                    revenue: '$22K'
-                },
-                content: {
-                    ideas: ['Maternal health investigation', 'Rising Black directors profile', 'Voting legislation analysis', 'Black women in tech feature'],
-                    production: ['Documentary: "Black Women\'s Labor"', 'Series: Reproductive Justice', 'Podcast: Policy & Power'],
-                    ready: ['March event coverage', 'Women\'s History special'],
-                    published: ['Feature: "Cost of Being Strong"', 'Video: Panel recap']
-                }
-            },
-            tss: {
-                name: 'The Shallow Side',
-                fullName: 'The Shallow Side',
-                icon: '💎',
-                tagline: 'Fashion & beauty commentary with cultural criticism lens',
-                status: 'launching',
-                gradient: 'linear-gradient(135deg, #ffb6c1, #ffc0cb, #ffe4e1)',
-                stats: {
-                    pipeline: 12,
-                    reach: '500',
-                    engagement: '15',
-                    revenue: '2'
-                },
-                content: {
-                    ideas: ['Fashion Week analysis', 'Beauty standards piece', 'Luxury accessibility', 'Street style docs'],
-                    production: ['Launch video', 'Brand manifesto', 'Instagram strategy'],
-                    ready: ['Teaser campaign', 'Launch week content'],
-                    published: ['Brand identity', 'Website design']
-                }
-            },
-            mtih: {
-                name: 'MTiH',
-                fullName: 'Making Things is Hard',
-                icon: '🚀',
-                tagline: 'Tech & business insights for creative entrepreneurs',
-                status: 'active',
-                gradient: 'linear-gradient(135deg, #1e3c72, #2a5298, #3498db)',
-                stats: {
-                    pipeline: 18,
-                    reach: '45K',
-                    engagement: '15%',
-                    revenue: '$8K'
-                },
-                content: {
-                    ideas: ['AI tools for creators', 'Revenue diversification', 'Sustainable creative business'],
-                    production: ['Course: Content monetization', 'Newsletter: Tech reviews'],
-                    ready: ['Blog: Productivity tools', 'Video: Algorithm changes'],
-                    published: ['Guide: Email marketing', 'Case study: $10K month']
-                }
-            },
-            bwitw: {
-                name: 'BWitW',
-                fullName: 'Black Women in the Wild',
-                icon: '🌟',
-                tagline: 'Come solo, leave with a group chat - Community events',
-                status: 'active',
-                gradient: 'linear-gradient(135deg, #f39c12, #f1c40f, #ffd700)',
-                stats: {
-                    pipeline: 6,
-                    reach: '250+',
-                    engagement: '12',
-                    revenue: '95%'
-                },
-                content: {
-                    ideas: ['Summer Rooftop Mixer', 'Virtual Wine & Connect'],
-                    production: ['May 18: Punch Social', 'May 18: After Hours'],
-                    ready: ['May 18: Day Party'],
-                    published: ['March: Launch Event']
-                }
-            },
-            tok: {
-                name: 'ToK',
-                fullName: 'Taste of Kimberly',
-                icon: '🌹',
-                tagline: 'Personal style & aesthetic curation newsletter',
-                status: 'planning',
-                gradient: 'linear-gradient(135deg, #e74c3c, #ff6347, #ff7f50)',
-                stats: {
-                    pipeline: 15,
-                    reach: 'Q2',
-                    engagement: '$29',
-                    revenue: '3'
-                },
-                content: {
-                    ideas: ['Personal style evolution', 'Shopping guides', 'Outfit posts', 'Mood boards'],
-                    production: ['Newsletter template', 'Welcome series', 'Pricing model'],
-                    ready: ['Brand guide', 'Launch timeline'],
-                    published: ['Market research']
-                }
-            },
-            indigo: {
-                name: 'Indigo Hour',
-                fullName: 'The Indigo Hour',
-                icon: '🌙',
-                tagline: 'Intellectual salon series & curated conversations',
-                status: 'planning',
-                gradient: 'linear-gradient(135deg, #4b0082, #6a0dad, #7b68ee)',
-                stats: {
-                    pipeline: 5,
-                    reach: '2',
-                    engagement: '25',
-                    revenue: 'Q2'
-                },
-                content: {
-                    ideas: ['Future of Black Media', 'Art as Resistance', 'Technology & Culture'],
-                    production: ['Pilot Event planning'],
-                    ready: ['Venue research'],
-                    published: []
-                }
-            }
-        };
-
-        // Cross-brand opportunities
-        const opportunities = [
-            {
-                icon: '🎬',
-                title: 'BWitW Documentary Series',
-                description: 'Transform community events into compelling video content across platforms',
-                brands: ['BWitW', 'KNF', 'For Harriet']
-            },
-            {
-                icon: '👗',
-                title: 'Fashion Week Coverage',
-                description: 'Multi-angle coverage: fashion critique, cultural analysis, business insights',
-                brands: ['TSS', 'KNF', 'MTiH']
-            },
-            {
-                icon: '💡',
-                title: 'Creator Economy Summit',
-                description: 'Launch event combining MTiH expertise with Indigo Hour format',
-                brands: ['MTiH', 'Indigo Hour', 'BWitW']
-            },
-            {
-                icon: '📚',
-                title: 'Book Launch Strategy',
-                description: 'Leverage all brands for maximum impact on upcoming publications',
-                brands: ['All Brands']
-            }
-        ];
-
-        // Current view state
+        // View management
         let currentView = 'overview';
 
-        // Initialize the dashboard
-        function initializeDashboard() {
-            createNavigation();
-            createBrandCards();
-            createOpportunities();
-            createBrandDetailViews();
-            updateTotalStats();
-        }
-
-        // Create navigation buttons
-        function createNavigation() {
-            const nav = document.getElementById('brandNav');
-            
-            // Overview button
-            const overviewBtn = document.createElement('button');
-            overviewBtn.className = 'brand-nav-btn active';
-            overviewBtn.innerHTML = '<span>🌟 Empire Overview</span>';
-            overviewBtn.onclick = () => showView('overview');
-            nav.appendChild(overviewBtn);
-            
-            // Brand buttons
-            Object.entries(brandsData).forEach(([key, brand]) => {
-                const btn = document.createElement('button');
-                btn.className = `brand-nav-btn ${key}`;
-                btn.innerHTML = `<span>${brand.name}</span>`;
-                btn.style.setProperty('--gradient', brand.gradient);
-                btn.onclick = () => showView(key);
-                
-                // Add gradient to pseudo element
-                const style = document.createElement('style');
-                style.textContent = `.brand-nav-btn.${key}::before { background: ${brand.gradient}; }`;
-                document.head.appendChild(style);
-                
-                nav.appendChild(btn);
-            });
-        }
-
-        // Create brand cards for overview
-        function createBrandCards() {
-            const grid = document.getElementById('empireGrid');
-            
-            Object.entries(brandsData).forEach(([key, brand]) => {
-                const card = document.createElement('div');
-                card.className = `brand-luxury-card ${key}`;
-                card.onclick = () => showView(key);
-                
-                // Add gradient style
-                const style = document.createElement('style');
-                style.textContent = `.brand-luxury-card.${key}::before { background: ${brand.gradient}; }`;
-                document.head.appendChild(style);
-                
-                card.innerHTML = `
-                    <div class="brand-status-badge status-${brand.status}">${brand.status.toUpperCase()}</div>
-                    <div class="brand-card-content">
-                        <div class="brand-icon">${brand.icon}</div>
-                        <h3 class="brand-name">${brand.name}</h3>
-                        <p class="brand-tagline">${brand.tagline}</p>
-                        <div class="brand-stats-grid">
-                            <div class="mini-stat">
-                                <div class="mini-stat-value">${brand.stats.pipeline}</div>
-                                <div class="mini-stat-label">Pipeline</div>
-                            </div>
-                            <div class="mini-stat">
-                                <div class="mini-stat-value">${brand.stats.reach}</div>
-                                <div class="mini-stat-label">Reach</div>
-                            </div>
-                            <div class="mini-stat">
-                                <div class="mini-stat-value">${brand.stats.engagement}</div>
-                                <div class="mini-stat-label">Engagement</div>
-                            </div>
-                            <div class="mini-stat">
-                                <div class="mini-stat-value">${brand.stats.revenue}</div>
-                                <div class="mini-stat-label">Revenue</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                grid.appendChild(card);
-            });
-        }
-
-        // Create opportunities cards
-        function createOpportunities() {
-            const grid = document.getElementById('opportunitiesGrid');
-            
-            opportunities.forEach(opp => {
-                const card = document.createElement('div');
-                card.className = 'opportunity-card';
-                
-                card.innerHTML = `
-                    <div class="opportunity-icon">${opp.icon}</div>
-                    <h3 class="opportunity-title">${opp.title}</h3>
-                    <p class="opportunity-description">${opp.description}</p>
-                    <div class="opportunity-brands">
-                        ${opp.brands.map(brand => `<span class="brand-pill">${brand}</span>`).join('')}
-                    </div>
-                `;
-                
-                grid.appendChild(card);
-            });
-        }
-
-        // Create brand detail views
-        function createBrandDetailViews() {
-            const container = document.getElementById('brand-detail-container');
-            
-            Object.entries(brandsData).forEach(([key, brand]) => {
-                const view = document.createElement('div');
-                view.id = `${key}-view`;
-                view.className = 'view-container';
-                
-                // Add gradient style for hero
-                const style = document.createElement('style');
-                style.textContent = `.brand-hero.${key} { background: ${brand.gradient}; }`;
-                document.head.appendChild(style);
-                
-                view.innerHTML = `
-                    <div class="brand-hero ${key}">
-                        <div class="brand-hero-content">
-                            <h1 class="brand-hero-title">${brand.fullName}</h1>
-                            <p class="brand-hero-subtitle">${brand.tagline}</p>
-                        </div>
-                    </div>
-
-                    <div class="pipeline-luxury">
-                        <div class="pipeline-header">
-                            <h2 class="pipeline-title">Content Pipeline</h2>
-                            <button class="add-content-luxury" onclick="addContent('${key}')">+ Add Content</button>
-                        </div>
-                        <div class="pipeline-flow">
-                            ${createPipelineColumns(brand.content)}
-                        </div>
-                    </div>
-
-                    <div class="metrics-luxury">
-                        ${createMetricCards(brand)}
-                    </div>
-                `;
-                
-                container.appendChild(view);
-            });
-        }
-
-        // Create pipeline columns
-        function createPipelineColumns(content) {
-            const stages = ['ideas', 'production', 'ready', 'published'];
-            const stageNames = {
-                ideas: 'Ideas',
-                production: 'Production',
-                ready: 'Ready',
-                published: 'Published'
-            };
-            
-            return stages.map(stage => `
-                <div class="pipeline-column">
-                    <div class="pipeline-column-header">
-                        <span class="pipeline-column-title">${stageNames[stage]}</span>
-                        <span class="pipeline-count">${content[stage] ? content[stage].length : 0}</span>
-                    </div>
-                    ${content[stage] ? content[stage].map(item => 
-                        `<div class="content-card">${item}</div>`
-                    ).join('') : ''}
-                </div>
-            `).join('');
-        }
-
-        // Create metric cards
-        function createMetricCards(brand) {
-            const metrics = [
-                { icon: '📊', label: 'Monthly Reach', value: brand.stats.reach, change: '↑ 12% from last month' },
-                { icon: '💰', label: 'Monthly Revenue', value: brand.stats.revenue, change: '↑ 8% from last month' },
-                { icon: '⚡', label: 'Engagement Rate', value: brand.stats.engagement, change: '↑ 2.3% from last month' }
-            ];
-            
-            return metrics.map(metric => `
-                <div class="metric-card">
-                    <div class="metric-icon">${metric.icon}</div>
-                    <div class="metric-value">${metric.value}</div>
-                    <div class="metric-label">${metric.label}</div>
-                    <div class="metric-change">${metric.change}</div>
-                </div>
-            `).join('');
-        }
-
-        // Update total stats
-        function updateTotalStats() {
-            let totalPipeline = 0;
-            let totalRevenue = 0;
-            
-            Object.values(brandsData).forEach(brand => {
-                totalPipeline += brand.stats.pipeline;
-                if (brand.stats.revenue.includes('$')) {
-                    totalRevenue += parseInt(brand.stats.revenue.replace(/[$K,]/g, '')) || 0;
-                }
-            });
-            
-            document.getElementById('totalPipeline').textContent = totalPipeline;
-            document.getElementById('totalRevenue').textContent = `$${totalRevenue}K`;
-        }
-
-        // Show view function
         function showView(viewName) {
-            // Hide all views
-            document.querySelectorAll('.view-container').forEach(view => {
+            // Hide all views with fade out
+            const views = document.querySelectorAll('.view-container');
+            views.forEach(view => {
                 view.classList.remove('active');
             });
 
-            // Show selected view
+            // Show selected view with fade in
             setTimeout(() => {
                 const selectedView = document.getElementById(viewName + '-view');
                 if (selectedView) {
@@ -1133,9 +1302,8 @@
             }, 300);
 
             // Update navigation
-            document.querySelectorAll('.brand-nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            const navBtns = document.querySelectorAll('.brand-nav-btn');
+            navBtns.forEach(btn => btn.classList.remove('active'));
 
             const activeBtn = viewName === 'overview' 
                 ? document.querySelector('.brand-nav-btn:first-child')
@@ -1143,10 +1311,9 @@
             if (activeBtn) activeBtn.classList.add('active');
 
             currentView = viewName;
-            saveState();
         }
 
-        // Menu functions
+        // Floating menu toggle
         function toggleMenu() {
             const menuItems = document.getElementById('menuItems');
             menuItems.classList.toggle('active');
@@ -1157,53 +1324,23 @@
                 : 'rotate(0deg)';
         }
 
-        function showAnalytics() {
-            alert('Opening comprehensive analytics dashboard...');
-            toggleMenu();
-        }
-
-        function createContent() {
-            alert('Opening content creation suite...');
-            toggleMenu();
-        }
-
-        function schedulePost() {
-            alert('Opening social media scheduler...');
-            toggleMenu();
-        }
-
-        function manageTeam() {
-            alert('Opening team management portal...');
-            toggleMenu();
-        }
-
-        function viewRevenue() {
-            alert('Opening revenue analytics...');
-            toggleMenu();
-        }
-
-        function addContent(brand) {
-            alert(`Adding content to ${brandsData[brand].fullName}`);
-        }
-
-        // Save and load state
-        function saveState() {
-            localStorage.setItem('empireView', currentView);
-        }
-
-        function loadState() {
-            const savedView = localStorage.getItem('empireView');
-            if (savedView && savedView !== 'overview') {
-                showView(savedView);
-            }
-        }
-
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', () => {
-            initializeDashboard();
-            loadState();
+        // Smooth scroll for nav when scrolling
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.luxury-nav');
+            const currentScroll = window.pageYOffset;
             
-            // Add smooth appearance
+            if (currentScroll <= 0) {
+                nav.style.boxShadow = 'none';
+            } else {
+                nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Add smooth page transitions
+        document.addEventListener('DOMContentLoaded', () => {
             document.body.style.opacity = '0';
             setTimeout(() => {
                 document.body.style.transition = 'opacity 0.6s ease-out';
@@ -1211,8 +1348,22 @@
             }, 100);
         });
 
-        // Save state periodically
-        setInterval(saveState, 30000);
+        // Save state
+        function saveEmpireState() {
+            localStorage.setItem('empireView', currentView);
+        }
+
+        // Load state
+        function loadEmpireState() {
+            const savedView = localStorage.getItem('empireView');
+            if (savedView) {
+                showView(savedView);
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', loadEmpireState);
+        setInterval(saveEmpireState, 30000);
     </script>
 </body>
 </html>
