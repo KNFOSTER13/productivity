@@ -893,6 +893,405 @@ const db = firebase.firestore();
 .brand-perf-value {
     font-size: 1.2rem;
     font-weight: 700;
+}/* Event Modal Styles */
+.event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.event-modal {
+  background: var(--bg);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.event-hero {
+  padding: 3rem;
+  position: relative;
+  color: #fff;
+  text-align: center;
+}
+
+.event-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.event-date {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+.close-event {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-event:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Event Tabs */
+.event-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-mute);
+  padding: 0 2rem;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 1.2rem 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  color: var(--text-m);
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  color: var(--accent);
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+
+.tab-icon {
+  font-size: 1.2rem;
+}
+
+/* Event Content */
+.event-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Moodboard Section */
+.moodboard-section {
+  display: grid;
+  gap: 2rem;
+}
+
+.moodboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.moodboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.moodboard-item {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-mute);
+  border: 2px dashed var(--border);
+  transition: 0.2s;
+}
+
+.moodboard-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moodboard-item:hover .remove-image {
+  opacity: 1;
+}
+
+.remove-image {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.add-image-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-image-btn:hover {
+  background: var(--bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.add-image-btn input {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Color Palette */
+.color-palette-section {
+  background: var(--bg-mute);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.color-swatch {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.add-color {
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--text-m);
+}
+
+/* Details Section */
+.details-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.detail-card {
+  background: var(--bg-mute);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.detail-card h3 {
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.detail-field {
+  margin-bottom: 1rem;
+}
+
+.detail-field label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-m);
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-field input,
+.detail-field textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: inherit;
+}
+
+/* Checklist Section */
+.checklist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.checklist-progress {
+  background: var(--bg-mute);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.checklist-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.checklist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.checklist-item {
+  background: var(--bg-mute);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: 0.2s;
+}
+
+.checklist-item:hover {
+  transform: translateX(5px);
+}
+
+.checklist-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.checklist-checkbox.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.checklist-checkbox.checked::after {
+  content: '✓';
+  color: #fff;
+  font-weight: bold;
+}
+
+.checklist-text {
+  flex: 1;
+}
+
+.checklist-item.completed .checklist-text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.checklist-due {
+  font-size: 0.8rem;
+  color: var(--text-m);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .event-modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .event-tabs {
+    padding: 0 1rem;
+  }
+  
+  .tab {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .tab-icon {
+    display: none;
+  }
+  
+  .moodboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
@@ -2263,6 +2662,398 @@ show = function(id) {
         originalShow(id);
     }
 };
+        // ---------- Event Details System ----------
+var EVENT_DETAILS = {}; // Store detailed event data
+
+function initEventSystem() {
+  // Make event items clickable
+  document.addEventListener('click', function(e) {
+    const item = e.target.closest('.item');
+    if (item && (item.classList.contains('planning') || 
+                 item.classList.contains('upcoming') ||
+                 item.classList.contains('marketing'))) {
+      const brandId = item.closest('.col').dataset.brand;
+      const eventId = item.dataset.id;
+      if (brandId && EVENT_BRANDS.includes(brandId)) {
+        openEventDetails(eventId, brandId);
+      }
+    }
+  });
+}
+
+function openEventDetails(eventId, brandId) {
+  // Get or create event data
+  const event = getEventDetails(eventId, brandId);
+  
+  const modal = el('div', 'event-modal-overlay');
+  modal.onclick = function(e) {
+    if (e.target === modal) closeEventModal();
+  };
+  
+  const brandColor = BRANDS.find(b => b.id === brandId).accent;
+  
+  modal.innerHTML = `
+    <div class="event-modal">
+      <div class="event-hero" style="background: linear-gradient(135deg, ${brandColor}, ${brandColor}22)">
+        <button class="close-event" onclick="closeEventModal()">×</button>
+        <h1>${event.title}</h1>
+        <p class="event-date">${formatEventDate(event.date)}</p>
+      </div>
+      
+      <div class="event-tabs">
+        <button class="tab active" onclick="showEventTab('moodboard', '${eventId}')">
+          <span class="tab-icon">🎨</span> Moodboard
+        </button>
+        <button class="tab" onclick="showEventTab('details', '${eventId}')">
+          <span class="tab-icon">📋</span> Details
+        </button>
+        <button class="tab" onclick="showEventTab('checklist', '${eventId}')">
+          <span class="tab-icon">✅</span> Checklist
+        </button>
+      </div>
+      
+      <div class="event-content">
+        <div id="moodboard" class="tab-panel active">
+          ${createMoodboardSection(eventId, event)}
+        </div>
+        <div id="details" class="tab-panel">
+          ${createDetailsSection(eventId, event)}
+        </div>
+        <div id="checklist" class="tab-panel">
+          ${createChecklistSection(eventId, event)}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Initialize moodboard functionality
+  setTimeout(() => initializeMoodboard(eventId), 100);
+}
+
+function closeEventModal() {
+  const modal = qs('.event-modal-overlay');
+  if (modal) {
+    modal.style.opacity = '0';
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+function showEventTab(tabName, eventId) {
+  // Update active tab
+  qsa('.tab').forEach(tab => tab.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Show corresponding panel
+  qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  qs('#' + tabName).classList.add('active');
+}
+
+function getEventDetails(eventId, brandId) {
+  // Check if we have saved details
+  if (EVENT_DETAILS[eventId]) {
+    return EVENT_DETAILS[eventId];
+  }
+  
+  // Find the event in pipelines
+  let eventTitle = 'New Event';
+  let eventDate = todayISO();
+  
+  const stages = EVENT_STAGES;
+  stages.forEach(stage => {
+    const items = PIPELINES[brandId][stage] || [];
+    const found = items.find(item => item.id === eventId);
+    if (found) {
+      eventTitle = found.title;
+      // Extract date from title if present
+      const dateMatch = found.title.match(/\((\d{4}-\d{2}-\d{2})\)/);
+      if (dateMatch) {
+        eventDate = dateMatch[1];
+        eventTitle = found.title.replace(dateMatch[0], '').trim();
+      }
+    }
+  });
+  
+  // Create new event details
+  const newEvent = {
+    id: eventId,
+    brandId: brandId,
+    title: eventTitle,
+    date: eventDate,
+    moodboard: {
+      images: [],
+      colors: ['#ffb600', '#ff5880', '#652399'],
+      theme: ''
+    },
+    details: {
+      venue: '',
+      address: '',
+      capacity: '',
+      time: '6:00 PM',
+      description: ''
+    },
+    checklist: [
+      { id: 1, text: 'Book venue', due: addDays(eventDate, -30), done: false },
+      { id: 2, text: 'Create event page', due: addDays(eventDate, -28), done: false },
+      { id: 3, text: 'Design marketing materials', due: addDays(eventDate, -21), done: false },
+      { id: 4, text: 'Open registration', due: addDays(eventDate, -21), done: false },
+      { id: 5, text: 'Send first announcement', due: addDays(eventDate, -20), done: false },
+      { id: 6, text: 'Confirm vendors/catering', due: addDays(eventDate, -14), done: false },
+      { id: 7, text: 'Send reminder email', due: addDays(eventDate, -7), done: false },
+      { id: 8, text: 'Final headcount', due: addDays(eventDate, -3), done: false },
+      { id: 9, text: 'Prepare materials', due: addDays(eventDate, -1), done: false }
+    ]
+  };
+  
+  EVENT_DETAILS[eventId] = newEvent;
+  return newEvent;
+}
+
+function createMoodboardSection(eventId, event) {
+  return `
+    <div class="moodboard-section">
+      <div class="moodboard-header">
+        <h3>Visual Inspiration</h3>
+        <button class="add" onclick="document.getElementById('image-upload-${eventId}').click()">
+          + Add Images
+        </button>
+      </div>
+      
+      <div class="moodboard-grid" id="moodboard-grid-${eventId}">
+        ${event.moodboard.images.map((img, i) => `
+          <div class="moodboard-item">
+            <img src="${img}" alt="Moodboard ${i}">
+            <button class="remove-image" onclick="removeImage('${eventId}', ${i})">×</button>
+          </div>
+        `).join('')}
+        
+        <div class="moodboard-item add-image-btn" onclick="document.getElementById('image-upload-${eventId}').click()">
+          <input type="file" id="image-upload-${eventId}" accept="image/*" multiple onchange="handleImageUpload('${eventId}', this)">
+          <span class="upload-icon">📷</span>
+          <span>Add Images</span>
+        </div>
+      </div>
+      
+      <div class="color-palette-section">
+        <h3>Color Palette</h3>
+        <div class="color-swatches" id="colors-${eventId}">
+          ${event.moodboard.colors.map((color, i) => `
+            <div class="color-swatch" style="background: ${color}" onclick="editColor('${eventId}', ${i})"></div>
+          `).join('')}
+          <div class="color-swatch add-color" onclick="addColor('${eventId}')">+</div>
+        </div>
+      </div>
+      
+      <div class="detail-card">
+        <h3>Theme & Vibe</h3>
+        <textarea placeholder="Describe the event atmosphere, feeling, and aesthetic..." 
+                  onblur="saveTheme('${eventId}', this.value)"
+                  rows="4">${event.moodboard.theme || ''}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function createDetailsSection(eventId, event) {
+  return `
+    <div class="details-grid">
+      <div class="detail-card">
+        <h3>Event Information</h3>
+        <div class="detail-field">
+          <label>Event Name</label>
+          <input type="text" value="${event.title}" onblur="saveEventField('${eventId}', 'title', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Date</label>
+          <input type="date" value="${event.date}" onblur="saveEventField('${eventId}', 'date', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Time</label>
+          <input type="text" value="${event.details.time || '6:00 PM'}" onblur="saveEventDetail('${eventId}', 'time', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Expected Attendance</label>
+          <input type="number" value="${event.details.capacity || ''}" placeholder="50" onblur="saveEventDetail('${eventId}', 'capacity', this.value)">
+        </div>
+      </div>
+      
+      <div class="detail-card">
+        <h3>Venue Details</h3>
+        <div class="detail-field">
+          <label>Venue Name</label>
+          <input type="text" value="${event.details.venue || ''}" placeholder="The Garden Room" onblur="saveEventDetail('${eventId}', 'venue', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Address</label>
+          <textarea rows="3" placeholder="123 Main Street..." onblur="saveEventDetail('${eventId}', 'address', this.value)">${event.details.address || ''}</textarea>
+        </div>
+      </div>
+      
+      <div class="detail-card" style="grid-column: span 2">
+        <h3>Event Description</h3>
+        <div class="detail-field">
+          <textarea rows="6" placeholder="What's this event about? What can attendees expect?" 
+                    onblur="saveEventDetail('${eventId}', 'description', this.value)">${event.details.description || ''}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function createChecklistSection(eventId, event) {
+  const completed = event.checklist.filter(item => item.done).length;
+  const total = event.checklist.length;
+  const progress = total > 0 ? (completed / total) * 100 : 0;
+  
+  return `
+    <div class="checklist-section">
+      <div class="checklist-header">
+        <h3>Planning Checklist</h3>
+        <span>${completed} of ${total} completed</span>
+      </div>
+      
+      <div class="checklist-progress">
+        <div class="checklist-progress-bar" style="width: ${progress}%"></div>
+      </div>
+      
+      <div class="checklist-items">
+        ${event.checklist.map(item => `
+          <div class="checklist-item ${item.done ? 'completed' : ''}">
+            <div class="checklist-checkbox ${item.done ? 'checked' : ''}" 
+                 onclick="toggleChecklistItem('${eventId}', ${item.id})"></div>
+            <div class="checklist-text">${item.text}</div>
+            <div class="checklist-due">${formatDueDate(item.due)}</div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <button class="add" style="margin-top: 1.5rem" onclick="addChecklistItem('${eventId}')">
+        + Add Task
+      </button>
+    </div>
+  `;
+}
+
+// Helper functions
+function formatEventDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+}
+
+function formatDueDate(dateStr) {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return `${Math.abs(diffDays)} days overdue`;
+  if (diffDays === 0) return 'Due today';
+  if (diffDays === 1) return 'Due tomorrow';
+  return `Due in ${diffDays} days`;
+}
+
+function addDays(dateStr, days) {
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+// Moodboard functions
+function initializeMoodboard(eventId) {
+  // Enable drag and drop for moodboard
+  const grid = qs('#moodboard-grid-' + eventId);
+  if (grid) {
+    grid.ondragover = function(e) {
+      e.preventDefault();
+      grid.classList.add('drag-over');
+    };
+    
+    grid.ondragleave = function() {
+      grid.classList.remove('drag-over');
+    };
+    
+    grid.ondrop = function(e) {
+      e.preventDefault();
+      grid.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      handleFiles(eventId, files);
+    };
+  }
+}
+
+function handleImageUpload(eventId, input) {
+  const files = input.files;
+  handleFiles(eventId, files);
+}
+
+function handleFiles(eventId, files) {
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const event = EVENT_DETAILS[eventId];
+        event.moodboard.images.push(e.target.result);
+        refreshMoodboard(eventId);
+        saveEventToFirebase(eventId);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+function removeImage(eventId, index) {
+  const event = EVENT_DETAILS[eventId];
+  event.moodboard.images.splice(index, 1);
+  refreshMoodboard(eventId);
+  saveEventToFirebase(eventId);
+}
+
+function refreshMoodboard(eventId) {
+  const event = EVENT_DETAILS[eventId];
+  const grid = qs('#moodboard-grid-' + eventId);
+  if (grid) {
+    grid.innerHTML = event.moodboard.images.map((img, i) => `
+      <div class="moodboard-item">
+        <img src="${img}" alt="Moodboard ${i}">
+        <button class="remove-image" onclick="removeImage('${eventId}', ${i})">×</button>
+      </div>
+    `).join('') + `
+      <div class="moodboard-item add-image-btn" onclick="document.getElementById('image-upload-${eventId}').click()">
+        <input type="file" id="image-upload-${eventId}" accept="image/*" multiple onchange="handleImageUpload('${eventId}', this)">
+        <span class="upload-icon">📷</span>
+        <span>Add Images</span>
+      </div>
+    `;
+  }
+}
+
+function addColor(eventId) {
+  const color = prompt('Enter a hex color (e.g., #ffb600):');
+  if (color && /^#[0-9A-F]{6}$/i.test(color)) {
+    const event = EVENT_DETAILS[eventId];
+    event.moodboard.colors.push(color);
+    refreshColors(eventId);
+    saveEventToFirebase(eventId);
+  }
+}
+
+function editColor(eventId, index) {
+  const event = EVENT_DETAILS[eventId];
+  const newColor = prompt('Enter new color:', event.moodboard.colors[index]);
+  if (newColor && /^#[0-9A-F]{6}$/i.test(newColor)) {
+    event.moodboard.colors[index] = newColor;
+    refreshColors(eventId);
+    saveEventToFirebase(eventId);
+  }
+}
+
+function refreshColors(eventId) {
+  const event =
 
         // ---------- initialize ----------
         buildNav();
@@ -2271,6 +3062,8 @@ show = function(id) {
         show('overview');
         buildAnalyticsView();
         loadFromFirebase();
+    initEventSystem();
+    loadEventDetails();
         
         // Real-time sync
 BRANDS.forEach(function(brand) {
