@@ -2753,15 +2753,22 @@ function closeEventModal() {
   }
 }
 
-function showEventTab(tabName, eventId) {
-  // Update active tab
+window.showEventTab = function(tabName, eventId) {
+  // Update active tabs
   qsa('.tab').forEach(tab => tab.classList.remove('active'));
-  event.target.classList.add('active');
+  
+  // Find and activate the clicked tab
+  qsa('.tab').forEach(tab => {
+    if (tab.textContent.toLowerCase().includes(tabName)) {
+      tab.classList.add('active');
+    }
+  });
   
   // Show corresponding panel
   qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
-  qs('#' + tabName).classList.add('active');
-}
+  var panel = qs('#' + tabName);
+  if (panel) panel.classList.add('active');
+};
 
 function getEventDetails(eventId, brandId) {
   // Check if we have saved details
