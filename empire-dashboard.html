@@ -3420,6 +3420,434 @@ window.removeImage = removeImage;
 window.handleImageUpload = handleImageUpload;
 window.addColor = addColor;
 window.editColor = editColor;
+        // ---------- Content Details System ----------
+var CONTENT_DETAILS = {}; // Store detailed content data
+
+// Add this after your event system initialization
+function initContentSystem() {
+  // Make content items clickable
+  document.addEventListener('click', function(e) {
+    const item = e.target.closest('.item');
+    if (item && !item.classList.contains('planning') && 
+                 !item.classList.contains('upcoming') &&
+                 !item.classList.contains('marketing') &&
+                 !item.classList.contains('completed')) {
+      const brandId = item.closest('.col')?.dataset.brand;
+      const itemId = item.dataset.itemId;
+      if (brandId && itemId && !EVENT_BRANDS.includes(brandId)) {
+        e.stopPropagation();
+        openContentDetails(itemId, brandId);
+      }
+    }
+  });
+}
+
+function openContentDetails(itemId, brandId) {
+  // Find the content item
+  let contentItem = null;
+  let contentStage = null;
+  
+  EDIT_STAGES.forEach(stage => {
+    const found = PIPELINES[brandId][stage]?.find(item => item.id === itemId);
+    if (found) {
+      contentItem = found;
+      contentStage = stage;
+    }
+  });
+  
+  if (!contentItem) return;
+  
+  // Get or create content details
+  const content = getContentDetails(itemId, contentItem, brandId);
+  const brandColor = BRANDS.find(b => b.id === brandId).accent;
+  
+  const modal = el('div', 'content-modal-overlay');
+  modal.onclick = function(e) {
+    if (e.target === modal) closeContentModal();
+  };
+  
+  modal.innerHTML = `
+    <div class="content-modal">
+      <div class="content-hero" style="background: linear-gradient(135deg, ${brandColor}, ${brandColor}22)">
+        <button class="close-content" onclick="closeContentModal()">×</button>
+        <h1>${content.title}</h1>
+        <p class="content-meta">${getContentTypeEmoji(content.type)} ${content.type} • ${content.stage}</p>
+      </div>
+      
+      <div class="content-tabs">
+        <button class="tab active" onclick="showContentTab('content')">
+          <span class="tab-icon">📝</span> Content
+        </button>
+        <button class="tab" onclick="showContentTab('media')">
+          <span class="tab-icon">🖼️</span> Media
+        </button>
+        <button class="tab" onclick="showContentTab('links')">
+          <span class="tab-icon">🔗</span> Links
+        </button>
+        <button class="tab" onclick="showContentTab('notes')">
+          <span class="tab-icon">📋</span> Notes
+        </button>
+      </div>
+      
+      <div class="content-body">
+        <div id="content-panel" class="tab-panel active">
+          ${createContentPanel(itemId, content)}
+        </div>
+        <div id="media-panel" class="tab-panel">
+          ${createMediaPanel(itemId, content)}
+        </div>
+        <div id="links-panel" class="tab-panel">
+          ${createLinksPanel(itemId, content)}
+        </div>
+        <div id="notes-panel" class="tab-panel">
+          ${createNotesPanel(itemId, content)}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Initialize media upload functionality
+  setTimeout(() => initializeContentMedia(itemId), 100);
+}
+
+function getContentDetails(itemId, item, brandId) {
+  if (CONTENT_DETAILS[itemId]) {
+    return CONTENT_DETAILS[itemId];
+  }
+  
+  const newContent = {
+    id: itemId,
+    brandId: brandId,
+    title: item.title,
+    type: getContentType(item.title),
+    stage: item.stage,
+    content: {
+      text: '',
+      images: [],
+      thumbnail: '',
+      links: [],
+      notes: item.notes || ''
+    }
+  };
+  
+  CONTENT_DETAILS[itemId] = newContent;
+  return newContent;
+}
+
+function createContentPanel(itemId, content) {
+  const templates = {
+    video: `
+      <div class="content-section">
+        <h3>Video Script</h3>
+        <textarea class="content-textarea" placeholder="Write your video script here..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+      </div>
+      <div class="content-section">
+        <h3>Video Details</h3>
+        <div class="detail-field">
+          <label>Duration (estimated)</label>
+          <input type="text" placeholder="5-10 minutes" onblur="saveContentMeta('${itemId}', 'duration', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Platform</label>
+          <select onchange="saveContentMeta('${itemId}', 'platform', this.value)">
+            <option>YouTube</option>
+            <option>Instagram Reels</option>
+            <option>TikTok</option>
+            <option>All Platforms</option>
+          </select>
+        </div>
+      </div>
+    `,
+    article: `
+      <div class="content-section">
+        <h3>Article Content</h3>
+        <textarea class="content-textarea large" placeholder="Write your article here..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+      </div>
+    `,
+    newsletter: `
+      <div class="content-section">
+        <h3>Newsletter Content</h3>
+        <div class="detail-field">
+          <label>Subject Line</label>
+          <input type="text" placeholder="This week's insights..." onblur="saveContentMeta('${itemId}', 'subject', this.value)">
+        </div>
+        <textarea class="content-textarea large" placeholder="Write your newsletter content..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+      </div>
+    `,
+    social: `
+      <div class="content-section">
+        <h3>Social Media Post</h3>
+        <textarea class="content-textarea" placeholder="Write your post/caption..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+        <div class="detail-field">
+          <label>Hashtags</label>
+          <input type="text" placeholder="#culture #fashion #thoughts" onblur="saveContentMeta('${itemId}', 'hashtags', this.value)">
+        </div>
+      </div>
+    `
+  };
+  
+  return templates[content.type] || templates.article;
+}
+
+function createMediaPanel(itemId, content) {
+  return `
+    <div class="media-section">
+      <div class="media-header">
+        <h3>Images & Media</h3>
+        <button class="add" onclick="document.getElementById('content-image-upload-${itemId}').click()">
+          + Add Images
+        </button>
+      </div>
+      
+      <div class="media-grid" id="media-grid-${itemId}">
+        ${content.content.images.map((img, i) => `
+          <div class="media-item">
+            <img src="${img}" alt="Content image ${i}">
+            <button class="remove-media" onclick="removeContentImage('${itemId}', ${i})">×</button>
+            ${i === 0 ? '<span class="thumbnail-badge">Thumbnail</span>' : ''}
+          </div>
+        `).join('')}
+        
+        <div class="media-item add-media-btn" onclick="document.getElementById('content-image-upload-${itemId}').click()">
+          <input type="file" id="content-image-upload-${itemId}" accept="image/*" multiple onchange="handleContentImageUpload('${itemId}', this)">
+          <span class="upload-icon">📷</span>
+          <span>Add Images</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function createLinksPanel(itemId, content) {
+  return `
+    <div class="links-section">
+      <div class="links-header">
+        <h3>Related Links</h3>
+        <button class="add" onclick="addContentLink('${itemId}')">+ Add Link</button>
+      </div>
+      
+      <div class="links-list" id="links-list-${itemId}">
+        ${content.content.links.map((link, i) => `
+          <div class="link-item">
+            <input type="text" value="${link.title}" placeholder="Link title" 
+                   onblur="updateContentLink('${itemId}', ${i}, 'title', this.value)">
+            <input type="url" value="${link.url}" placeholder="https://..." 
+                   onblur="updateContentLink('${itemId}', ${i}, 'url', this.value)">
+            <button class="remove-link" onclick="removeContentLink('${itemId}', ${i})">×</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function createNotesPanel(itemId, content) {
+  return `
+    <div class="notes-section">
+      <h3>Production Notes</h3>
+      <textarea class="notes-textarea" placeholder="Add any production notes, ideas, or reminders..." 
+                onblur="saveContentNotes('${itemId}', this.value)">${content.content.notes || ''}</textarea>
+    </div>
+  `;
+}
+
+// Helper functions
+function getContentTypeEmoji(type) {
+  const emojis = {
+    video: '🎥',
+    article: '✏️',
+    newsletter: '📧',
+    social: '📱',
+    podcast: '🎙️'
+  };
+  return emojis[type] || '📄';
+}
+
+// Content save functions
+window.saveContentText = function(itemId, text) {
+  CONTENT_DETAILS[itemId].content.text = text;
+  saveContentToFirebase(itemId);
+};
+
+window.saveContentMeta = function(itemId, field, value) {
+  if (!CONTENT_DETAILS[itemId].content.meta) {
+    CONTENT_DETAILS[itemId].content.meta = {};
+  }
+  CONTENT_DETAILS[itemId].content.meta[field] = value;
+  saveContentToFirebase(itemId);
+};
+
+window.saveContentNotes = function(itemId, notes) {
+  CONTENT_DETAILS[itemId].content.notes = notes;
+  saveContentToFirebase(itemId);
+};
+
+// Media handling
+function initializeContentMedia(itemId) {
+  const grid = qs('#media-grid-' + itemId);
+  if (grid) {
+    grid.ondragover = function(e) {
+      e.preventDefault();
+      grid.classList.add('drag-over');
+    };
+    
+    grid.ondragleave = function() {
+      grid.classList.remove('drag-over');
+    };
+    
+    grid.ondrop = function(e) {
+      e.preventDefault();
+      grid.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      handleContentFiles(itemId, files);
+    };
+  }
+}
+
+window.handleContentImageUpload = function(itemId, input) {
+  const files = input.files;
+  handleContentFiles(itemId, files);
+};
+
+function handleContentFiles(itemId, files) {
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = CONTENT_DETAILS[itemId];
+        content.content.images.push(e.target.result);
+        refreshMediaGrid(itemId);
+        saveContentToFirebase(itemId);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+window.removeContentImage = function(itemId, index) {
+  const content = CONTENT_DETAILS[itemId];
+  content.content.images.splice(index, 1);
+  refreshMediaGrid(itemId);
+  saveContentToFirebase(itemId);
+};
+
+function refreshMediaGrid(itemId) {
+  const content = CONTENT_DETAILS[itemId];
+  const grid = qs('#media-grid-' + itemId);
+  if (grid) {
+    grid.innerHTML = content.content.images.map((img, i) => `
+      <div class="media-item">
+        <img src="${img}" alt="Content image ${i}">
+        <button class="remove-media" onclick="removeContentImage('${itemId}', ${i})">×</button>
+        ${i === 0 ? '<span class="thumbnail-badge">Thumbnail</span>' : ''}
+      </div>
+    `).join('') + `
+      <div class="media-item add-media-btn" onclick="document.getElementById('content-image-upload-${itemId}').click()">
+        <input type="file" id="content-image-upload-${itemId}" accept="image/*" multiple onchange="handleContentImageUpload('${itemId}', this)">
+        <span class="upload-icon">📷</span>
+        <span>Add Images</span>
+      </div>
+    `;
+  }
+}
+
+// Links management
+window.addContentLink = function(itemId) {
+  const content = CONTENT_DETAILS[itemId];
+  content.content.links.push({ title: '', url: '' });
+  refreshLinksList(itemId);
+  saveContentToFirebase(itemId);
+};
+
+window.updateContentLink = function(itemId, index, field, value) {
+  const content = CONTENT_DETAILS[itemId];
+  if (content.content.links[index]) {
+    content.content.links[index][field] = value;
+    saveContentToFirebase(itemId);
+  }
+};
+
+window.removeContentLink = function(itemId, index) {
+  const content = CONTENT_DETAILS[itemId];
+  content.content.links.splice(index, 1);
+  refreshLinksList(itemId);
+  saveContentToFirebase(itemId);
+};
+
+function refreshLinksList(itemId) {
+  const content = CONTENT_DETAILS[itemId];
+  const list = qs('#links-list-' + itemId);
+  if (list) {
+    list.innerHTML = content.content.links.map((link, i) => `
+      <div class="link-item">
+        <input type="text" value="${link.title}" placeholder="Link title" 
+               onblur="updateContentLink('${itemId}', ${i}, 'title', this.value)">
+        <input type="url" value="${link.url}" placeholder="https://..." 
+               onblur="updateContentLink('${itemId}', ${i}, 'url', this.value)">
+        <button class="remove-link" onclick="removeContentLink('${itemId}', ${i})">×</button>
+      </div>
+    `).join('');
+  }
+}
+
+// Tab navigation
+window.showContentTab = function(tabName) {
+  qsa('.content-modal .tab').forEach(tab => tab.classList.remove('active'));
+  qsa('.content-modal .tab').forEach(tab => {
+    if (tab.textContent.toLowerCase().includes(tabName)) {
+      tab.classList.add('active');
+    }
+  });
+  
+  qsa('.content-modal .tab-panel').forEach(panel => panel.classList.remove('active'));
+  const panel = qs('#' + tabName + '-panel');
+  if (panel) panel.classList.add('active');
+};
+
+// Close modal
+window.closeContentModal = function() {
+  const modal = qs('.content-modal-overlay');
+  if (modal) {
+    modal.style.opacity = '0';
+    setTimeout(() => modal.remove(), 300);
+  }
+};
+
+// Firebase integration
+function saveContentToFirebase(itemId) {
+  if (typeof db !== 'undefined') {
+    db.collection('content-details')
+      .doc(itemId)
+      .set({
+        ...CONTENT_DETAILS[itemId],
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .catch(function(error) {
+        console.error('Error saving content details:', error);
+      });
+  }
+}
+
+function loadContentDetails() {
+  if (typeof db !== 'undefined') {
+    db.collection('content-details')
+      .get()
+      .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          CONTENT_DETAILS[doc.id] = doc.data();
+        });
+      })
+      .catch(function(error) {
+        console.error('Error loading content details:', error);
+      });
+  }
+}
 
         // ---------- initialize ----------
         buildNav();
@@ -3430,6 +3858,8 @@ window.editColor = editColor;
         loadFromFirebase();
     initEventSystem();
     loadEventDetails();
+        initContentSystem();
+loadContentDetails();
         
         // Real-time sync
 BRANDS.forEach(function(brand) {
