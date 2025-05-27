@@ -3403,8 +3403,12 @@ function loadEventDetails() {
       .get()
       .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
-          EVENT_DETAILS[doc.id] = doc.data();
+          const data = doc.data();
+          // Remove the lastUpdated field to avoid issues
+          delete data.lastUpdated;
+          EVENT_DETAILS[doc.id] = data;
         });
+        console.log('Loaded event details:', EVENT_DETAILS); // Add for debugging
       })
       .catch(function(error) {
         console.error('Error loading event details:', error);
