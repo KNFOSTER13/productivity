@@ -3053,7 +3053,111 @@ function editColor(eventId, index) {
 }
 
 function refreshColors(eventId) {
-  const event =
+  const event = EVENT_DETAILS[eventId];
+  const container = qs('#colors-' + eventId);
+  if (container) {
+    container.innerHTML = event.moodboard.colors.map((color, i) => `
+      <div class="color-swatch" style="background: ${color}" onclick="editColor('${eventId}', ${i})"></div>
+    `).join('') + '<div class="color-swatch add-color" onclick="addColor(\'' + eventId + '\')">+</div>';
+  }
+}
+
+// Save functions
+window.saveTheme = function(eventId, value) {
+  EVENT_DETAILS[eventId].moodboard.theme = value;
+  saveEventToFirebase(eventId);
+};
+
+window.saveEventField = function(eventId, field, value) {
+  EVENT_DETAILS[eventId][field] = value;
+  saveEventToFirebase(eventId);
+};
+
+window.saveEventDetail = function(eventId, field, value) {
+  EVENT_DETAILS[eventId].details[field] = value;
+  saveEventToFirebase(eventId);
+};
+
+window.toggleChecklistItem = function(eventId, itemId) {
+  const event = EVENT_DETAILS[eventId];
+  const item = event.checklist.find(i => i.id === itemId);
+  if (item) {
+    item.done = !item.done;
+    refreshChecklist(eventId);
+    saveEventToFirebase(eventId);
+  }
+};
+
+window.addChecklistItem = function(eventId) {
+  const text = prompt('Enter task:');
+  if (text) {
+    const event = EVENT_DETAILS[eventId];
+    const newItem = {
+      id: Date.now(),
+      text: text,
+      due: addDays(event.date, -7),
+      done: false
+    };
+    event.checklist.push(newItem);
+    refreshChecklist(eventId);
+    saveEventToFirebase(eventId);
+  }
+};
+
+function refreshChecklist(eventId) {
+  const checklistPanel = qs('#checklist');
+  if (checklistPanel && checklistPanel.classList.contains('active')) {
+    checklistPanel.innerHTML = createChecklistSection(eventId, EVENT_DETAILS[eventId]);
+  }
+}
+
+// Firebase integration for events
+function saveEventToFirebase(eventId) {
+  if (typeof db !== 'undefined') {
+    db.collection('event-details')
+      .doc(eventId)
+      .set({
+        ...EVENT_DETAILS[eventId],
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .catch(function(error) {
+        console.error('Error saving event details:', error);
+      });
+  }
+}
+
+function loadEventDetails() {
+  if (typeof db !== 'undefined') {
+    db.collection('event-details')
+      .get()
+      .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          EVENT_DETAILS[doc.id] = doc.data();
+        });
+      })
+      .catch(function(error) {
+        console.error('Error loading event details:', error);
+      });
+  }
+}
+
+// Make showEventTab work globally
+window.showEventTab = function(tabName, eventId) {
+  // Update active tab
+  qsa('.tab').forEach(tab => tab.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Show corresponding panel
+  qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  qs('#' + tabName).classList.add('active');
+};
+
+// Make these functions globally available
+window.closeEventModal = closeEventModal;
+window.removeImage = removeImage;
+window.handleImageUpload = handleImageUpload;
+window.addColor = addColor;
+window.editColor = editColor;
 
         // ---------- initialize ----------
         buildNav();
