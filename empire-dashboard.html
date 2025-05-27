@@ -1780,22 +1780,34 @@ const db = firebase.firestore();
         };
         
         // ---------- build UI ----------
-        function buildNav() {
-            var nav = qs('#nav');
-            if (!nav) return;
-            nav.innerHTML = '';
-            
-            ['overview'].concat(brandOrder).forEach(function(id) {
-                var b = (id === 'overview') ? {name: 'Overview', id: 'overview'} : 
-                        BRANDS.filter(function(br) { return br.id === id; })[0];
-                if (!b) return;
-                
-                var btn = el('button', 'nav-btn', b.name);
-                btn.dataset.id = id;
-                btn.onclick = function() { show(id); };
-                nav.appendChild(btn);
-            });
-        }
+       function buildNav() {
+    var nav = qs('#nav');
+    if (!nav) return;
+    nav.innerHTML = '';
+    
+    // Add Overview button
+    var overviewBtn = el('button', 'nav-btn', 'Overview');
+    overviewBtn.dataset.id = 'overview';
+    overviewBtn.onclick = function() { show('overview'); };
+    nav.appendChild(overviewBtn);
+    
+    // Add Analytics button HERE
+    var analyticsBtn = el('button', 'nav-btn', 'Analytics');
+    analyticsBtn.dataset.id = 'analytics';
+    analyticsBtn.onclick = function() { show('analytics'); };
+    nav.appendChild(analyticsBtn);
+    
+    // Then add brand buttons
+    brandOrder.forEach(function(id) {
+        var b = BRANDS.filter(function(br) { return br.id === id; })[0];
+        if (!b) return;
+        
+        var btn = el('button', 'nav-btn', b.name);
+        btn.dataset.id = id;
+        btn.onclick = function() { show(id); };
+        nav.appendChild(btn);
+    });
+}
         
         function buildOverview() {
             var grid = qs('#overview');
