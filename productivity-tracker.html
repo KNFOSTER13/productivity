@@ -2778,6 +2778,213 @@ window.addEventListener('load', async function() {
         location.reload();
     }
 }
+        // Weekly Review Functions with Firebase Integration
+async function loadWeeklyReview() {
+    const weekData = {};
+    let totalTasks = 0;
+    let totalMinutes = 0;
+    const categoryTotals = {};
+    const dailyTotals = {};
+    
+    // Show loading state
+    document.getElementById('weeklyTaskCount').textContent = '...';
+    document.getElementById('weeklyTimeSpent').textContent = '...';
+    
+    // Collect data for the past 7 days
+    for (let i = 0; i < 7; i++) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dateKey = getDateString(date);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        
+        try {
+            // Try Firebase first
+            const doc = await db.collection('productivity').doc(dateKey).get();
+            let dayData = null;
+            
+            if (doc.exists) {
+                dayData = doc.data();
+                delete dayData.lastUpdated; // Remove Firebase timestamp
+            } else {
+                // Fall back to localStorage
+                const localData = localStorage.getItem(dateKey);
+                if (localData) {
+                    dayData = JSON.parse(localData);
+                }
+            }
+            
+            if (dayData) {
+                weekData[dateKey] = dayData;
+                
+                // Count tasks and time for this day
+                let dayTasks = 0;
+                let dayMinutes = 0;
+                
+                Object.keys(dayData).forEach(category => {
+                    if (Array.isArray(dayData[category])) {
+                        dayData[category].forEach(task => {
+                            if (task.completed) {
+                                dayTasks++;
+                                totalTasks++;
+                                const timeSpent = task.timeSpent || 0;
+                                dayMinutes += timeSpent;
+                                totalMinutes += timeSpent;
+                                
+                                // Track by category
+                                if (!categoryTotals[category]) {
+                                    categoryTotals[category] = { tasks: 0, time: 0 };
+                                }
+                                categoryTotals[category].tasks++;
+                                categoryTotals[category].time += timeSpent;
+                            }
+                        });
+                    }
+                });
+                
+                dailyTotals[dayName] = { tasks: dayTasks, time: dayMinutes };
+            }
+        } catch (error) {
+            console.error('Error loading day data:', dateKey, error);
+        }
+    }
+    
+    // Display results
+    if (totalTasks > 0) {
+        displayWeeklyReview(totalTasks, totalMinutes, categoryTotals, dailyTotals);
+    } else {
+        displayEmptyWeeklyReview();
+    }
+}
+
+function displayWeeklyReview(totalTasks, totalMinutes, categoryTotals, dailyTotals) {
+    // Update stats
+    document.getElementById('weeklyTaskCount').textContent = totalTasks;
+    document.getElementById('weeklyTimeSpent').textContent = formatTime(totalMinutes);
+    
+    // Find most productive day
+    let bestDay = '-';
+    let maxTasks = 0;
+    Object.entries(dailyTotals).forEach(([day, data]) => {
+        if (data.tasks > maxTasks) {
+            maxTasks = data.tasks;
+            bestDay = day;
+        }
+    });
+    document.getElementById('mostProductiveDay').textContent = bestDay;
+    
+    // Find top category
+    let topCategory = '-';
+    let maxCategoryTasks = 0;
+    Object.entries(categoryTotals).forEach(([category, data]) => {
+        if (data.tasks > maxCategoryTasks) {
+            maxCategoryTasks = data.tasks;
+            topCategory = category;
+        }
+    });
+    
+    const categoryNames = {
+        work: '💼 Work',
+        education: '📚 Education',
+        relationships: '💝 Relationships',
+        money: '💰 Money',
+        business: '🚀 Business',
+        leisure: '🎨 Leisure',
+        vanity: '💅 Vanity',
+        health: '🌿 Health',
+        home: '🏡 Home',
+        produce: '🎬 Produce',
+        recover: '♻️ Recover',
+        discover: '🔍 Discover'
+    };
+    
+    document.getElementById('topCategory').textContent = categoryNames[topCategory] || topCategory;
+    
+    // Create category breakdown
+    const sortedCategories = Object.entries(categoryTotals)
+        .sort((a, b) => b[1].tasks - a[1].tasks)
+        .slice(0, 5); // Top 5 categories
+    
+    const breakdownHTML = sortedCategories.map(([category, data]) => {
+        const percentage = Math.round((data.tasks / totalTasks) * 100);
+        return `
+            <div class="category-bar">
+                <div class="category-bar-label">
+                    <span>${categoryNames[category] || category}</span>
+                    <span>${data.tasks} tasks • ${formatTime(data.time)}</span>
+                </div>
+                <div class="category-bar-fill">
+                    <div class="category-bar-progress" style="width: ${percentage}%">
+                        ${percentage}%
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('weeklyBreakdown').innerHTML = '<h3>Top Categories</h3>' + breakdownHTML;
+    
+    // Generate insights
+    const insights = generateWeeklyInsights(totalTasks, totalMinutes, categoryTotals, dailyTotals);
+    document.getElementById('weeklyInsights').innerHTML = '<h3>Weekly Insights</h3>' + insights;
+    
+    // Show the section
+    document.getElementById('weeklySection').style.display = 'block';
+}
+
+function displayEmptyWeeklyReview() {
+    document.getElementById('weeklyTaskCount').textContent = '0';
+    document.getElementById('weeklyTimeSpent').textContent = '0h';
+    document.getElementById('mostProductiveDay').textContent = '-';
+    document.getElementById('topCategory').textContent = '-';
+    
+    document.getElementById('weeklyBreakdown').innerHTML = 
+        '<p style="text-align: center; opacity: 0.8;">No completed tasks this week yet. Keep going!</p>';
+    
+    document.getElementById('weeklyInsights').innerHTML = 
+        '<p style="text-align: center; opacity: 0.8;">Complete some tasks to see your weekly insights!</p>';
+    
+    document.getElementById('weeklySection').style.display = 'block';
+}
+
+function generateWeeklyInsights(totalTasks, totalMinutes, categoryTotals, dailyTotals) {
+    const insights = [];
+    
+    // Productivity insight
+    const avgTasksPerDay = Math.round(totalTasks / 7);
+    insights.push(`You completed an average of ${avgTasksPerDay} tasks per day this week.`);
+    
+    // Time insight
+    if (totalMinutes > 0) {
+        const avgTimePerTask = Math.round(totalMinutes / totalTasks);
+        insights.push(`Average time per task: ${formatTime(avgTimePerTask)}. ${avgTimePerTask > 60 ? 'Consider breaking down complex tasks.' : 'Great job keeping tasks manageable!'}`);
+    }
+    
+    // Balance insight
+    const activeCategories = Object.keys(categoryTotals).length;
+    if (activeCategories < 5) {
+        insights.push(`You focused on ${activeCategories} life areas. Consider adding tasks in other areas for better balance.`);
+    } else {
+        insights.push(`Great balance! You worked across ${activeCategories} different life areas.`);
+    }
+    
+    // Empire building insight
+    const empireCategories = ['work', 'business', 'education'];
+    const empireTasks = empireCategories.reduce((sum, cat) => (categoryTotals[cat]?.tasks || 0) + sum, 0);
+    if (totalTasks > 0) {
+        const empirePercentage = Math.round((empireTasks / totalTasks) * 100);
+        insights.push(`${empirePercentage}% of your tasks were empire-building activities. ${empirePercentage > 60 ? 'Strong focus on growth!' : 'Remember to invest in your empire!'}`);
+    }
+    
+    return insights.map(insight => `<div class="insight-item">${insight}</div>`).join('');
+}
+
+function hideWeeklyReview() {
+    document.getElementById('weeklySection').style.display = 'none';
+}
+
+function showWeeklyReview() {
+    loadWeeklyReview();
+}
     </script>
 </body>
 </html>
