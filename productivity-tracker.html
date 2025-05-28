@@ -1688,38 +1688,81 @@
             initializeGoals();
         }
         
-        function createTaskElement(category, text = '', completed = false, priority = 'none') {
-            const taskDiv = document.createElement('div');
-            taskDiv.className = 'task-input';
-            taskDiv.dataset.priority = priority;
-            
-            const priorityEmojis = {
-                'empire': '🏛⚡',
-                'high': '🚀💥',
-                'maintenance': '🔧🛠',
-                'none': ''
-            };
-            
-            taskDiv.innerHTML = `
-                <input type="checkbox" id="task-${taskCounter}" ${completed ? 'checked' : ''} 
-                    onchange="updateCompletedCount(); updateStreaks(); saveData();">
-                <div class="priority-buttons">
-                    <button class="priority-btn ${priority === 'empire' ? 'active' : ''}" 
-                        onclick="setPriority(this, 'empire')" title="Empire Critical">🏛⚡</button>
-                    <button class="priority-btn ${priority === 'high' ? 'active' : ''}" 
-                        onclick="setPriority(this, 'high')" title="High Impact">🚀💥</button>
-                    <button class="priority-btn ${priority === 'maintenance' ? 'active' : ''}" 
-                        onclick="setPriority(this, 'maintenance')" title="Maintenance">🔧🛠</button>
-                </div>
-                <input type="text" placeholder="Enter your task here..." 
-                    value="${text}"
-                    onkeypress="handleEnter(event, '${category}')"
-                    onchange="saveData()">
-            `;
-            
-            taskCounter++;
-            return taskDiv;
-        }
+       function createTaskElement(category, text = '', completed = false, priority = 'none', timeSpent = 0) {
+    const taskDiv = document.createElement('div');
+    taskDiv.className = 'task-input';
+    taskDiv.dataset.priority = priority;
+    taskDiv.dataset.timeSpent = timeSpent;
+    
+    taskDiv.innerHTML = `
+        <input type="checkbox" id="task-${taskCounter}" ${completed ? 'checked' : ''} 
+            onchange="updateCompletedCount(); updateStreaks(); saveData();">
+        <div class="priority-buttons">
+            <button class="priority-btn ${priority === 'empire' ? 'active' : ''}" 
+                onclick="setPriority(this, 'empire')" title="Empire Critical">🏛⚡</button>
+            <button class="priority-btn ${priority === 'high' ? 'active' : ''}" 
+                onclick="setPriority(this, 'high')" title="High Impact">🚀💥</button>
+            <button class="priority-btn ${priority === 'maintenance' ? 'active' : ''}" 
+                onclick="setPriority(this, 'maintenance')" title="Maintenance">🔧🛠</button>
+        </div>
+        <input type="text" placeholder="Enter your task here..." 
+            value="${text}"
+            onkeypress="handleEnter(event, '${category}')"
+            onchange="saveData()">
+        <div class="time-tracking">
+            <button class="time-btn" onclick="addTime(this, 15)">+15m</button>
+            <button class="time-btn" onclick="addTime(this, 30)">+30m</button>
+            <button class="time-btn" onclick="addTime(this, 60)">+1h</button>
+            <span class="time-display">${formatTime(timeSpent)}</span>
+        </div>
+    `;
+    
+    taskCounter++;
+    return taskDiv;
+}
+        function addTime(button, minutes) {
+    const taskDiv = button.closest('.task-input');
+    const currentTime = parseInt(taskDiv.dataset.timeSpent) || 0;
+    const newTime = currentTime + minutes;
+    taskDiv.dataset.timeSpent = newTime;
+    
+    // Update display
+    const timeDisplay = taskDiv.querySelector('.time-display');
+    timeDisplay.textContent = formatTime(newTime);
+    
+    // Update total time
+    updateTotalTime();
+    saveData();
+}
+
+function formatTime(minutes) {
+    if (minutes === 0) return '';
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+}
+
+function updateTotalTime() {
+    let totalMinutes = 0;
+    document.querySelectorAll('.task-input').forEach(taskDiv => {
+        const time = parseInt(taskDiv.dataset.timeSpent) || 0;
+        totalMinutes += time;
+    });
+    
+    // Update the stats display
+    const statsDiv = document.querySelector('.stats');
+    let timeElement = document.getElementById('totalTime');
+    if (!timeElement) {
+        // Add total time to stats if not there
+        const syncStatus = document.getElementById('syncStatus');
+        timeElement = document.createElement('div');
+        timeElement.id = 'totalTime';
+        timeElement.style.marginTop = '8px';
+        statsDiv.insertBefore(timeElement, syncStatus);
+    }
+    timeElement.innerHTML = `<strong>Time Today:</strong> ${formatTime(totalMinutes)}`;
+}
         
         function createEmpireTaskElement(category, text = '', completed = false) {
             const taskDiv = document.createElement('div');
