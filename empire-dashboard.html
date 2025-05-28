@@ -3040,19 +3040,7 @@ function updateAnalytics() {
     }
 }
 
-// Update your existing show() function to handle analytics
-var originalShow = show;
-show = function(id) {
-    if (id === 'analytics') {
-        showAnalytics();
-        return;
-    } else {
-        // Hide analytics if showing something else
-        var analyticsView = qs('#analytics-view');
-        if (analyticsView) analyticsView.classList.remove('active');
-        originalShow(id);
-    }
-};
+
         // ---------- Event Details System ----------
 var EVENT_DETAILS = {}; // Store detailed event data
 
