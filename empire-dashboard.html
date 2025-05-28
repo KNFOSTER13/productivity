@@ -2665,9 +2665,16 @@ const db = firebase.firestore();
             show(brandId);
         }
         
-     function addItem(bid) {
+ function addItem(bid) {
     var stage = (EVENT_BRANDS.indexOf(bid) === -1 ? 'ideas' : 'planning');
     var newItem = createItem('', stage);
+    
+    if (VIEW_STATES[bid] === 'calendar') {
+        var today = todayISO();
+        newItem.scheduledDate = today;
+        newItem._pendingCalendarDate = today;
+    }
+    
     openEditPanel(newItem, bid);
 }
                 
