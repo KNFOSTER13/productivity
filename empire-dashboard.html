@@ -2686,15 +2686,12 @@ openEditPanel(newItem, bid);
             saveToFirebase();
         }
         
-        function addItemToDate(brandId, dateStr) {
-            var title = prompt('Enter title for ' + dateStr + ':');
-            if (title) {
-                var newItem = createItem(title, 'planning', {scheduledDate: dateStr});
-                addToCalendar(brandId, dateStr, newItem, 'planning');
-                buildCalendar(brandId);
-                updateAll();
-                saveToFirebase();
-            }
+          function addItemToDate(brandId, dateStr) {
+    var newItem = createItem('', 'planning', { scheduledDate: dateStr });
+    newItem._pendingCalendarDate = dateStr;
+    openEditPanel(newItem, brandId);
+}
+
         }
         
         function updateCounts() {
