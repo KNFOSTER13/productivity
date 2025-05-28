@@ -2145,22 +2145,16 @@ const db = firebase.firestore();
         };
         
         window.saveEditPanel = function() {
-            if (currentEditItem && currentEditBrand) {
-                currentEditItem.title = qs('#editTitle').value;
-                currentEditItem.scheduledDate = qs('#editDate').value;
-                currentEditItem.priority = qs('#editPriority').value;
-                currentEditItem.notes = qs('#editNotes').value;
-                currentEditItem.modified = new Date().toISOString();
-                if (currentEditItem._pendingCalendarDate) {
-                    if (!CALENDAR_DATA[currentEditBrand]) {
-        CALENDAR_DATA[currentEditBrand] = {};
-    var calendarDate = currentEditItem._pendingCalendarDate;
-    if (currentEditItem._pendingCalendarDate) {
+        if (currentEditItem._pendingCalendarDate) {
     if (!CALENDAR_DATA[currentEditBrand]) {
         CALENDAR_DATA[currentEditBrand] = {};
     }
     var calendarDate = currentEditItem._pendingCalendarDate;
-
+    if (!CALENDAR_DATA[currentEditBrand][calendarDate]) {
+        CALENDAR_DATA[currentEditBrand][calendarDate] = [];
+    }
+    CALENDAR_DATA[currentEditBrand][calendarDate].push(currentEditItem);
+    delete currentEditItem._pendingCalendarDate;
 }
 
                 
