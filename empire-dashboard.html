@@ -1889,6 +1889,15 @@ const db = firebase.firestore();
         var currentEditItem = null;
         var currentEditBrand = null;
         var sortableInstances = [];
+        function showSaveNotification() {
+    var toast = el('div', 'save-toast', '✓ Saved!');
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() { toast.remove(); }, 300);
+    }, 2000);
+}
         
         // ---------- Firebase sync functions ----------
         function saveToFirebase() {
