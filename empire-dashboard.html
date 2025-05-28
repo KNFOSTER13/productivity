@@ -3995,401 +3995,405 @@ function loadContentDetails() {
       });
   }
 }
-        // ---------- Quick Search System ----------
-var QuickSearch = {
-    isOpen: false,
-    selectedIndex: 0,
-    results: [],
-    
-    init: function() {
-        console.log('QuickSearch init called');
-        var self = this;
-        document.addEventListener('keydown', function(e) {
-    console.log('Key pressed:', e.key, 'Ctrl:', e.ctrlKey, 'Cmd:', e.metaKey); // ADD THIS LINE
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        console.log('Quick search keyboard shortcut triggered!'); // ADD THIS LINE
-        self.toggle();
-    }
-});
-    },
-    
-    toggle: function() {
-    console.log('Toggle called. isOpen:', this.isOpen); // ADD THIS LINE
-    if (this.isOpen) {
-        this.close();
-    } else {
-        this.open();
-    }
-    
-    open: function() {
-        console.log('Open called');
-        var self = this;
-        this.isOpen = true;
-        this.selectedIndex = 0; // Reset selection
-        
-        var overlay = el('div', 'quick-search-overlay');
-        overlay.onclick = function(e) {
-            if (e.target === overlay) self.close();
-        };
-        
-        var modal = el('div', 'quick-search-modal');
-        
-        var input = el('input', 'quick-search-input');
-        input.type = 'text';
-        input.placeholder = 'Search content, jump to brand, or type > for commands...';
-        
-        var results = el('div', 'quick-search-results');
-        
-        input.addEventListener('input', function() {
-            self.search(this.value, results);
-        });
-        
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                self.selectNext();
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                self.selectPrev();
-            } else if (e.key === 'Enter') {
-                e.preventDefault();
-                self.executeSelected();
-            } else if (e.key === 'Escape') {
-                self.close();
-            }
-        });
-        
-        modal.appendChild(input);
-        modal.appendChild(results);
-        overlay.appendChild(modal);
-        document.body.appendChild(overlay);
-        
-        input.focus();
-        
-        // Show initial suggestions
-        this.showSuggestions(results);
-    },
-    
-    close: function() {
-        this.isOpen = false;
-        var overlay = qs('.quick-search-overlay');
-        if (overlay) {
-            overlay.style.opacity = '0';
-            setTimeout(function() { 
-                if (overlay && overlay.parentNode) {
-                    overlay.parentNode.removeChild(overlay);
-                }
-            }, 200);
-        }
-    },
-    
-    search: function(query, resultsContainer) {
-        this.selectedIndex = 0;
-        this.results = [];
-        
-        if (!query) {
-            this.showSuggestions(resultsContainer);
-            return;
-        }
-        
-        // Command mode
-        if (query.indexOf('>') === 0) {
-            this.searchCommands(query.slice(1).trim(), resultsContainer);
-            return;
-        }
-        
-        // Search all content
-        this.searchContent(query, resultsContainer);
-    },
-    
-    showSuggestions: function(container) {
-        var self = this;
-        this.results = [
-            { type: 'command', icon: '🚀', title: 'Create new content', action: function() { self.createNewContent(); } },
-            { type: 'command', icon: '📊', title: 'View analytics', action: function() { self.close(); show('analytics'); } },
-            { type: 'command', icon: '🔍', title: 'Search all content', action: function() {} }
-        ];
-        
-        // Add brand shortcuts
-        BRANDS.forEach(function(brand) {
-            self.results.push({
-                type: 'brand',
-                icon: '🏷️',
-                title: brand.name,
-                meta: brand.desc,
-                brandColor: brand.accent,
-                action: function() { self.close(); show(brand.id); }
-            });
-        });
-        
-        this.renderResults(container);
-    },
-    
-    searchContent: function(query, container) {
-        var self = this;
-        var lowerQuery = query.toLowerCase();
-        
-        // Search through all pipeline content
-        BRANDS.forEach(function(brand) {
-            var stages = EVENT_BRANDS.indexOf(brand.id) !== -1 ? EVENT_STAGES : EDIT_STAGES;
+      // ---------- Quick Search System ----------
+        var QuickSearch = {
+            isOpen: false,
+            selectedIndex: 0,
+            results: [],
             
-            stages.forEach(function(stage) {
-                var items = PIPELINES[brand.id][stage] || [];
-                
-                items.forEach(function(item) {
-                    var matchesTitle = item.title.toLowerCase().indexOf(lowerQuery) !== -1;
-                    var matchesTags = false;
-                    
-                    if (item.tags && item.tags.length > 0) {
-                        for (var i = 0; i < item.tags.length; i++) {
-                            if (item.tags[i].toLowerCase().indexOf(lowerQuery) !== -1) {
-                                matchesTags = true;
-                                break;
-                            }
-                        }
+            init: function() {
+                console.log('QuickSearch init called');
+                var self = this;
+                document.addEventListener('keydown', function(e) {
+                    console.log('Key pressed:', e.key, 'Ctrl:', e.ctrlKey, 'Cmd:', e.metaKey);
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                        e.preventDefault();
+                        console.log('Quick search keyboard shortcut triggered!');
+                        self.toggle();
                     }
+                });
+            },
+            
+            toggle: function() {
+                console.log('Toggle called. isOpen:', this.isOpen);
+                if (this.isOpen) {
+                    this.close();
+                } else {
+                    this.open();
+                }
+            },
+            
+            open: function() {
+                console.log('Open called');
+                var self = this;
+                this.isOpen = true;
+                this.selectedIndex = 0; // Reset selection
+                
+                var overlay = el('div', 'quick-search-overlay');
+                overlay.onclick = function(e) {
+                    if (e.target === overlay) self.close();
+                };
+                
+                var modal = el('div', 'quick-search-modal');
+                
+                var input = el('input', 'quick-search-input');
+                input.type = 'text';
+                input.placeholder = 'Search content, jump to brand, or type > for commands...';
+                
+                var results = el('div', 'quick-search-results');
+                
+                input.addEventListener('input', function() {
+                    self.search(this.value, results);
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        self.selectNext();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        self.selectPrev();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        self.executeSelected();
+                    } else if (e.key === 'Escape') {
+                        self.close();
+                    }
+                });
+                
+                modal.appendChild(input);
+                modal.appendChild(results);
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                
+                input.focus();
+                
+                // Show initial suggestions
+                this.showSuggestions(results);
+            },
+            
+            close: function() {
+                this.isOpen = false;
+                var overlay = qs('.quick-search-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    setTimeout(function() { 
+                        if (overlay && overlay.parentNode) {
+                            overlay.parentNode.removeChild(overlay);
+                        }
+                    }, 200);
+                }
+            },
+            
+            search: function(query, resultsContainer) {
+                this.selectedIndex = 0;
+                this.results = [];
+                
+                if (!query) {
+                    this.showSuggestions(resultsContainer);
+                    return;
+                }
+                
+                // Command mode
+                if (query.indexOf('>') === 0) {
+                    this.searchCommands(query.slice(1).trim(), resultsContainer);
+                    return;
+                }
+                
+                // Search all content
+                this.searchContent(query, resultsContainer);
+            },
+            
+            showSuggestions: function(container) {
+                var self = this;
+                this.results = [
+                    { type: 'command', icon: '🚀', title: 'Create new content', action: function() { self.createNewContent(); } },
+                    { type: 'command', icon: '📊', title: 'View analytics', action: function() { self.close(); show('analytics'); } },
+                    { type: 'command', icon: '🔍', title: 'Search all content', action: function() {} }
+                ];
+                
+                // Add brand shortcuts
+                BRANDS.forEach(function(brand) {
+                    self.results.push({
+                        type: 'brand',
+                        icon: '🏷️',
+                        title: brand.name,
+                        meta: brand.desc,
+                        brandColor: brand.accent,
+                        action: function() { self.close(); show(brand.id); }
+                    });
+                });
+                
+                this.renderResults(container);
+            },
+            
+            searchContent: function(query, container) {
+                var self = this;
+                var lowerQuery = query.toLowerCase();
+                
+                // Search through all pipeline content
+                BRANDS.forEach(function(brand) {
+                    var stages = EVENT_BRANDS.indexOf(brand.id) !== -1 ? EVENT_STAGES : EDIT_STAGES;
                     
-                    if (matchesTitle || matchesTags) {
-                        self.results.push({
-                            type: 'content',
-                            icon: self.getContentIcon(item.title),
-                            title: item.title,
-                            meta: brand.name + ' • ' + stage,
-                            brandColor: brand.accent,
-                            itemId: item.id,
-                            brandId: brand.id,
-                            action: function() {
-                                self.close();
-                                show(brand.id);
-                                // Highlight the item after view loads
-                                setTimeout(function() {
-                                    var element = qs('[data-id="' + item.id + '"]');
-                                    if (element) {
-                                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        element.style.animation = 'pulse 2s ease-out';
+                    stages.forEach(function(stage) {
+                        var items = PIPELINES[brand.id][stage] || [];
+                        
+                        items.forEach(function(item) {
+                            var matchesTitle = item.title.toLowerCase().indexOf(lowerQuery) !== -1;
+                            var matchesTags = false;
+                            
+                            if (item.tags && item.tags.length > 0) {
+                                for (var i = 0; i < item.tags.length; i++) {
+                                    if (item.tags[i].toLowerCase().indexOf(lowerQuery) !== -1) {
+                                        matchesTags = true;
+                                        break;
                                     }
-                                }, 300);
+                                }
                             }
+                            
+                            if (matchesTitle || matchesTags) {
+                                self.results.push({
+                                    type: 'content',
+                                    icon: self.getContentIcon(item.title),
+                                    title: item.title,
+                                    meta: brand.name + ' • ' + stage,
+                                    brandColor: brand.accent,
+                                    itemId: item.id,
+                                    brandId: brand.id,
+                                    action: function() {
+                                        self.close();
+                                        show(brand.id);
+                                        // Highlight the item after view loads
+                                        setTimeout(function() {
+                                            var element = qs('[data-id="' + item.id + '"]');
+                                            if (element) {
+                                                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                element.style.animation = 'pulse 2s ease-out';
+                                            }
+                                        }, 300);
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+                
+                // Search calendar items too
+                BRANDS.forEach(function(brand) {
+                    if (CALENDAR_DATA[brand.id]) {
+                        Object.keys(CALENDAR_DATA[brand.id]).forEach(function(dateStr) {
+                            var items = CALENDAR_DATA[brand.id][dateStr] || [];
+                            items.forEach(function(item) {
+                                if (item.title && item.title.toLowerCase().indexOf(lowerQuery) !== -1) {
+                                    self.results.push({
+                                        type: 'calendar',
+                                        icon: '📅',
+                                        title: item.title,
+                                        meta: brand.name + ' • Scheduled ' + dateStr,
+                                        brandColor: brand.accent,
+                                        action: function() {
+                                            self.close();
+                                            show(brand.id);
+                                            toggleView(brand.id, 'calendar');
+                                        }
+                                    });
+                                }
+                            });
                         });
                     }
                 });
-            });
-        });
-        
-        // Search calendar items too
-        BRANDS.forEach(function(brand) {
-            if (CALENDAR_DATA[brand.id]) {
-                Object.keys(CALENDAR_DATA[brand.id]).forEach(function(dateStr) {
-                    var items = CALENDAR_DATA[brand.id][dateStr] || [];
-                    items.forEach(function(item) {
-                        if (item.title && item.title.toLowerCase().indexOf(lowerQuery) !== -1) {
-                            self.results.push({
-                                type: 'calendar',
-                                icon: '📅',
-                                title: item.title,
-                                meta: brand.name + ' • Scheduled ' + dateStr,
-                                brandColor: brand.accent,
-                                action: function() {
-                                    self.close();
-                                    show(brand.id);
-                                    toggleView(brand.id, 'calendar');
-                                }
-                            });
-                        }
+                
+                // Show "no results" if empty
+                if (this.results.length === 0) {
+                    this.results.push({
+                        type: 'empty',
+                        icon: '🔍',
+                        title: 'No results found',
+                        meta: 'Try a different search term',
+                        action: function() {}
                     });
+                }
+                
+                this.renderResults(container);
+            },
+            
+            searchCommands: function(query, container) {
+                var self = this;
+                var commands = [
+                    { icon: '➕', title: 'New Video', action: function() { self.createNewItem('video'); } },
+                    { icon: '➕', title: 'New Article', action: function() { self.createNewItem('article'); } },
+                    { icon: '➕', title: 'New Event', action: function() { self.createNewItem('event'); } },
+                    { icon: '📊', title: 'Analytics', action: function() { self.close(); show('analytics'); } },
+                    { icon: '🔄', title: 'Refresh Data', action: function() { self.close(); loadFromFirebase(); } },
+                    { icon: '📥', title: 'Export All Data', action: function() { self.exportAllData(); } }
+                ];
+                
+                this.results = [];
+                for (var i = 0; i < commands.length; i++) {
+                    if (commands[i].title.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+                        this.results.push(commands[i]);
+                    }
+                }
+                
+                this.renderResults(container);
+            },
+            
+            renderResults: function(container) {
+                var self = this;
+                container.innerHTML = '';
+                
+                this.results.forEach(function(result, index) {
+                    var item = el('div', 'search-result');
+                    if (index === self.selectedIndex) {
+                        item.classList.add('selected');
+                    }
+                    
+                    var icon = el('span', 'search-result-icon', result.icon);
+                    var content = el('div', 'search-result-content');
+                    var title = el('div', 'search-result-title', result.title);
+                    content.appendChild(title);
+                    
+                    if (result.meta) {
+                        var meta = el('div', 'search-result-meta', result.meta);
+                        content.appendChild(meta);
+                    }
+                    
+                    item.appendChild(icon);
+                    item.appendChild(content);
+                    
+                    if (result.brandColor && result.type !== 'empty') {
+                        var brand = el('span', 'search-result-brand');
+                        brand.style.background = result.brandColor;
+                        item.appendChild(brand);
+                    }
+                    
+                    item.onclick = function() {
+                        self.selectedIndex = index;
+                        self.executeSelected();
+                    };
+                    
+                    container.appendChild(item);
                 });
+            },
+            
+            selectNext: function() {
+                if (this.selectedIndex < this.results.length - 1) {
+                    this.selectedIndex++;
+                    this.updateSelection();
+                }
+            },
+            
+            selectPrev: function() {
+                if (this.selectedIndex > 0) {
+                    this.selectedIndex--;
+                    this.updateSelection();
+                }
+            },
+            
+            updateSelection: function() {
+                var self = this;
+                qsa('.search-result').forEach(function(el, index) {
+                    if (index === self.selectedIndex) {
+                        el.classList.add('selected');
+                    } else {
+                        el.classList.remove('selected');
+                    }
+                });
+            },
+            
+            executeSelected: function() {
+                if (this.results[this.selectedIndex] && this.results[this.selectedIndex].type !== 'empty') {
+                    this.results[this.selectedIndex].action();
+                }
+            },
+            
+            getContentIcon: function(title) {
+                var lower = title.toLowerCase();
+                if (lower.indexOf('video') !== -1) return '🎥';
+                if (lower.indexOf('article') !== -1 || lower.indexOf('essay') !== -1) return '✏️';
+                if (lower.indexOf('newsletter') !== -1) return '📧';
+                if (lower.indexOf('podcast') !== -1) return '🎙️';
+                if (lower.indexOf('event') !== -1 || lower.indexOf('mixer') !== -1) return '📅';
+                if (lower.indexOf('post') !== -1 || lower.indexOf('tweet') !== -1) return '📱';
+                return '📄';
+            },
+            
+            createNewContent: function() {
+                this.close();
+                var brandId = prompt('Enter brand code (knf, fh, mtih, sss, tok, bwitw, indigo):');
+                if (brandId && BRANDS.find(function(b) { return b.id === brandId; })) {
+                    addItem(brandId);
+                }
+            },
+            
+            createNewItem: function(type) {
+                this.close();
+                // You can customize this based on type
+                if (type === 'event') {
+                    addItem('bwitw'); // Default to BWitW for events
+                } else {
+                    this.createNewContent();
+                }
+            },
+            
+            exportAllData: function() {
+                this.close();
+                try {
+                    var data = {
+                        pipelines: PIPELINES,
+                        calendar: CALENDAR_DATA,
+                        events: EVENT_DETAILS,
+                        content: CONTENT_DETAILS,
+                        exportDate: new Date().toISOString()
+                    };
+                    
+                    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'empire-dashboard-backup-' + todayISO() + '.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    alert('Export failed. Check console for details.');
+                }
             }
-        });
+        };
         
-        // Show "no results" if empty
-        if (this.results.length === 0) {
-            this.results.push({
-                type: 'empty',
-                icon: '🔍',
-                title: 'No results found',
-                meta: 'Try a different search term',
-                action: function() {}
-            });
-        }
+        console.log('QuickSearch object defined:', QuickSearch);
         
-        this.renderResults(container);
-    },
-    
-    searchCommands: function(query, container) {
-        var self = this;
-        var commands = [
-            { icon: '➕', title: 'New Video', action: function() { self.createNewItem('video'); } },
-            { icon: '➕', title: 'New Article', action: function() { self.createNewItem('article'); } },
-            { icon: '➕', title: 'New Event', action: function() { self.createNewItem('event'); } },
-            { icon: '📊', title: 'Analytics', action: function() { self.close(); show('analytics'); } },
-            { icon: '🔄', title: 'Refresh Data', action: function() { self.close(); loadFromFirebase(); } },
-            { icon: '📥', title: 'Export All Data', action: function() { self.exportAllData(); } }
-        ];
-        
-        this.results = [];
-        for (var i = 0; i < commands.length; i++) {
-            if (commands[i].title.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-                this.results.push(commands[i]);
-            }
-        }
-        
-        this.renderResults(container);
-    },
-    
-    renderResults: function(container) {
-        var self = this;
-        container.innerHTML = '';
-        
-        this.results.forEach(function(result, index) {
-            var item = el('div', 'search-result');
-            if (index === self.selectedIndex) {
-                item.classList.add('selected');
-            }
-            
-            var icon = el('span', 'search-result-icon', result.icon);
-            var content = el('div', 'search-result-content');
-            var title = el('div', 'search-result-title', result.title);
-            content.appendChild(title);
-            
-            if (result.meta) {
-                var meta = el('div', 'search-result-meta', result.meta);
-                content.appendChild(meta);
-            }
-            
-            item.appendChild(icon);
-            item.appendChild(content);
-            
-            if (result.brandColor && result.type !== 'empty') {
-                var brand = el('span', 'search-result-brand');
-                brand.style.background = result.brandColor;
-                item.appendChild(brand);
-            }
-            
-            item.onclick = function() {
-                self.selectedIndex = index;
-                self.executeSelected();
-            };
-            
-            container.appendChild(item);
-        });
-    },
-    
-    selectNext: function() {
-        if (this.selectedIndex < this.results.length - 1) {
-            this.selectedIndex++;
-            this.updateSelection();
-        }
-    },
-    
-    selectPrev: function() {
-        if (this.selectedIndex > 0) {
-            this.selectedIndex--;
-            this.updateSelection();
-        }
-    },
-    
-    updateSelection: function() {
-        var self = this;
-        qsa('.search-result').forEach(function(el, index) {
-            if (index === self.selectedIndex) {
-                el.classList.add('selected');
-            } else {
-                el.classList.remove('selected');
-            }
-        });
-    },
-    
-    executeSelected: function() {
-        if (this.results[this.selectedIndex] && this.results[this.selectedIndex].type !== 'empty') {
-            this.results[this.selectedIndex].action();
-        }
-    },
-    
-    getContentIcon: function(title) {
-        var lower = title.toLowerCase();
-        if (lower.indexOf('video') !== -1) return '🎥';
-        if (lower.indexOf('article') !== -1 || lower.indexOf('essay') !== -1) return '✏️';
-        if (lower.indexOf('newsletter') !== -1) return '📧';
-        if (lower.indexOf('podcast') !== -1) return '🎙️';
-        if (lower.indexOf('event') !== -1 || lower.indexOf('mixer') !== -1) return '📅';
-        if (lower.indexOf('post') !== -1 || lower.indexOf('tweet') !== -1) return '📱';
-        return '📄';
-    },
-    
-    createNewContent: function() {
-        this.close();
-        var brandId = prompt('Enter brand code (knf, fh, mtih, sss, tok, bwitw, indigo):');
-        if (brandId && BRANDS.find(function(b) { return b.id === brandId; })) {
-            addItem(brandId);
-        }
-    },
-    
-    createNewItem: function(type) {
-        this.close();
-        // You can customize this based on type
-        if (type === 'event') {
-            addItem('bwitw'); // Default to BWitW for events
-        } else {
-            this.createNewContent();
-        }
-    },
-    
-    exportAllData: function() {
-        this.close();
-        try {
-            var data = {
-                pipelines: PIPELINES,
-                calendar: CALENDAR_DATA,
-                events: EVENT_DETAILS,
-                content: CONTENT_DETAILS,
-                exportDate: new Date().toISOString()
-            };
-            
-            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'empire-dashboard-backup-' + todayISO() + '.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Export failed:', error);
-            alert('Export failed. Check console for details.');
-        }
-    }
-};
-        console.log('QuickSearch object defined:', QuickSearch); // ADD IT HERE
-
         // ---------- initialize ----------
-        console.log('Starting initialization...'); // ADD THIS LINE
-buildNav();
-buildOverview();
-buildViews();
-buildAnalyticsView();
-console.log('About to initialize QuickSearch...'); // ADD THIS LINE
-QuickSearch.init();
-console.log('QuickSearch initialized'); // ADD THIS LINE
+        console.log('Starting initialization...');
+        buildNav();
+        buildOverview();
+        buildViews();
+        buildAnalyticsView();
+        console.log('About to initialize QuickSearch...');
+        QuickSearch.init();
+        console.log('QuickSearch initialized');
+        show('overview');
         loadFromFirebase();
-    initEventSystem();
-    loadEventDetails();
+        initEventSystem();
+        loadEventDetails();
         initContentSystem();
-loadContentDetails();
+        loadContentDetails();
         
         // Real-time sync
-BRANDS.forEach(function(brand) {
-    // Listen for pipeline changes
-    db.collection('empire-pipelines').doc(brand.id)
-        .onSnapshot(function(doc) {
-            if (doc.exists && doc.metadata.hasPendingWrites === false) {
-                PIPELINES[brand.id] = doc.data().data || PIPELINES[brand.id];
-                refreshView(brand.id);
-            }
+        BRANDS.forEach(function(brand) {
+            // Listen for pipeline changes
+            db.collection('empire-pipelines').doc(brand.id)
+                .onSnapshot(function(doc) {
+                    if (doc.exists && doc.metadata.hasPendingWrites === false) {
+                        PIPELINES[brand.id] = doc.data().data || PIPELINES[brand.id];
+                        refreshView(brand.id);
+                    }
+                });
         });
-});
-    });
+        
+    }); // This closes the DOMContentLoaded event listener
     </script>
 </body>
 </html>
