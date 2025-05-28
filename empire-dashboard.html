@@ -1673,7 +1673,25 @@ const db = firebase.firestore();
   color: white;
   border-color: var(--accent);
 }
-
+/* Save notification toast */
+.save-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--success);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 3000;
+}
+.save-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </head>
