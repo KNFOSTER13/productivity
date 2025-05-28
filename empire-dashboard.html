@@ -2155,11 +2155,12 @@ const db = firebase.firestore();
                     if (!CALENDAR_DATA[currentEditBrand]) {
         CALENDAR_DATA[currentEditBrand] = {};
     var calendarDate = currentEditItem._pendingCalendarDate;
-    if (!CALENDAR_DATA[currentEditBrand][calendarDate]) {
-        CALENDAR_DATA[currentEditBrand][calendarDate] = [];
+    if (currentEditItem._pendingCalendarDate) {
+    if (!CALENDAR_DATA[currentEditBrand]) {
+        CALENDAR_DATA[currentEditBrand] = {};
     }
-    CALENDAR_DATA[currentEditBrand][calendarDate].push(currentEditItem);
-    delete currentEditItem._pendingCalendarDate;
+    var calendarDate = currentEditItem._pendingCalendarDate;
+
 }
 
                 
