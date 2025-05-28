@@ -2584,6 +2584,15 @@
                 initializeEmptyTasks();
             }
         }, 100);
+        
+        function startFreshDay() {
+    if (confirm('Start a fresh day? This will clear today\'s tasks but keep all previous days.')) {
+        const todayKey = getDateString();
+        localStorage.setItem(todayKey, '{}');
+        db.collection('productivity').doc(todayKey).delete();
+        location.reload();
+    }
+}
     </script>
 </body>
 </html>
