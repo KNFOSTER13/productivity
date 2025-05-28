@@ -2782,7 +2782,10 @@ window.addEventListener('load', async function() {
     }
 }
         // Weekly Review Functions with Firebase Integration
-async function loadWeeklyReview() {
+    async function loadWeeklyReview() {
+    document.getElementById('weeklySection').style.display = 'block';
+    document.getElementById('weeklyBreakdown').innerHTML = '<p style="text-align: center;">Loading weekly data...</p>';
+    
     const weekData = {};
     let totalTasks = 0;
     let totalMinutes = 0;
