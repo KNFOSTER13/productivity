@@ -2662,11 +2662,6 @@ const db = firebase.firestore();
         function addItem(bid) {
            var newItem = createItem('', (EVENT_BRANDS.indexOf(bid) === -1 ? 'ideas' : 'planning'));
 openEditPanel(newItem, bid);
-
-            
-            var stage = (EVENT_BRANDS.indexOf(bid) === -1) ? 'ideas' : 'planning';
-            var newItem = createItem(txt, stage);
-            
             if (VIEW_STATES[bid] === 'calendar') {
                 // Add directly to today on calendar
                 var today = todayISO();
