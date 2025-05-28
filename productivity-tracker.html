@@ -428,6 +428,87 @@
             box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5) !important;
             border-color: rgba(255, 255, 255, 0.6) !important;
         }
+        /* Weekly Review Styles */
+.weekly-review {
+    border-left-color: #6B2C91 !important;
+    background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
+    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.weekly-review h2 {
+    color: white !important;
+    text-align: center !important;
+    font-size: 1.8em !important;
+    margin-bottom: 15px !important;
+}
+
+.weekly-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.weekly-breakdown {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    backdrop-filter: blur(10px);
+}
+
+.category-bar {
+    margin: 15px 0;
+}
+
+.category-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.category-bar-fill {
+    height: 25px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.category-bar-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 0.8em;
+    font-weight: bold;
+    transition: width 0.5s ease;
+}
+
+.weekly-insights {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    line-height: 1.8;
+}
+
+.insight-item {
+    margin: 10px 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+.insight-item:before {
+    content: "💡";
+    position: absolute;
+    left: 0;
+}
         
         /* Empire Integration Points */
         .empire-integration {
