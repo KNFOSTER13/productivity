@@ -1535,6 +1535,140 @@ const db = firebase.firestore();
   border-color: var(--accent);
   background: var(--bg);
 }
+        /* Quick Search Styles */
+.quick-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10vh;
+    opacity: 0;
+    animation: fadeIn 0.2s forwards;
+}
+
+.quick-search-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.quick-search-input {
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    font-size: 1.1rem;
+    font-family: inherit;
+    outline: none;
+    background: transparent;
+}
+
+.quick-search-results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-result {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+}
+
+.search-result:hover,
+.search-result.selected {
+    background: var(--bg-mute);
+}
+
+.search-result-icon {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.search-result-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-meta {
+    font-size: 0.8rem;
+    color: var(--text-m);
+    margin-top: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-brand {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    border-radius: 2px;
+}
+
+/* Empty state */
+.search-result[data-type="empty"] {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.search-result[data-type="empty"]:hover {
+    background: transparent;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .quick-search-overlay {
+        padding-top: 5vh;
+    }
+    
+    .quick-search-modal {
+        width: 95%;
+    }
+    
+    .quick-search-input {
+        font-size: 1rem;
+        padding: 1rem;
+    }
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </head>
