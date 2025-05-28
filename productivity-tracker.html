@@ -1616,8 +1616,7 @@
                         container.innerHTML = '';
                         data[category].forEach(task => {
                             if (task.text && task.text.trim()) {
-                                const taskDiv = createTaskElement(category, task.text, task.completed, task.priority);
-                                container.appendChild(taskDiv);
+const taskDiv = createTaskElement(category, task.text, task.completed, task.priority, task.timeSpent || 0);                                container.appendChild(taskDiv);
                             }
                         });
                         // Add an empty task
