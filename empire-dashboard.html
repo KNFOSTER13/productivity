@@ -1,39 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-    // Your Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
-    authDomain: "productivity-tracker-knf13.firebaseapp.com",
-    projectId: "productivity-tracker-knf13",
-    storageBucket: "productivity-tracker-knf13.firebasestorage.app",
-    messagingSenderId: "76203539357",
-    appId: "1:76203539357:web:7d474a6a57c631b80d96"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-</script>
-    console.log('Script starting...');
-try {
-    <!-- 
-    =========================================================
-    Empire Dashboard • Enhanced Edition v4.0.0
-    ---------------------------------------------------------
-    • Object-based data structure with metadata
-    • Delete functionality with confirmation
-    • Inline and panel editing capabilities
-    • Enhanced item management
-    =========================================================
-    -->
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Empire Dashboard — Enhanced</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+            authDomain: "productivity-tracker-knf13.firebaseapp.com",
+            projectId: "productivity-tracker-knf13",
+            storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+            messagingSenderId: "76203539357",
+            appId: "1:76203539357:web:7d474a6a57c631b80d96"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+            console.log('Script starting...');
+try {
+    </script>
+    
+
+    
+
     <style>
         :root {
             --bg: #fff;
