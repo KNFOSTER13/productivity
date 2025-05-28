@@ -2613,8 +2613,9 @@ const db = firebase.firestore();
         }
         
         function addItem(bid) {
-            var txt = prompt('Enter title');
-            if (!txt) { return; }
+           var newItem = createItem('', (EVENT_BRANDS.indexOf(bid) === -1 ? 'ideas' : 'planning'));
+openEditPanel(newItem, bid);
+
             
             var stage = (EVENT_BRANDS.indexOf(bid) === -1) ? 'ideas' : 'planning';
             var newItem = createItem(txt, stage);
