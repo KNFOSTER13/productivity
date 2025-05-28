@@ -2615,20 +2615,21 @@ function updateTotalTime() {
             console.log('LocalStorage data for today:', localData);
         }
         
-        // Initialize the app
-        window.addEventListener('load', async function() {
-            debugDateIssue(); // Debug info
-            loadYesterdayReview();
-            loadData();
-            makeCollapsible();
-            setupRealtimeSync();
-            
-            // Set up brain dump auto-save
-            const textarea = document.querySelector('.brain-dump textarea');
-            if (textarea) {
-                textarea.addEventListener('input', saveData);
-            }
-        });
+      // Initialize the app
+window.addEventListener('load', async function() {
+    debugDateIssue(); // Debug info
+    loadYesterdayReview();
+    loadData();
+    makeCollapsible();
+    setupRealtimeSync();
+    updateTotalTime(); // ADD THIS LINE HERE
+    
+    // Set up brain dump auto-save
+    const textarea = document.querySelector('.brain-dump textarea');
+    if (textarea) {
+        textarea.addEventListener('input', saveData);
+    }
+});
         
         // Auto-save every 30 seconds
         setInterval(saveData, 30000);
