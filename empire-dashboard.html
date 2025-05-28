@@ -2151,6 +2151,17 @@ const db = firebase.firestore();
                 currentEditItem.priority = qs('#editPriority').value;
                 currentEditItem.notes = qs('#editNotes').value;
                 currentEditItem.modified = new Date().toISOString();
+                if (currentEditItem._pendingCalendarDate) {
+                    if (!CALENDAR_DATA[currentEditBrand]) {
+        CALENDAR_DATA[currentEditBrand] = {};
+    var calendarDate = currentEditItem._pendingCalendarDate;
+    if (!CALENDAR_DATA[currentEditBrand][calendarDate]) {
+        CALENDAR_DATA[currentEditBrand][calendarDate] = [];
+    }
+    CALENDAR_DATA[currentEditBrand][calendarDate].push(currentEditItem);
+    delete currentEditItem._pendingCalendarDate;
+}
+
                 
                 // Update tags
                 currentEditItem.tags = [];
