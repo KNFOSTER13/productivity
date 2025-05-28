@@ -2752,14 +2752,7 @@ const db = firebase.firestore();
 var ANALYTICS_CHARTS = {};
 var CURRENT_DATE_RANGE = '30d';
 
-function buildAnalyticsView() {
-    // Add analytics to navigation
-    var nav = qs('#nav');
-    var analyticsBtn = el('button', 'nav-btn', 'Analytics');
-    analyticsBtn.dataset.id = 'analytics';
-    analyticsBtn.onclick = function() { showAnalytics(); };
-    // Insert after Overview button
-    nav.insertBefore(analyticsBtn, nav.children[1]);
+
     
     // Create analytics view container
     var views = qs('#views');
