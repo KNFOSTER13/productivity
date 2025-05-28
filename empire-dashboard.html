@@ -4005,22 +4005,25 @@ var QuickSearch = {
         console.log('QuickSearch init called');
         var self = this;
         document.addEventListener('keydown', function(e) {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                self.toggle();
-            }
-        });
+    console.log('Key pressed:', e.key, 'Ctrl:', e.ctrlKey, 'Cmd:', e.metaKey); // ADD THIS LINE
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        console.log('Quick search keyboard shortcut triggered!'); // ADD THIS LINE
+        self.toggle();
+    }
+});
     },
     
     toggle: function() {
-        if (this.isOpen) {
-            this.close();
-        } else {
-            this.open();
-        }
-    },
+    console.log('Toggle called. isOpen:', this.isOpen); // ADD THIS LINE
+    if (this.isOpen) {
+        this.close();
+    } else {
+        this.open();
+    }
     
     open: function() {
+        console.log('Open called');
         var self = this;
         this.isOpen = true;
         this.selectedIndex = 0; // Reset selection
@@ -4360,12 +4363,14 @@ var QuickSearch = {
 };
 
         // ---------- initialize ----------
-        buildNav();
-        buildOverview();
-        buildViews();
-                buildAnalyticsView();
+        console.log('Starting initialization...'); // ADD THIS LINE
+buildNav();
+buildOverview();
+buildViews();
+buildAnalyticsView();
+console.log('About to initialize QuickSearch...'); // ADD THIS LINE
 QuickSearch.init();
-        show('overview');
+console.log('QuickSearch initialized'); // ADD THIS LINE
         loadFromFirebase();
     initEventSystem();
     loadEventDetails();
