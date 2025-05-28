@@ -2547,6 +2547,10 @@ const db = firebase.firestore();
         
         // ---------- interactions ----------
         function show(id) {
+             if (id === 'analytics') {
+        showAnalytics();
+        return;
+    }
             ['overview'].concat(brandOrder).forEach(function(bid) {
                 var navBtn = qs('.nav-btn[data-id="' + bid + '"]');
                 if (navBtn) {
