@@ -1158,7 +1158,40 @@
         </div>
         <button class="motivational-btn" onclick="hideYesterdayReview()">Let's Build on This Success! 🚀</button>
     </div>
+    <!-- Weekly Review Section -->
+<div class="section weekly-review" id="weeklySection" style="display: none; margin-bottom: 30px;">
+    <h2>📊 Weekly Review</h2>
+    <div class="section-description">Your productivity patterns over the past 7 days</div>
     
+    <div class="weekly-stats-grid">
+        <div class="stat-box">
+            <div class="stat-number" id="weeklyTaskCount">0</div>
+            <div class="stat-label">Tasks Completed</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="weeklyTimeSpent">0h</div>
+            <div class="stat-label">Time Invested</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="mostProductiveDay">-</div>
+            <div class="stat-label">Best Day</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number" id="topCategory">-</div>
+            <div class="stat-label">Top Focus</div>
+        </div>
+    </div>
+    
+    <div class="weekly-breakdown" id="weeklyBreakdown">
+        <!-- Category breakdown will go here -->
+    </div>
+    
+    <div class="weekly-insights" id="weeklyInsights">
+        <!-- Insights will go here -->
+    </div>
+    
+    <button class="motivational-btn" onclick="hideWeeklyReview()">Ready for Another Productive Week! 💪</button>
+</div>
     <!-- Empire Integration Points Section -->
     <div class="section empire-integration" style="margin-bottom: 30px;">
         <h2>✨ Empire Integration Points</h2>
