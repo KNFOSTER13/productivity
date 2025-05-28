@@ -1554,12 +1554,13 @@
                         const priority = taskDiv.dataset.priority || 'none';
                         
                         if (textInput && textInput.value.trim()) {
-                            tasks.push({
-                                text: textInput.value,
-                                completed: checkbox.checked,
-                                priority: priority
-                            });
-                        }
+    tasks.push({
+        text: textInput.value,
+        completed: checkbox.checked,
+        priority: priority,
+        timeSpent: parseInt(taskDiv.dataset.timeSpent) || 0
+    });
+}
                     });
                 }
                 
