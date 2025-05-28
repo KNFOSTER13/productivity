@@ -1900,27 +1900,30 @@ const db = firebase.firestore();
 }
         
         // ---------- Firebase sync functions ----------
-        function saveToFirebase() {
-            // Save pipelines
-            Object.keys(PIPELINES).forEach(function(brandId) {
-                db.collection('empire-pipelines').doc(brandId).set({
-                    data: PIPELINES[brandId],
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(function(error) {
-                    console.error('Error saving pipeline for ' + brandId, error);
-                });
-            });
-            
-            // Save calendar data
-            Object.keys(CALENDAR_DATA).forEach(function(brandId) {
-                db.collection('empire-calendar').doc(brandId).set({
-                    data: CALENDAR_DATA[brandId],
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                }).catch(function(error) {
-                    console.error('Error saving calendar for ' + brandId, error);
-                });
-            });
-        }
+  function saveToFirebase() {
+    // Save pipelines
+    Object.keys(PIPELINES).forEach(function(brandId) {
+        db.collection('empire-pipelines').doc(brandId).set({
+            data: PIPELINES[brandId],
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(function(error) {
+            console.error('Error saving pipeline for ' + brandId, error);
+        });
+    });
+    
+    // Save calendar data
+    Object.keys(CALENDAR_DATA).forEach(function(brandId) {
+        db.collection('empire-calendar').doc(brandId).set({
+            data: CALENDAR_DATA[brandId],
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(function(error) {
+            console.error('Error saving calendar for ' + brandId, error);
+        });
+    });
+    
+    // Show notification once at the end
+    showSaveNotification();
+}
 
         function loadFromFirebase() {
             // Load pipelines
