@@ -2671,19 +2671,11 @@ const db = firebase.firestore();
             show(brandId);
         }
         
-        function addItem(bid) {
-           var newItem = createItem('', (EVENT_BRANDS.indexOf(bid) === -1 ? 'ideas' : 'planning'));
-openEditPanel(newItem, bid);
-            if (VIEW_STATES[bid] === 'calendar') {
-                // Add directly to today on calendar
-                var today = todayISO();
-                newItem.scheduledDate = today;
-                addToCalendar(bid, today, newItem, stage);
-                buildCalendar(bid);
-            } else {
-                // Add to pipeline
-                if (!PIPELINES[bid][stage]) { PIPELINES[bid][stage] = []; }
-                PIPELINES[bid][stage].push(newItem);
+     function addItem(bid) {
+    var stage = (EVENT_BRANDS.indexOf(bid) === -1 ? 'ideas' : 'planning');
+    var newItem = createItem('', stage);
+    openEditPanel(newItem, bid);
+}
                 
                 // Rebuild pipeline view
                 var brand = BRANDS.find(function(b) { return b.id === bid; });
