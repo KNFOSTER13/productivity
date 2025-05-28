@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+            authDomain: "productivity-tracker-knf13.firebaseapp.com",
+            projectId: "productivity-tracker-knf13",
+            storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+            messagingSenderId: "76203539357",
+            appId: "1:76203539357:web:7d474a6a57c631b80d96"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        console.log('Firebase initialized!', db);
+    </script>
+</head>
+<body>
+    <h1>Firebase Test</h1>
+</body>
+</html>
