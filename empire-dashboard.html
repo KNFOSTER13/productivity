@@ -4002,6 +4002,7 @@ var QuickSearch = {
     results: [],
     
     init: function() {
+        console.log('QuickSearch init called');
         var self = this;
         document.addEventListener('keydown', function(e) {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
