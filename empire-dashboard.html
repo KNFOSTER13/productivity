@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Your Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+    authDomain: "productivity-tracker-knf13.firebaseapp.com",
+    projectId: "productivity-tracker-knf13",
+    storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+    messagingSenderId: "76203539357",
+    appId: "1:76203539357:web:7d474a6a57c631b80d96"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+    <!-- 
+    =========================================================
+    Empire Dashboard • Enhanced Edition v4.0.0
+    ---------------------------------------------------------
+    • Object-based data structure with metadata
+    • Delete functionality with confirmation
+    • Inline and panel editing capabilities
+    • Enhanced item management
+    =========================================================
+    -->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Empire Dashboard — Enhanced</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-    
-    <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
-            authDomain: "productivity-tracker-knf13.firebaseapp.com",
-            projectId: "productivity-tracker-knf13",
-            storageBucket: "productivity-tracker-knf13.firebasestorage.app",
-            messagingSenderId: "76203539357",
-            appId: "1:76203539357:web:7d474a6a57c631b80d96"
-        };
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-   
-    </script>
-    
-
-    
-
     <style>
         :root {
             --bg: #fff;
@@ -2144,18 +2145,12 @@
         };
         
         window.saveEditPanel = function() {
-        if (currentEditItem._pendingCalendarDate) {
-    if (!CALENDAR_DATA[currentEditBrand]) {
-        CALENDAR_DATA[currentEditBrand] = {};
-    }
-    var calendarDate = currentEditItem._pendingCalendarDate;
-    if (!CALENDAR_DATA[currentEditBrand][calendarDate]) {
-        CALENDAR_DATA[currentEditBrand][calendarDate] = [];
-    }
-    CALENDAR_DATA[currentEditBrand][calendarDate].push(currentEditItem);
-    delete currentEditItem._pendingCalendarDate;
-}
-
+            if (currentEditItem && currentEditBrand) {
+                currentEditItem.title = qs('#editTitle').value;
+                currentEditItem.scheduledDate = qs('#editDate').value;
+                currentEditItem.priority = qs('#editPriority').value;
+                currentEditItem.notes = qs('#editNotes').value;
+                currentEditItem.modified = new Date().toISOString();
                 
                 // Update tags
                 currentEditItem.tags = [];
@@ -2664,18 +2659,24 @@
             show(brandId);
         }
         
- function addItem(bid) {
-    var stage = (EVENT_BRANDS.indexOf(bid) === -1 ? 'ideas' : 'planning');
-    var newItem = createItem('', stage);
-    
-    if (VIEW_STATES[bid] === 'calendar') {
-        var today = todayISO();
-        newItem.scheduledDate = today;
-        newItem._pendingCalendarDate = today;
-    }
-    
-    openEditPanel(newItem, bid);
-}
+        function addItem(bid) {
+           var newItem = createItem('', (EVENT_BRANDS.indexOf(bid) === -1 ? 'ideas' : 'planning'));
+openEditPanel(newItem, bid);
+
+            
+            var stage = (EVENT_BRANDS.indexOf(bid) === -1) ? 'ideas' : 'planning';
+            var newItem = createItem(txt, stage);
+            
+            if (VIEW_STATES[bid] === 'calendar') {
+                // Add directly to today on calendar
+                var today = todayISO();
+                newItem.scheduledDate = today;
+                addToCalendar(bid, today, newItem, stage);
+                buildCalendar(bid);
+            } else {
+                // Add to pipeline
+                if (!PIPELINES[bid][stage]) { PIPELINES[bid][stage] = []; }
+                PIPELINES[bid][stage].push(newItem);
                 
                 // Rebuild pipeline view
                 var brand = BRANDS.find(function(b) { return b.id === bid; });
@@ -2690,13 +2691,16 @@
             saveToFirebase();
         }
         
-          function addItemToDate(brandId, dateStr) {
-    var newItem = createItem('', 'planning', { scheduledDate: dateStr });
-    newItem._pendingCalendarDate = dateStr;
-    openEditPanel(newItem, brandId);
-}
-
-        
+        function addItemToDate(brandId, dateStr) {
+            var title = prompt('Enter title for ' + dateStr + ':');
+            if (title) {
+                var newItem = createItem(title, 'planning', {scheduledDate: dateStr});
+                addToCalendar(brandId, dateStr, newItem, 'planning');
+                buildCalendar(brandId);
+                updateAll();
+                saveToFirebase();
+            }
+        }
         
         function updateCounts() {
             var cols = qsa('.col');
@@ -2755,14 +2759,17 @@
             updateTotals();
         }
         // ---------- Analytics Dashboard ----------
-        
+var ANALYTICS_CHARTS = {};
+var CURRENT_DATE_RANGE = '30d';
 
-    
-    // Create analytics view container
-    var views = qs('#views');
-    var analyticsView = el('div', 'analytics-view');
-
-
+function buildAnalyticsView() {
+    // Add analytics to navigation
+    var nav = qs('#nav');
+    var analyticsBtn = el('button', 'nav-btn', 'Analytics');
+    analyticsBtn.dataset.id = 'analytics';
+    analyticsBtn.onclick = function() { showAnalytics(); };
+    // Insert after Overview button
+    nav.insertBefore(analyticsBtn, nav.children[1]);
     
     // Create analytics view container
     var views = qs('#views');
@@ -3170,21 +3177,21 @@ function closeEventModal() {
 }
 
 window.showEventTab = function(tabName, eventId) {
-    // Update active tabs
-    qsa('.tab').forEach(tab => tab.classList.remove('active'));
-    
-    // Find and activate the clicked tab
-    qsa('.tab').forEach(tab => {
-        if (tab.textContent.toLowerCase().includes(tabName)) {
-            tab.classList.add('active');
-        }
-    });
-    
-    // Show corresponding panel
-    qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
-    var panel = qs('#' + tabName);
-    if (panel) panel.classList.add('active');
-};  // <-- ADD THIS CLOSING BRACE
+  // Update active tabs
+  qsa('.tab').forEach(tab => tab.classList.remove('active'));
+  
+  // Find and activate the clicked tab
+  qsa('.tab').forEach(tab => {
+    if (tab.textContent.toLowerCase().includes(tabName)) {
+      tab.classList.add('active');
+    }
+  });
+  
+  // Show corresponding panel
+  qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  var panel = qs('#' + tabName);
+  if (panel) panel.classList.add('active');
+};
 
 function getEventDetails(eventId, brandId) {
   // Check if we have saved details
@@ -4408,6 +4415,7 @@ function loadContentDetails() {
         buildNav();
         buildOverview();
         buildViews();
+        buildAnalyticsView();
         console.log('About to initialize QuickSearch...');
         QuickSearch.init();
         console.log('QuickSearch initialized');
@@ -4431,8 +4439,6 @@ function loadContentDetails() {
         });
         
     }); // This closes the DOMContentLoaded event listener
- 
-
     </script>
 </body>
 </html>
