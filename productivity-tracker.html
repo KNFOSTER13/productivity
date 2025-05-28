@@ -2866,7 +2866,10 @@ function displayWeeklyReview(totalTasks, totalMinutes, categoryTotals, dailyTota
     // Update stats
     document.getElementById('weeklyTaskCount').textContent = totalTasks;
     document.getElementById('weeklyTimeSpent').textContent = formatTime(totalMinutes);
-    
+    const startDate = new Date();
+startDate.setDate(startDate.getDate() - 6);
+const dateRangeText = `${startDate.toLocaleDateString()} - ${new Date().toLocaleDateString()}`;
+
     // Find most productive day
     let bestDay = '-';
     let maxTasks = 0;
