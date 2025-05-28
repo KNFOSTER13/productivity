@@ -18,6 +18,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
+    console.log('Script starting...');
+try {
     <!-- 
     =========================================================
     Empire Dashboard • Enhanced Edition v4.0.0
@@ -4429,6 +4431,10 @@ function loadContentDetails() {
         });
         
     }); // This closes the DOMContentLoaded event listener
+   } catch(e) {
+    console.error('Main error:', e);
+    console.error('Stack:', e.stack);
+
     </script>
 </body>
 </html>
