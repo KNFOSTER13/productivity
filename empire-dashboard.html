@@ -2128,6 +2128,23 @@ const db = firebase.firestore();
                     var tagText = tagEl.textContent.replace('×', '').trim();
                     if (tagText) currentEditItem.tags.push(tagText);
                 });
+                        // Check if this is a new item (not already in any stage)
+        var alreadyExists = false;
+        var stagesToCheck = EVENT_BRANDS.includes(currentEditBrand) ? EVENT_STAGES : EDIT_STAGES;
+        stagesToCheck.forEach(function(stage) {
+            if (PIPELINES[currentEditBrand][stage]?.some(i => i.id === currentEditItem.id)) {
+                alreadyExists = true;
+            }
+        });
+
+        if (!alreadyExists) {
+            var defaultStage = EVENT_BRANDS.includes(currentEditBrand) ? 'planning' : 'ideas';
+            if (!PIPELINES[currentEditBrand][defaultStage]) {
+                PIPELINES[currentEditBrand][defaultStage] = [];
+            }
+            PIPELINES[currentEditBrand][defaultStage].push(currentEditItem);
+        }
+
                 
                 refreshView(currentEditBrand);
                 closeEditPanel();
