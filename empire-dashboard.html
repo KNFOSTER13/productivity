@@ -3167,21 +3167,21 @@ function closeEventModal() {
 }
 
 window.showEventTab = function(tabName, eventId) {
-  // Update active tabs
-  qsa('.tab').forEach(tab => tab.classList.remove('active'));
-  
-  // Find and activate the clicked tab
-  qsa('.tab').forEach(tab => {
-    if (tab.textContent.toLowerCase().includes(tabName)) {
-      tab.classList.add('active');
-    }
-  });
-  
-  // Show corresponding panel
-  qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
-  var panel = qs('#' + tabName);
-  if (panel) panel.classList.add('active');
-};
+    // Update active tabs
+    qsa('.tab').forEach(tab => tab.classList.remove('active'));
+    
+    // Find and activate the clicked tab
+    qsa('.tab').forEach(tab => {
+        if (tab.textContent.toLowerCase().includes(tabName)) {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Show corresponding panel
+    qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    var panel = qs('#' + tabName);
+    if (panel) panel.classList.add('active');
+};  // <-- ADD THIS CLOSING BRACE
 
 function getEventDetails(eventId, brandId) {
   // Check if we have saved details
