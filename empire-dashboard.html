@@ -2755,8 +2755,14 @@
             updateTotals();
         }
         // ---------- Analytics Dashboard ----------
-var ANALYTICS_CHARTS = {};
-var CURRENT_DATE_RANGE = '30d';
+        
+function buildAnalyticsView() {
+    var ANALYTICS_CHARTS = {};
+    var CURRENT_DATE_RANGE = '30d';
+    
+    // Create analytics view container
+    var views = qs('#views');
+    var analyticsView = el('div', 'analytics-view');
 
 
     
