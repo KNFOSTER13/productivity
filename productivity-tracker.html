@@ -2801,6 +2801,41 @@ function updateTotalTime() {
       // Initialize the app
 // Initialize the app
 window.addEventListener('load', async function() {
+    // Make deleteTask globally accessible
+window.deleteTask = function(button, category) {
+    const taskDiv = button.closest('.task-input') || button.closest('.empire-task-input');
+    const container = taskDiv.parentElement;
+    
+    // Only delete if there's more than one task in the category
+    if (container.children.length > 1) {
+        taskDiv.remove();
+        saveData();
+        updateCompletedCount();
+        updateTotalTime();
+    } else {
+        // If it's the last task, just clear it
+        const textInput = taskDiv.querySelector('input[type="text"]');
+        const checkbox = taskDiv.querySelector('input[type="checkbox"]');
+        textInput.value = '';
+        checkbox.checked = false;
+        taskDiv.dataset.priority = 'none';
+        taskDiv.dataset.timeSpent = '0';
+        
+        // Update priority buttons
+        const priorityButtons = taskDiv.querySelectorAll('.priority-btn');
+        priorityButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Update time display if it exists
+        const timeDisplay = taskDiv.querySelector('.time-display');
+        if (timeDisplay) {
+            timeDisplay.textContent = '';
+        }
+        
+        saveData();
+        updateCompletedCount();
+        updateTotalTime();
+    }
+};
     debugDateIssue(); // Debug info
     loadYesterdayReview();
     loadData();
