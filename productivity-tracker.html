@@ -1293,7 +1293,13 @@
     📊 Weekly Review
 </button>
 </div>
-   
+   <div class="history-controls">
+    <label>View Past Day:</label>
+    <input type="date" id="historyDate" class="date-picker" max="${new Date().toISOString().split('T')[0]}">
+    <button class="history-btn" onclick="viewHistoryDate()">📖 View This Date</button>
+    <button class="history-btn" onclick="returnToToday()">📅 Back to Today</button>
+</div>
+<div id="historyNotice" class="viewing-history" style="display: none;"></div>
     
     <!-- Yesterday's Review Section -->
     <div class="section yesterday-review" id="yesterdaySection" style="display: none; margin-bottom: 30px;">
