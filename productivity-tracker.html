@@ -3000,12 +3000,57 @@ window.deleteTask = function(button, category) {
             }
         }, 100);
         
-        function startFreshDay() {
+     async function startFreshDay() {
     if (confirm('Start a fresh day? This will clear today\'s tasks but keep all previous days.')) {
-        const todayKey = getDateString();
-        localStorage.setItem(todayKey, '{}');
-        db.collection('productivity').doc(todayKey).delete();
-        location.reload();
+        try {
+            const todayKey = getDateString();
+            
+            // Clear localStorage first
+            localStorage.removeItem(todayKey);
+            
+            // Clear Firebase and wait for it to complete
+            await db.collection('productivity').doc(todayKey).delete();
+            
+            // Clear all task inputs manually before reload
+            document.querySelectorAll('.task-input, .empire-task-input').forEach(taskDiv => {
+                const textInput = taskDiv.querySelector('input[type="text"]');
+                const checkbox = taskDiv.querySelector('input[type="checkbox"]');
+                if (textInput) textInput.value = '';
+                if (checkbox) checkbox.checked = false;
+                taskDiv.dataset.priority = 'none';
+                taskDiv.dataset.timeSpent = '0';
+            });
+            
+            // Clear brain dump
+            const brainDump = document.querySelector('.brain-dump textarea');
+            if (brainDump) brainDump.value = '';
+            
+            // Reset goals
+            document.querySelectorAll('.milestone-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            // Reset streaks to 0
+            document.getElementById('writingStreak').textContent = '0';
+            document.getElementById('submissionStreak').textContent = '0';
+            document.getElementById('authorityStreak').textContent = '0';
+            document.getElementById('newsletterStreak').textContent = '0';
+            
+            // Update the count
+            updateCompletedCount();
+            
+            // Show success message
+            updateSyncStatus('🌅 Fresh day started!');
+            
+            // Reload after a short delay to ensure everything is cleared
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+            
+        } catch (error) {
+            console.error('Error starting fresh day:', error);
+            alert('There was an error clearing today\'s data. Please try again.');
+        }
     }
 }
         // Weekly Review Functions with Firebase Integration
