@@ -3081,18 +3081,23 @@
             `;
             
             // Add completed tasks if any
-            if (completedTasks.length > 0) {
-                summaryHTML += `
-                    <div class="summary-section">
-                        <h3>✅ Accomplished Today</h3>
-                        <ul class="summary-task-list">
-                         ${completedTasks.map(task => 
-                                '<li class="summary-task-item">' +
-                                '<strong>' + task.category + ':</strong> ' + task.text +
-                                (task.priority !== 'none' ? ' (' + priorityLabels[task.priority] + ')' : '') +
-                                '</li>'
-                            ).join('')}
-            
+          if (completedTasks.length > 0) {
+  summaryHTML += `
+    <div class="summary-section">
+      <h3>✅ Accomplished Today</h3>
+      <ul class="summary-task-list">
+        ${completedTasks.map(task => `
+          <li class="summary-task-item">
+            <strong>${task.category}:</strong> ${task.text}
+            ${task.priority !== 'none' ? ` (${priorityLabels[task.priority]})` : ''}
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `;
+}
+
+
                 // Add category breakdown
             if (Object.keys(categoryStats).length > 0) {
                 summaryHTML += `
