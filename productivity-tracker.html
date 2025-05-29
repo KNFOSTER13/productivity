@@ -1788,13 +1788,14 @@ const taskDiv = createTaskElement(category, task.text, task.completed, task.prio
             });
             
             // Load brain dump
-            if (data.brainDump) {
-                const textarea = document.querySelector('.brain-dump textarea');
-                if (textarea) {
-                    textarea.value = data.brainDump;
-                    textarea.addEventListener('input', saveData);
-                }
-            }
+           // Load brain dump
+if (data.brainDump !== undefined) { // Check for undefined instead of truthy
+    const textarea = document.querySelector('.brain-dump textarea');
+    if (textarea) {
+        textarea.value = data.brainDump || ''; // Set empty string if null/undefined
+        // Don't add listener here - it's added in the initialization
+    }
+}
             
             // Load goals
             if (data.goals) {
