@@ -2733,6 +2733,7 @@ function updateTotalTime() {
         }
         
       // Initialize the app
+// Initialize the app
 window.addEventListener('load', async function() {
     debugDateIssue(); // Debug info
     loadYesterdayReview();
@@ -2741,11 +2742,19 @@ window.addEventListener('load', async function() {
     setupRealtimeSync();
     updateTotalTime(); // ADD THIS LINE HERE
     
-    // Set up brain dump auto-save
-    const textarea = document.querySelector('.brain-dump textarea');
-    if (textarea) {
-        textarea.addEventListener('input', saveData);
-    }
+    // Set up brain dump auto-save with a slight delay to ensure DOM is ready
+    setTimeout(() => {
+        const textarea = document.querySelector('.brain-dump textarea');
+        if (textarea) {
+            // Remove any existing listeners first
+            textarea.removeEventListener('input', saveData);
+            // Add the event listener
+            textarea.addEventListener('input', saveData);
+            console.log('Brain dump auto-save initialized');
+        } else {
+            console.error('Brain dump textarea not found');
+        }
+    }, 100);
 });
         
         // Auto-save every 30 seconds
