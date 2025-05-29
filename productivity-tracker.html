@@ -2892,6 +2892,66 @@ window.deleteTask = function(button, category) {
         updateTotalTime();
     }
 };
+    // History view functions
+    window.viewHistoryDate = function() {
+        const datePicker = document.getElementById('historyDate');
+        const selectedDate = datePicker.value;
+        
+        if (!selectedDate) {
+            alert('Please select a date');
+            return;
+        }
+        
+        const date = new Date(selectedDate + 'T00:00:00');
+        const dateString = date.toDateString();
+        
+        // Show notice
+        const notice = document.getElementById('historyNotice');
+        notice.style.display = 'block';
+        notice.textContent = `📚 Viewing: ${date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+        
+        // Load that day's data
+        loadData(dateString);
+        
+        // Disable editing for past dates
+        document.querySelectorAll('input, button, textarea').forEach(el => {
+            if (!el.closest('.history-controls')) {
+                el.disabled = true;
+            }
+        });
+        
+        // Change header
+        document.getElementById('currentDate').textContent = date.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        }) + ' (Archive View)';
+    };
+
+    window.returnToToday = function() {
+        // Hide notice
+        document.getElementById('historyNotice').style.display = 'none';
+        
+        // Re-enable editing
+        document.querySelectorAll('input, button, textarea').forEach(el => {
+            el.disabled = false;
+        });
+        
+        // Load today's data
+        loadData();
+        
+        // Reset header
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        // Clear date picker
+        document.getElementById('historyDate').value = '';
+    };
     debugDateIssue(); // Debug info
     loadYesterdayReview();
     loadData();
@@ -2913,6 +2973,7 @@ window.deleteTask = function(button, category) {
         }
     }, 100);
 });
+        
         
         // Auto-save every 30 seconds
         setInterval(saveData, 30000);
