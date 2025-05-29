@@ -3435,7 +3435,7 @@ db.collection('productivity').doc(todayKey)
         // Check if this update happened more than 5 seconds after our last save
         const timeSinceLastSave = Date.now() - lastLocalSaveTime;
         
-        if (doc.exists && doc.metadata.hasPendingWrites === false && timeSinceLastSave > 5000) {
+        if (doc.exists && doc.metadata.hasPendingWrites === false && timeSinceLastSave > 30000) {
             const data = doc.data();
             delete data.lastUpdated;
             loadDataIntoUI(data);
