@@ -1226,6 +1226,56 @@
 
 .empire-task-input:hover .delete-task-btn {
     opacity: 1;
+}// Add this CSS
+.history-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%);
+    border-radius: 12px;
+    color: white;
+}
+
+.date-picker {
+    padding: 10px 15px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.date-picker::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.history-btn {
+    background: rgba(255, 255, 255, 0.95);
+    color: #6B2C91;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.history-btn:hover {
+    background: white;
+    transform: translateY(-2px);
+}
+
+.viewing-history {
+    background: #f0e6ff;
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    color: #6B2C91;
 }
     </style>
 </head>
