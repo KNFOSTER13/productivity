@@ -3432,7 +3432,10 @@ function saveData() {
 const todayKey = getDateString();
 db.collection('productivity').doc(todayKey)
     .onSnapshot((doc) => {
-        if (doc.exists && doc.metadata.hasPendingWrites === false && !isLocalUpdate) {
+        // Check if this update happened more than 5 seconds after our last save
+        const timeSinceLastSave = Date.now() - lastLocalSaveTime;
+        
+        if (doc.exists && doc.metadata.hasPendingWrites === false && timeSinceLastSave > 5000) {
             const data = doc.data();
             delete data.lastUpdated;
             loadDataIntoUI(data);
@@ -3441,8 +3444,7 @@ db.collection('productivity').doc(todayKey)
                 updateSyncStatus('☁ Cloud Synced');
             }, 3000);
         }
-    });
-            
+    });    
             // Auto-save every 30 seconds
             setInterval(saveData, 30000);
             
