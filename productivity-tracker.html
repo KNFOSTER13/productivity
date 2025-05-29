@@ -1889,6 +1889,7 @@ if (data.brainDump !== undefined) { // Check for undefined instead of truthy
             <button class="time-btn" onclick="addTime(this, 60)">+1h</button>
             <span class="time-display">${formatTime(timeSpent)}</span>
         </div>
+        <button class="delete-task-btn" onclick="deleteTask(this, '${category}')">×</button>
     `;
     
     taskCounter++;
