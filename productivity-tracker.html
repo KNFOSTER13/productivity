@@ -3432,10 +3432,10 @@ function saveData() {
 const todayKey = getDateString();
 db.collection('productivity').doc(todayKey)
     .onSnapshot((doc) => {
-        // Check if this update happened more than 5 seconds after our last save
+        // Check if this update happened more than 5 minutes after our last save
         const timeSinceLastSave = Date.now() - lastLocalSaveTime;
         
-        if (doc.exists && doc.metadata.hasPendingWrites === false && timeSinceLastSave > 30000) {
+        if (doc.exists && doc.metadata.hasPendingWrites === false && timeSinceLastSave > 300000) {
             const data = doc.data();
             delete data.lastUpdated;
             loadDataIntoUI(data);
@@ -3445,8 +3445,8 @@ db.collection('productivity').doc(todayKey)
             }, 3000);
         }
     });    
-            // Auto-save every 30 seconds
-            setInterval(saveData, 30000);
+            // Auto-save every 5 minutes
+            setInterval(saveData, 300000);
             
             // Update total time on load
             updateTotalTime();
