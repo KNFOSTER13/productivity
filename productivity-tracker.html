@@ -1967,7 +1967,8 @@
         let taskCounter = 0;
         let currentSuggestion = null;
         let currentPriorities = {};
-        
+        let isLocalUpdate = false;
+
         // Initialize with one task per category
         const categories = ['work', 'education', 'relationships', 'money', 'business', 'leisure', 'vanity', 'health', 'home', 'produce', 'recover', 'discover'];
         const empireCategories = ['empire-priorities', 'empire-deadlines', 'empire-revenue', 'empire-opportunities'];
