@@ -34,11 +34,11 @@
         }
         
         body {
-            font-family: 'Georgia', serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #fefefe;
-            padding: 10px;
+            color: #2d3748;
+            background: #f0f2f5;
+            padding: 20px;
             max-width: 100%;
             margin: 0;
             -webkit-text-size-adjust: 100%;
@@ -47,43 +47,147 @@
         
         .header {
             text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e8e8e8;
+            margin-bottom: 50px;
+            color: #2d3748;
         }
         
         .header h1 {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 8px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
         }
         
         .date {
             font-size: 1.1em;
-            color: #7f8c8d;
+            color: #718096;
             font-style: italic;
         }
         
         .container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
+        }
+        
+        /* Section with gradient backgrounds */
+        .section {
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 260px;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: none;
             margin-bottom: 20px;
         }
         
-        .section {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.1);
-            border-left: 5px solid #3498db;
-            transition: all 0.3s ease;
-            margin-bottom: 10px;
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
         
-        .section:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.15);
+        /* Category-specific gradients */
+        .section.work { 
+            background: linear-gradient(135deg, #FF1493 0%, #FF69B4 50%, #FFB6C1 100%);
+        }
+        .section.education { 
+            background: linear-gradient(135deg, #FF6347 0%, #FF7F50 50%, #FFA07A 100%);
+        }
+        .section.relationships { 
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFE4B5 100%);
+        }
+        .section.money { 
+            background: linear-gradient(135deg, #00FF7F 0%, #32CD32 50%, #90EE90 100%);
+        }
+        .section.business { 
+            background: linear-gradient(135deg, #00CED1 0%, #00BFFF 50%, #87CEEB 100%);
+        }
+        .section.leisure { 
+            background: linear-gradient(135deg, #4169E1 0%, #1E90FF 50%, #87CEFA 100%);
+        }
+        .section.vanity { 
+            background: linear-gradient(135deg, #8A2BE2 0%, #9370DB 50%, #DDA0DD 100%);
+        }
+        .section.health { 
+            background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 50%, #FFC0CB 100%);
+        }
+        .section.home { 
+            background: linear-gradient(135deg, #9932CC 0%, #BA55D3 50%, #DA70D6 100%);
+        }
+        
+        /* Background watermark icons */
+        .section::before {
+            position: absolute;
+            font-size: 8em;
+            opacity: 0.15;
+            top: 20px;
+            right: 20px;
+            transition: all 0.3s ease;
+            text-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .section:hover::before {
+            opacity: 0.25;
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .work::before { content: "💼"; }
+        .education::before { content: "📚"; }
+        .relationships::before { content: "💝"; }
+        .money::before { content: "💰"; }
+        .business::before { content: "🚀"; }
+        .leisure::before { content: "🎨"; }
+        .vanity::before { content: "💅"; }
+        .health::before { content: "🌿"; }
+        .home::before { content: "🏡"; }
+        
+        /* Floating animation for icons */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .section::after {
+            content: attr(data-icon);
+            position: absolute;
+            font-size: 3em;
+            opacity: 0.2;
+            bottom: 20px;
+            left: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .work::after { content: "💻"; }
+        .education::after { content: "✏️"; }
+        .relationships::after { content: "🤝"; }
+        .money::after { content: "💵"; }
+        .business::after { content: "📈"; }
+        .leisure::after { content: "🎭"; }
+        .vanity::after { content: "✨"; }
+        .health::after { content: "💪"; }
+        .home::after { content: "🛋️"; }
+        
+        /* Section headers */
+        .section h2 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
         }
         
         .section-header {
@@ -96,19 +200,10 @@
             padding: 5px 0;
         }
         
-        .section h2 {
-            font-size: 1.3em;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
         .collapse-icon {
             font-size: 1.2em;
             transition: transform 0.3s ease;
-            color: #7f8c8d;
+            color: rgba(255, 255, 255, 0.8);
         }
         
         .section.collapsed .collapse-icon {
@@ -127,26 +222,68 @@
         }
         
         .section-description {
-            color: #7f8c8d;
-            font-size: 0.95em;
-            margin-bottom: 15px;
-            font-style: italic;
-            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
         }
         
+        /* Task inputs with glass effect */
         .task-input {
             display: flex;
-            margin-bottom: 15px;
             align-items: center;
             gap: 12px;
-            padding: 8px 0;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .task-input:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(5px);
         }
         
         .task-input input[type="checkbox"] {
+            appearance: none;
             width: 22px;
             height: 22px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
             cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
             flex-shrink: 0;
+        }
+        
+        .task-input input[type="checkbox"]:hover {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .task-input input[type="checkbox"]:checked {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: white;
+        }
+        
+        .task-input input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #333;
+            font-weight: bold;
+            font-size: 14px;
         }
         
         .priority-buttons {
@@ -156,124 +293,157 @@
         }
         
         .priority-btn {
-            background: #f0f0f0;
-            border: 1px solid #ddd;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
             transition: all 0.2s;
+            color: white;
         }
         
         .priority-btn:hover {
-            background: #e0e0e0;
+            background: rgba(255, 255, 255, 0.3);
             transform: translateY(-1px);
         }
         
         .priority-btn.active {
-            background: #e8e8e8;
-            border-color: #999;
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .task-input input[type="text"] {
             flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1em;
-            background: white;
-            color: #333;
-            min-height: 44px;
-            box-sizing: border-box;
+            padding: 0;
+            background: transparent;
+            border: none;
+            font-size: 0.95em;
+            color: white;
+            font-weight: 500;
         }
         
         .task-input input[type="text"]:focus {
             outline: none;
-            border-color: #FF1493;
-            box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
-            background: white;
         }
         
-        /* Empire Integration Inputs */
-        .empire-task-input {
-            display: flex;
-            margin-bottom: 15px;
-            align-items: center;
-            gap: 12px;
+        .task-input input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
         
-        .empire-task-input input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        
-        .empire-task-input input[type="text"] {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1em;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            min-height: 44px;
-            box-sizing: border-box;
-        }
-        
-        .empire-task-input input[type="text"]:focus {
-            outline: none;
-            border-color: #fff;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-        }
-        
+        /* Add button */
         .add-task-btn {
-            background: linear-gradient(45deg, #7B3F8A, #9A5FB8) !important;
-            color: white !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            padding: 12px 20px !important;
-            border-radius: 8px !important;
-            cursor: pointer !important;
-            font-size: 1em !important;
-            margin-top: 15px !important;
-            transition: all 0.3s !important;
-            box-shadow: 0 2px 8px rgba(123, 63, 138, 0.3) !important;
-            width: 100% !important;
-            min-height: 44px !important;
-            font-weight: 600 !important;
-            touch-action: manipulation !important;
-        }
-        
-        .add-task-btn:hover,
-        .add-task-btn:active {
-            background: linear-gradient(45deg, #8E4BA0, #B070D0) !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 4px 12px rgba(123, 63, 138, 0.4) !important;
-        }
-        
-        .empire-btn {
-            background: rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+            padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
             color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 15px;
-            transition: all 0.3s;
-            width: 100%;
-            min-height: 44px;
             font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
         }
         
-        .empire-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .add-task-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            border-color: rgba(255, 255, 255, 0.6);
             transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
         
+        .add-task-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Progress indicator */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: width 0.3s ease;
+        }
+        
+        /* Completed task style */
+        .task-input.completed {
+            opacity: 0.7;
+        }
+        
+        .task-input.completed input[type="text"] {
+            text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Time tracking */
+        .time-tracking {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .time-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .time-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .time-display {
+            font-weight: bold;
+            color: white;
+            margin-left: 8px;
+            min-width: 60px;
+        }
+        
+        /* Task deletion button */
+        .delete-task-btn {
+            background: rgba(255, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 1.2em;
+            min-width: 30px;
+            height: 30px;
+        }
+
+        .task-input:hover .delete-task-btn {
+            opacity: 1;
+        }
+
+        .empire-task-input:hover .delete-task-btn {
+            opacity: 1;
+        }
+        
+        /* Stats widget */
         .stats {
             position: sticky !important;
             top: 10px !important;
@@ -312,7 +482,6 @@
         
         /* Yesterday's Review Styles */
         .yesterday-review {
-            border-left-color: #6B2C91 !important;
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
@@ -431,7 +600,6 @@
         
         /* Weekly Review Styles */
         .weekly-review {
-            border-left-color: #6B2C91 !important;
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
@@ -513,7 +681,6 @@
         
         /* Empire Integration Points */
         .empire-integration {
-            border-left-color: #B8860B !important;
             background: linear-gradient(135deg, #B8860B 0%, #DAA520 50%, #FFD700 100%) !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(184, 134, 11, 0.4) !important;
@@ -549,9 +716,104 @@
             gap: 8px;
         }
         
+        /* Empire Integration Inputs */
+        .empire-task-input {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .empire-task-input:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateX(5px);
+        }
+        
+        .empire-task-input input[type="checkbox"] {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .empire-task-input input[type="checkbox"]:hover {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .empire-task-input input[type="checkbox"]:checked {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: white;
+        }
+        
+        .empire-task-input input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #333;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .empire-task-input input[type="text"] {
+            flex: 1;
+            padding: 0;
+            background: transparent;
+            border: none;
+            font-size: 0.95em;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .empire-task-input input[type="text"]:focus {
+            outline: none;
+        }
+        
+        .empire-task-input input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .empire-btn {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95em;
+            margin-top: 15px;
+            transition: all 0.3s;
+            width: 100%;
+            min-height: 44px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            text-shadow: 0 1px 5px rgba(0,0,0,0.2);
+        }
+        
+        .empire-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
         /* Creative Streaks */
         .creative-streaks {
-            border-left-color: #6B2C91 !important;
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
@@ -607,7 +869,6 @@
         
         /* Unstuck Suggestions Styles */
         .unstuck-suggestions {
-            border-left-color: #6B2C91 !important;
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
@@ -757,7 +1018,6 @@
         .creative-workflow {
             background: linear-gradient(135deg, #E6E6FA 0%, #DDA0DD 50%, #9370DB 100%);
             color: white;
-            border-left: none;
             box-shadow: 0 4px 20px rgba(221, 160, 221, 0.4);
             margin-bottom: 15px;
         }
@@ -799,7 +1059,6 @@
         
         /* Goal Milestones */
         .goal-milestones {
-            border-left-color: #6B2C91 !important;
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
@@ -914,11 +1173,9 @@
         /* Brain dump */
         .brain-dump {
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
-            border-left: 5px solid #6B2C91 !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
             border: 2px solid rgba(255, 255, 255, 0.2) !important;
-            border-left: 5px solid #6B2C91 !important;
         }
         
         .brain-dump h2 {
@@ -945,14 +1202,14 @@
         
         .brain-dump textarea:focus {
             outline: none;
-            border-color: #FF1493;
-            box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+            background: white;
         }
         
         /* Daily Summary Styles */
         .daily-summary {
             background: linear-gradient(135deg, #6B2C91 0%, #9A4AC0 50%, #C084E8 100%) !important;
-            border-left: 5px solid #6B2C91 !important;
             color: white !important;
             box-shadow: 0 4px 20px rgba(107, 44, 145, 0.4) !important;
             border: 2px solid rgba(255, 255, 255, 0.2) !important;
@@ -1091,147 +1348,6 @@
             font-style: italic;
         }
         
-        /* Category-specific colors - Unicorn Palette */
-        .work { border-left-color: #FF1493; } /* Hot Pink */
-        .education { border-left-color: #FF6347; } /* Coral */
-        .relationships { border-left-color: #FFD700; } /* Bright Gold */
-        .money { border-left-color: #00FF7F; } /* Spring Green */
-        .business { border-left-color: #32CD32; } /* Lime Green */
-        .leisure { border-left-color: #00BFFF; } /* Deep Sky Blue */
-        .vanity { border-left-color: #4169E1; } /* Royal Blue */
-        .health { border-left-color: #DDA0DD; } /* Plum */
-        .home { border-left-color: #9932CC; } /* Dark Orchid */
-        
-        /* Mobile-specific responsive adjustments */
-        @media (max-width: 768px) {
-            .yesterday-stats {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .stat-box {
-                min-width: auto;
-                width: 100%;
-                max-width: 200px;
-                margin: 0 auto;
-            }
-            
-            .workflow-section h3 {
-                font-size: 1.2em;
-            }
-            
-            .suggestion-controls {
-                gap: 12px;
-            }
-            
-            .streak-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .priority-buttons {
-                flex-wrap: wrap;
-            }
-        }
-        
-        /* Larger mobile screens */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-                max-width: 800px;
-                margin: 0 auto;
-            }
-            
-            .creative-workflow,
-            .brain-dump,
-            .daily-summary,
-            .goal-milestones {
-                grid-column: 1 / -1;
-            }
-        }
-        
-        /* Desktop */
-        @media (min-width: 1025px) {
-            body {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            
-            .container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
-            }
-            
-            .creative-workflow,
-            .brain-dump,
-            .daily-summary,
-            .goal-milestones {
-                grid-column: 1 / -1;
-            }
-            
-            .stats {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                margin: 0;
-            }
-        }
-        
-        .time-tracking {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            margin-left: 10px;
-        }
-
-        .time-btn {
-            background: #e8e8e8;
-            border: 1px solid #ddd;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85em;
-            transition: all 0.2s;
-        }
-
-        .time-btn:hover {
-            background: #d0d0d0;
-        }
-
-        .time-display {
-            font-weight: bold;
-            color: #6B2C91;
-            margin-left: 8px;
-            min-width: 60px;
-        }
-        
-        /* Task deletion button */
-        .delete-task-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-size: 1.2em;
-            min-width: 30px;
-            height: 30px;
-        }
-
-        .task-input:hover .delete-task-btn {
-            opacity: 1;
-        }
-
-        .empire-task-input:hover .delete-task-btn {
-            opacity: 1;
-        }
-        
         /* History controls */
         .history-controls {
             display: flex;
@@ -1293,7 +1409,7 @@
             backdrop-filter: blur(10px);
             border-bottom: 2px solid #e8e8e8;
             padding: 10px 0;
-            margin: -10px -10px 20px -10px;
+            margin: -20px -20px 20px -20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
@@ -1301,7 +1417,7 @@
         .nav-container {
             display: flex;
             gap: 8px;
-            padding: 0 10px;
+            padding: 0 20px;
             overflow-x: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -1366,6 +1482,50 @@
 
         /* Mobile optimizations */
         @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .section::before {
+                font-size: 6em;
+                top: 10px;
+                right: 10px;
+            }
+            
+            .section {
+                min-height: 220px;
+                padding: 25px;
+            }
+            
+            .yesterday-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stat-box {
+                min-width: auto;
+                width: 100%;
+                max-width: 200px;
+                margin: 0 auto;
+            }
+            
+            .workflow-section h3 {
+                font-size: 1.2em;
+            }
+            
+            .suggestion-controls {
+                gap: 12px;
+            }
+            
+            .streak-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .priority-buttons {
+                flex-wrap: wrap;
+            }
+            
             .sticky-nav {
                 padding: 8px 0;
             }
@@ -1381,6 +1541,34 @@
             
             .nav-icon {
                 font-size: 1.1em;
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1025px) {
+            body {
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            
+            .creative-workflow,
+            .brain-dump,
+            .daily-summary,
+            .goal-milestones,
+            .yesterday-review,
+            .weekly-review,
+            .empire-integration,
+            .creative-streaks,
+            .unstuck-suggestions {
+                grid-column: 1 / -1;
+            }
+            
+            .stats {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                margin: 0;
             }
         }
 
@@ -2285,12 +2473,15 @@
         function createTaskElement(category, text = '', completed = false, priority = 'none', timeSpent = 0) {
             const taskDiv = document.createElement('div');
             taskDiv.className = 'task-input';
+            if (completed) {
+                taskDiv.classList.add('completed');
+            }
             taskDiv.dataset.priority = priority;
             taskDiv.dataset.timeSpent = timeSpent;
             
             taskDiv.innerHTML = `
                 <input type="checkbox" id="task-${taskCounter}" ${completed ? 'checked' : ''} 
-                    onchange="updateCompletedCount(); updateStreaks(); saveData();">
+                    onchange="handleCheckboxChange(this); updateCompletedCount(); updateStreaks(); saveData();">
                 <div class="priority-buttons">
                     <button class="priority-btn ${priority === 'empire' ? 'active' : ''}" 
                         onclick="setPriority(this, 'empire')" title="Empire Critical">🏛⚡</button>
@@ -2314,6 +2505,15 @@
             
             taskCounter++;
             return taskDiv;
+        }
+        
+        function handleCheckboxChange(checkbox) {
+            const taskDiv = checkbox.closest('.task-input');
+            if (checkbox.checked) {
+                taskDiv.classList.add('completed');
+            } else {
+                taskDiv.classList.remove('completed');
+            }
         }
         
         function addTime(button, minutes) {
@@ -2897,20 +3097,25 @@
             }
             
             // Add category breakdown
+            if (Object.keys(categoryStats).length >
+                // Add category breakdown
             if (Object.keys(categoryStats).length > 0) {
                 summaryHTML += `
                     <div class="summary-section">
-                        <h3>📊 Category Breakdown</h3>
-                        ${Object.entries(categoryStats).map(([key, stats]) => `
-                            <div style="margin-bottom: 10px;">
-                                <strong>${stats.name}:</strong> ${stats.completed}/${stats.total} completed
-                            </div>
-                        `).join('')}
+                        <h3>📊 Progress by Category</h3>
+                        <div class="summary-stats">
+                            ${Object.values(categoryStats).map(stat => `
+                                <div class="summary-stat">
+                                    <div class="summary-stat-number">${stat.completed}/${stat.total}</div>
+                                    <div class="summary-stat-label">${stat.name}</div>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `;
             }
             
-            // Add brain dump if exists
+            // Add brain dump if there's content
             if (data.brainDump && data.brainDump.trim()) {
                 summaryHTML += `
                     <div class="summary-section">
@@ -2920,299 +3125,232 @@
                 `;
             }
             
+            // Update the summary content
             document.getElementById('summaryContent').innerHTML = summaryHTML;
         }
         
-        function getEncouragementMessage(completedTasks) {
-            if (completedTasks >= 10) {
-                return "🌟 Incredible! You accomplished so much today!";
-            } else if (completedTasks >= 7) {
-                return "🎉 Fantastic work! You really made things happen today.";
-            } else if (completedTasks >= 4) {
-                return "💪 Great progress! You tackled several important tasks.";
-            } else if (completedTasks >= 1) {
-                return "✨ Every task completed is a step forward. Well done!";
-            } else {
-                return "🌱 Tomorrow is a fresh start with endless possibilities!";
-            }
+        function getEncouragementMessage(count) {
+            if (count === 0) return "Today is a fresh start! Every journey begins with a single step.";
+            if (count <= 3) return "You've made progress! Small steps lead to big changes.";
+            if (count <= 7) return "Great momentum today! You're building powerful habits.";
+            if (count <= 15) return "Incredible productivity! You're crushing your goals!";
+            return "EMPIRE MODE ACTIVATED! You're unstoppable! 🔥";
         }
         
         function exportSummary() {
-            const summaryContent = document.getElementById('summaryContent');
-            if (summaryContent.querySelector('.summary-placeholder')) {
-                alert('Please generate a summary first!');
-                return;
-            }
+            const summaryContent = document.getElementById('summaryContent').innerHTML;
+            const date = new Date().toISOString().split('T')[0];
             
-            const data = getCurrentDayData();
-            const today = new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
+            // Create a text version
+            const textContent = summaryContent
+                .replace(/<h3>/g, '\n\n')
+                .replace(/<\/h3>/g, '\n')
+                .replace(/<strong>/g, '')
+                .replace(/<\/strong>/g, '')
+                .replace(/<li[^>]*>/g, '• ')
+                .replace(/<[^>]+>/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
             
-            let exportText = `DAILY PRODUCTIVITY SUMMARY\n`;
-            exportText += `${today}\n`;
-            exportText += `${'='.repeat(50)}\n\n`;
-            
-            // Stats
-            let totalCompleted = 0;
-            Object.keys(data).forEach(category => {
-                if (category === 'brainDump' || category === 'goals' || category === 'streaks') return;
-                
-                if (Array.isArray(data[category])) {
-                    const completed = data[category].filter(task => task.completed && task.text && task.text.trim());
-                    totalCompleted += completed.length;
-                }
-            });
-            
-            exportText += `OVERVIEW:\n`;
-            exportText += `- Tasks Completed: ${totalCompleted}\n\n`;
-            
-            // Completed tasks
-            exportText += `ACCOMPLISHMENTS:\n`;
-            
-            const categoryNames = {
-                work: 'Work',
-                education: 'Education',
-                relationships: 'Relationships',
-                money: 'Money',
-                business: 'Business',
-                leisure: 'Leisure',
-                vanity: 'Vanity',
-                health: 'Health',
-                home: 'Home',
-                produce: 'Produce',
-                recover: 'Recover',
-                discover: 'Discover'
-            };
-            
-            const priorityLabels = {
-                'empire': '🏛⚡ Empire Critical',
-                'high': '🚀💥 High Impact',
-                'maintenance': '🔧🛠 Maintenance',
-                'none': ''
-            };
-            
-            Object.keys(data).forEach(category => {
-                if (category === 'brainDump' || category === 'goals' || category === 'streaks') return;
-                
-                if (Array.isArray(data[category])) {
-                    const completed = data[category].filter(task => task.completed && task.text && task.text.trim());
-                    
-                    if (completed.length > 0) {
-                        exportText += `\n${categoryNames[category] || category}:\n`;
-                        completed.forEach(task => {
-                            const priorityText = task.priority && task.priority !== 'none' ? ` (${priorityLabels[task.priority]})` : '';
-                            exportText += `  ✓ ${task.text}${priorityText}\n`;
-                        });
-                    }
-                }
-            });
-            
-            // Brain dump
-            if (data.brainDump && data.brainDump.trim()) {
-                exportText += `\nBRAIN DUMP:\n`;
-                exportText += `${data.brainDump}\n`;
-            }
-            
-            // Download as text file
-            const blob = new Blob([exportText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
+            // Create and download file
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `daily-summary-${new Date().toISOString().split('T')[0]}.txt`;
+            a.download = `productivity-summary-${date}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-        
-        // Collapsible section functionality
-        function toggleSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            section.classList.toggle('collapsed');
-        }
-        
-        function makeCollapsible() {
-            const sections = document.querySelectorAll('.section:not(.yesterday-review):not(.empire-integration):not(.creative-streaks):not(.unstuck-suggestions):not(.creative-workflow):not(.brain-dump):not(.daily-summary):not(.goal-milestones):not(.weekly-review)');
-            
-            sections.forEach(section => {
-                const h2 = section.querySelector('h2');
-                if (h2) {
-                    const sectionId = section.id || 'section-' + Math.random().toString(36).substr(2, 9);
-                    section.id = sectionId;
-                    
-                    const header = document.createElement('div');
-                    header.className = 'section-header';
-                    header.onclick = () => toggleSection(sectionId);
-                    
-                    const collapseIcon = document.createElement('span');
-                    collapseIcon.className = 'collapse-icon';
-                    collapseIcon.innerHTML = '▼';
-                    
-                    h2.parentNode.insertBefore(header, h2);
-                    header.appendChild(h2);
-
-                header.appendChild(collapseIcon);
-                    
-                    // Wrap existing content in a div
-                    const content = document.createElement('div');
-                    content.className = 'section-content';
-                    
-                    // Move all children except the header to the content div
-                    while (section.children.length > 1) {
-                        content.appendChild(section.children[1]);
-                    }
-                    
-                    section.appendChild(content);
-                }
-            });
+            window.URL.revokeObjectURL(url);
         }
         
         // Weekly Review Functions
         function showWeeklyReview() {
-            calculateWeeklyStats();
+            const weekData = getWeekData();
+            
+            // Calculate stats
+            let totalTasks = 0;
+            let totalTime = 0;
+            let categoryTotals = {};
+            let dailyTotals = {};
+            
+            weekData.forEach(dayData => {
+                let dayTotal = 0;
+                
+                Object.keys(dayData.data).forEach(category => {
+                    if (category === 'brainDump' || category === 'goals' || category === 'streaks') return;
+                    
+                    if (Array.isArray(dayData.data[category])) {
+                        const completed = dayData.data[category].filter(task => task.completed);
+                        totalTasks += completed.length;
+                        dayTotal += completed.length;
+                        
+                        if (!categoryTotals[category]) categoryTotals[category] = 0;
+                        categoryTotals[category] += completed.length;
+                        
+                        // Calculate time
+                        dayData.data[category].forEach(task => {
+                            if (task.completed && task.timeSpent) {
+                                totalTime += task.timeSpent;
+                            }
+                        });
+                    }
+                });
+                
+                dailyTotals[dayData.date] = dayTotal;
+            });
+            
+            // Find most productive day
+            let mostProductiveDay = { date: '', count: 0 };
+            Object.entries(dailyTotals).forEach(([date, count]) => {
+                if (count > mostProductiveDay.count) {
+                    mostProductiveDay = { date, count };
+                }
+            });
+            
+            // Find top category
+            let topCategory = { name: '', count: 0 };
+            Object.entries(categoryTotals).forEach(([category, count]) => {
+                if (count > topCategory.count) {
+                    topCategory = { name: category, count };
+                }
+            });
+            
+            // Update display
+            document.getElementById('weeklyTaskCount').textContent = totalTasks;
+            document.getElementById('weeklyTimeSpent').textContent = formatTime(totalTime);
+            document.getElementById('mostProductiveDay').textContent = mostProductiveDay.date ? 
+                new Date(mostProductiveDay.date).toLocaleDateString('en-US', { weekday: 'short' }) : '-';
+            document.getElementById('topCategory').textContent = getCategoryName(topCategory.name) || '-';
+            
+            // Create category breakdown
+            const breakdown = document.getElementById('weeklyBreakdown');
+            breakdown.innerHTML = Object.entries(categoryTotals)
+                .sort((a, b) => b[1] - a[1])
+                .map(([category, count]) => {
+                    const percentage = totalTasks > 0 ? (count / totalTasks * 100) : 0;
+                    return `
+                        <div class="category-bar">
+                            <div class="category-bar-label">
+                                <span>${getCategoryName(category)}</span>
+                                <span>${count} tasks</span>
+                            </div>
+                            <div class="category-bar-fill">
+                                <div class="category-bar-progress" style="width: ${percentage}%">
+                                    ${percentage.toFixed(0)}%
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            
+            // Generate insights
+            const insights = document.getElementById('weeklyInsights');
+            insights.innerHTML = `
+                <h3>📈 Weekly Insights</h3>
+                ${generateWeeklyInsights(totalTasks, totalTime, mostProductiveDay, topCategory, categoryTotals)}
+            `;
+            
             document.getElementById('weeklySection').style.display = 'block';
-            document.getElementById('weeklySection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function getWeekData() {
+            const weekData = [];
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateKey = date.toDateString();
+                
+                const dayData = localStorage.getItem(dateKey);
+                if (dayData) {
+                    weekData.push({
+                        date: dateKey,
+                        data: JSON.parse(dayData)
+                    });
+                }
+            }
+            
+            return weekData;
+        }
+        
+        function getCategoryName(category) {
+            const names = {
+                work: '💼 Work',
+                education: '📚 Education',
+                relationships: '💝 Relationships',
+                money: '💰 Money',
+                business: '🚀 Business',
+                leisure: '🎨 Leisure',
+                vanity: '💅 Vanity',
+                health: '🌿 Health',
+                home: '🏡 Home',
+                produce: '🎬 Produce',
+                recover: '♻️ Recover',
+                discover: '🔍 Discover'
+            };
+            return names[category] || category;
+        }
+        
+        function generateWeeklyInsights(totalTasks, totalTime, mostProductiveDay, topCategory, categoryTotals) {
+            const insights = [];
+            
+            if (totalTasks > 0) {
+                insights.push(`<div class="insight-item">You completed ${totalTasks} tasks this week! That's an average of ${Math.round(totalTasks / 7)} per day.</div>`);
+            }
+            
+            if (totalTime > 0) {
+                insights.push(`<div class="insight-item">You invested ${formatTime(totalTime)} in your goals this week.</div>`);
+            }
+            
+            if (topCategory.name) {
+                insights.push(`<div class="insight-item">Your main focus was ${getCategoryName(topCategory.name)} with ${topCategory.count} completed tasks.</div>`);
+            }
+            
+            if (mostProductiveDay.date) {
+                insights.push(`<div class="insight-item">Your most productive day was ${new Date(mostProductiveDay.date).toLocaleDateString('en-US', { weekday: 'long' })} with ${mostProductiveDay.count} tasks completed!</div>`);
+            }
+            
+            // Add encouragement based on performance
+            if (totalTasks > 50) {
+                insights.push(`<div class="insight-item">🔥 EMPIRE MODE! You're operating at peak performance!</div>`);
+            } else if (totalTasks > 30) {
+                insights.push(`<div class="insight-item">💪 Excellent week! You're building serious momentum!</div>`);
+            } else if (totalTasks > 15) {
+                insights.push(`<div class="insight-item">✨ Good progress! Keep building on this foundation!</div>`);
+            } else {
+                insights.push(`<div class="insight-item">🌱 Every step counts! Next week is full of possibilities!</div>`);
+            }
+            
+            return insights.join('');
         }
         
         function hideWeeklyReview() {
             document.getElementById('weeklySection').style.display = 'none';
         }
         
-        function calculateWeeklyStats() {
-            let totalTasks = 0;
-            let totalTimeMinutes = 0;
-            let categoryBreakdown = {};
-            let dailyTasks = {};
-            
-            // Calculate for the past 7 days
-            for (let i = 0; i < 7; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                const dateKey = getDateString(date);
-                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                
-                const data = localStorage.getItem(dateKey);
-                if (data) {
-                    const parsed = JSON.parse(data);
-                    let dayTotal = 0;
-                    
-                    Object.keys(parsed).forEach(category => {
-                        if (Array.isArray(parsed[category])) {
-                            parsed[category].forEach(task => {
-                                if (task.completed) {
-                                    totalTasks++;
-                                    dayTotal++;
-                                    categoryBreakdown[category] = (categoryBreakdown[category] || 0) + 1;
-                                    totalTimeMinutes += task.timeSpent || 0;
-                                }
-                            });
-                        }
-                    });
-                    
-                    dailyTasks[dayName] = dayTotal;
-                }
-            }
-            
-            // Update stats
-            document.getElementById('weeklyTaskCount').textContent = totalTasks;
-            document.getElementById('weeklyTimeSpent').textContent = formatTime(totalTimeMinutes);
-            
-            // Find most productive day
-            let maxDay = '';
-            let maxTasks = 0;
-            Object.entries(dailyTasks).forEach(([day, count]) => {
-                if (count > maxTasks) {
-                    maxTasks = count;
-                    maxDay = day;
-                }
-            });
-            document.getElementById('mostProductiveDay').textContent = maxDay || '-';
-            
-            // Find top category
-            let topCategory = '';
-            let maxCategory = 0;
-            Object.entries(categoryBreakdown).forEach(([cat, count]) => {
-                if (count > maxCategory) {
-                    maxCategory = count;
-                    topCategory = cat;
-                }
-            });
-            document.getElementById('topCategory').textContent = topCategory ? topCategory.charAt(0).toUpperCase() + topCategory.slice(1) : '-';
-            
-            // Create breakdown chart
-            const breakdownDiv = document.getElementById('weeklyBreakdown');
-            breakdownDiv.innerHTML = '<h3>Category Breakdown</h3>';
-            
-            Object.entries(categoryBreakdown).forEach(([category, count]) => {
-                const percentage = totalTasks > 0 ? (count / totalTasks * 100).toFixed(0) : 0;
-                breakdownDiv.innerHTML += `
-                    <div class="category-bar">
-                        <div class="category-bar-label">
-                            <span>${category.charAt(0).toUpperCase() + category.slice(1)}</span>
-                            <span>${count} tasks</span>
-                        </div>
-                        <div class="category-bar-fill">
-                            <div class="category-bar-progress" style="width: ${percentage}%">
-                                ${percentage}%
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            // Generate insights
-            const insightsDiv = document.getElementById('weeklyInsights');
-            insightsDiv.innerHTML = '<h3>Weekly Insights</h3>';
-            
-            const insights = [];
-            if (totalTasks > 35) {
-                insights.push("You're on fire! Over 35 tasks completed this week!");
-            } else if (totalTasks > 20) {
-                insights.push("Great week! You maintained strong productivity.");
-            }
-            
-            if (topCategory) {
-                insights.push(`Your main focus was on ${topCategory} this week.`);
-            }
-            
-            if (totalTimeMinutes > 600) {
-                insights.push(`You invested over ${Math.floor(totalTimeMinutes / 60)} hours in your tasks!`);
-            }
-            
-            insights.forEach(insight => {
-                insightsDiv.innerHTML += `<div class="insight-item">${insight}</div>`;
-            });
-        }
-        
-        // History viewing functions
+        // History Functions
         function viewHistoryDate() {
-            const dateInput = document.getElementById('historyDate');
-            const selectedDate = new Date(dateInput.value + 'T00:00:00');
+            const selectedDate = document.getElementById('historyDate').value;
+            if (!selectedDate) return;
             
-            if (!dateInput.value) {
-                alert('Please select a date to view');
-                return;
-            }
+            const date = new Date(selectedDate);
+            const dateString = date.toDateString();
             
             // Show notice
             const notice = document.getElementById('historyNotice');
-            notice.textContent = `Viewing: ${selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}`;
+            notice.textContent = `Viewing: ${date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
             notice.style.display = 'block';
             
             // Load data for selected date
-            loadData(getDateString(selectedDate));
+            loadData(dateString);
             
-            // Disable editing for historical data
-            document.querySelectorAll('input[type="text"], textarea').forEach(input => {
-                input.setAttribute('readonly', true);
-            });
-            document.querySelectorAll('button').forEach(button => {
-                if (!button.textContent.includes('View') && !button.textContent.includes('Back')) {
-                    button.style.display = 'none';
+            // Disable editing for past dates
+            document.querySelectorAll('input, textarea, button').forEach(el => {
+                if (!el.classList.contains('history-btn') && !el.classList.contains('date-picker') && 
+                    !el.classList.contains('nav-pill') && el.type !== 'date') {
+                    el.disabled = true;
                 }
             });
         }
@@ -3221,15 +3359,12 @@
             // Hide notice
             document.getElementById('historyNotice').style.display = 'none';
             
-            // Clear date picker
+            // Reset date picker
             document.getElementById('historyDate').value = '';
             
             // Re-enable editing
-            document.querySelectorAll('input[type="text"], textarea').forEach(input => {
-                input.removeAttribute('readonly');
-            });
-            document.querySelectorAll('button').forEach(button => {
-                button.style.display = '';
+            document.querySelectorAll('input, textarea, button').forEach(el => {
+                el.disabled = false;
             });
             
             // Load today's data
@@ -3237,17 +3372,44 @@
         }
         
         function startFreshDay() {
-            if (confirm('This will clear all tasks for today. Are you sure?')) {
+            if (confirm('This will clear all tasks for today and start fresh. Are you sure?')) {
+                // Clear today's data
                 const todayKey = getDateString();
                 localStorage.removeItem(todayKey);
                 
-                // Clear Firebase
-                if (typeof db !== 'undefined') {
-                    db.collection('productivity').doc(todayKey).delete();
+                // Reset UI
+                categories.forEach(category => {
+                    const container = document.getElementById(category + '-tasks');
+                    if (container) {
+                        container.innerHTML = '';
+                    }
+                });
+                
+                empireCategories.forEach(category => {
+                    const container = document.getElementById(category);
+                    if (container) {
+                        container.innerHTML = '';
+                    }
+                });
+                
+                // Clear brain dump
+                const brainDump = document.querySelector('.brain-dump textarea');
+                if (brainDump) {
+                    brainDump.value = '';
                 }
                 
-                // Reload page
-                location.reload();
+                // Reset streaks
+                document.getElementById('writingStreak').textContent = '0';
+                document.getElementById('submissionStreak').textContent = '0';
+                document.getElementById('authorityStreak').textContent = '0';
+                document.getElementById('newsletterStreak').textContent = '0';
+                
+                // Reinitialize
+                initializeEmptyTasks();
+                updateCompletedCount();
+                saveData();
+                
+                alert('Fresh start! Ready for a productive day! 🌅');
             }
         }
         
@@ -3255,23 +3417,15 @@
         window.addEventListener('load', async function() {
             loadYesterdayReview();
             loadData();
-            makeCollapsible();
             initializeStickyNav();
             
             // Set up brain dump auto-save
             const textarea = document.querySelector('.brain-dump textarea');
             if (textarea) {
-                let saveTimeout;
-                textarea.addEventListener('input', function() {
-                    clearTimeout(saveTimeout);
-                    saveTimeout = setTimeout(saveData, 1000);
-                });
+                textarea.addEventListener('input', saveData);
             }
             
-            // Update total time on load
-            updateTotalTime();
-            
-            // Set up real-time sync
+            // Real-time sync listener
             const todayKey = getDateString();
             db.collection('productivity').doc(todayKey)
                 .onSnapshot((doc) => {
@@ -3285,6 +3439,17 @@
                         }, 3000);
                     }
                 });
+            
+            // Auto-save every 30 seconds
+            setInterval(saveData, 30000);
+            
+            // Update total time on load
+            updateTotalTime();
+            
+            // Initialize with empty tasks if needed
+            if (document.querySelectorAll('.task-input').length === 0) {
+                initializeEmptyTasks();
+            }
         });
     </script>
 </body>
