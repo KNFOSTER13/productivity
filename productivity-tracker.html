@@ -1568,36 +1568,43 @@
         }
         
         function saveData() {
-            try {
-                updateSyncStatus('🔄 Syncing...');
-                const data = getCurrentDayData();
-                const todayKey = getDateString();
-                
-                // Save to localStorage first (backup)
-                localStorage.setItem(todayKey, JSON.stringify(data));
-                
-                // Save to Firebase
-                db.collection('productivity').doc(todayKey)
-                    .set({
-                        ...data,
-                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                    })
-                    .then(() => {
-                        updateSyncStatus('☁ Cloud Synced');
-                        setTimeout(() => {
-                            updateSyncStatus('Ready to Track');
-                        }, 2000);
-                    })
-                    .catch((error) => {
-                        console.error('Firebase save error:', error);
-                        updateSyncStatus('⚠ Local Only');
-                    });
-                    
-            } catch (error) {
-                console.error('Save error:', error);
-                updateSyncStatus('❌ Save failed');
-            }
-        }
+    try {
+        updateSyncStatus('🔄 Syncing...');
+        const data = getCurrentDayData();
+        const todayKey = getDateString();
+        
+        // Debug logging
+        console.log('Saving data:', {
+            brainDump: data.brainDump ? data.brainDump.substring(0, 50) + '...' : 'empty',
+            date: todayKey
+        });
+        
+        // Save to localStorage first (backup)
+        localStorage.setItem(todayKey, JSON.stringify(data));
+        
+        // Save to Firebase
+        db.collection('productivity').doc(todayKey)
+            .set({
+                ...data,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                console.log('Save successful!');
+                updateSyncStatus('☁ Cloud Synced');
+                setTimeout(() => {
+                    updateSyncStatus('Ready to Track');
+                }, 2000);
+            })
+            .catch((error) => {
+                console.error('Firebase save error:', error);
+                updateSyncStatus('⚠ Local Only');
+            });
+            
+    } catch (error) {
+        console.error('Save error:', error);
+        updateSyncStatus('❌ Save failed');
+    }
+}
         
         function loadData(date = getDateString()) {
             try {
