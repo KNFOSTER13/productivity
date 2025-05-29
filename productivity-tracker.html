@@ -3079,7 +3079,9 @@ window.deleteTask = function(button, category) {
         updateCompletedCount();
         updateTotalTime();
     }
-};
+};    initializeStickyNav();
+    
+});
     // History view functions
     window.viewHistoryDate = function() {
         const datePicker = document.getElementById('historyDate');
