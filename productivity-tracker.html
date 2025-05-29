@@ -3086,19 +3086,13 @@
                     <div class="summary-section">
                         <h3>✅ Accomplished Today</h3>
                         <ul class="summary-task-list">
-                            ${completedTasks.map(task => `
-                                <li class="summary-task-item">
-                                    <strong>${task.category}:</strong> ${task.text}
-                                    ${task.priority !== 'none' ? ` (${priorityLabels[task.priority]})` : ''}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
+                         ${completedTasks.map(task => 
+                                '<li class="summary-task-item">' +
+                                '<strong>' + task.category + ':</strong> ' + task.text +
+                                (task.priority !== 'none' ? ' (' + priorityLabels[task.priority] + ')' : '') +
+                                '</li>'
+                            ).join('')}
             
-            // Add category breakdown
-            if (Object.keys(categoryStats).length >
                 // Add category breakdown
             if (Object.keys(categoryStats).length > 0) {
                 summaryHTML += `
