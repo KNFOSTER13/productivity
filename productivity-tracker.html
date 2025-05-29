@@ -1950,6 +1950,7 @@ function updateTotalTime() {
                     value="${text}"
                     onkeypress="handleEmpireEnter(event, '${category}')"
                     onchange="saveData()">
+                    <button class="delete-task-btn" onclick="deleteTask(this, '${category}')">×</button>
             `;
             
             taskCounter++;
