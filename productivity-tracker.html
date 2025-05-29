@@ -1204,6 +1204,28 @@
     color: #6B2C91;
     margin-left: 8px;
     min-width: 60px;
+}/* Task deletion button */
+.delete-task-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    min-width: 30px;
+    height: 30px;
+}
+
+.task-input:hover .delete-task-btn {
+    opacity: 1;
+}
+
+.empire-task-input:hover .delete-task-btn {
+    opacity: 1;
 }
     </style>
 </head>
