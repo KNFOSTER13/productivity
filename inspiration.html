@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Inspiration Gallery</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #7F57D3;
+            --secondary-color: #B794F6;
+            --bg-gradient-start: #F5F3FF;
+            --bg-gradient-end: #E9E5FF;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 30px rgba(127, 87, 211, 0.1);
+            --shadow-hover: 0 20px 40px rgba(127, 87, 211, 0.15);
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(127, 87, 211, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(183, 148, 246, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            animation: floatBackground 20s ease-in-out infinite;
+        }
+        
+        @keyframes floatBackground {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-20px, -20px) rotate(1deg); }
+            66% { transform: translate(20px, -10px) rotate(-1deg); }
+        }
+        
+        .header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        h1 {
+            font-family: 'Georgia', serif;
+            font-size: 3.5em;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1em;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .inspiration-gallery {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .inspiration-gallery:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .gallery-header h2 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8em;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+        
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(127, 87, 211, 0.1);
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .sync-status.processing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+        }
+        
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: syncPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes syncPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: rgba(127, 87, 211, 0.05);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            font-size: 1em;
+            letter-spacing: 0.3px;
+        }
+        
+        .tab:hover {
+            background: rgba(127, 87, 211, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(127, 87, 211, 0.3);
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .filter-section {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .color-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .color-filter {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .color-filter:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-filter.active {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 3px var(--primary-color), 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .color-filter[data-color="black"] { background: #000000; }
+        .color-filter[data-color="white"] { background: #FFFFFF; border: 1px solid #e0e0e0; }
+        .color-filter[data-color="gray"] { background: #6B7280; }
+        .color-filter[data-color="navy"] { background: #1E3A8A; }
+        .color-filter[data-color="blue"] { background: #3B82F6; }
+        .color-filter[data-color="pink"] { background: #EC4899; }
+        .color-filter[data-color="red"] { background: #EF4444; }
+        .color-filter[data-color="orange"] { background: #F97316; }
+        .color-filter[data-color="yellow"] { background: #F59E0B; }
+        .color-filter[data-color="green"] { background: #10B981; }
+        .color-filter[data-color="purple"] { background: #8B5CF6; }
+        .color-filter[data-color="brown"] { background: #92400E; }
+        .color-filter[data-color="beige"] { background: #D4B896; }
+        .color-filter[data-color="multi"] { 
+            background: linear-gradient(45deg, #FF0000 0%, #FF7F00 14%, #FFFF00 28%, #00FF00 42%, #0000FF 56%, #4B0082 70%, #9400D3 84%); 
+        }
+        
+        .add-section {
+            text-align: center;
+        }
+        
+        .filter-tag {
+            padding: 8px 16px;
+            background: rgba(127, 87, 211, 0.08);
+            border: 1px solid rgba(127, 87, 211, 0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .filter-tag:hover {
+            background: rgba(127, 87, 211, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(127, 87, 211, 0.2);
+        }
+        
+        .filter-tag.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(127, 87, 211, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(127, 87, 211, 0.4);
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .info-text {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: var(--text-light);
+            text-align: center;
+        }
+        
+        .inspiration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            column-count: 4;
+        }
+        
+        @media (max-width: 1200px) {
+            .inspiration-grid { column-count: 3; }
+        }
+        
+        @media (max-width: 900px) {
+            .inspiration-grid { column-count: 2; }
+        }
+        
+        @media (max-width: 600px) {
+            .inspiration-grid { column-count: 1; }
+        }
+        
+        .inspiration-item {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.6s ease-out;
+            break-inside: avoid;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .inspiration-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(127, 87, 211, 0.15);
+        }
+        
+        .inspiration-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .inspiration-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            color: white;
+        }
+        
+        .inspiration-item:hover .item-overlay {
+            transform: translateY(0);
+        }
+        
+        .item-notes {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .tag {
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+        
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .item-color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-bottom: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.favorite {
+            padding: 6px 10px;
+            font-size: 1.2em;
+        }
+        
+        .action-btn.favorite.active {
+            color: #FFD700;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+        
+        .empty-state p {
+            font-size: 1.1em;
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 16px;
+            height: 300px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            .inspiration-gallery { padding: 25px; }
+            .gallery-header h2 { font-size: 1.5em; }
+            .tabs { gap: 10px; }
+            .tab { padding: 10px 18px; font-size: 0.95em; }
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        /* Full Image Viewer */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .image-viewer.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .image-viewer img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .image-viewer-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .image-viewer-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>My Inspiration Gallery</h1>
+        <p class="subtitle">Curate your personal style collection</p>
+    </div>
+    
+    <div class="main-container">
+        <section class="inspiration-gallery">
+            <div class="gallery-header">
+                <h2>Style Inspiration ✨</h2>
+                <div class="sync-status" id="syncStatus">
+                    <span class="sync-dot"></span>
+                    <span id="syncText">Ready</span>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-category="outfit">Outfits 👗</div>
+                <div class="tab" data-category="beauty">Beauty 💄</div>
+                <div class="tab" data-category="hair">Hair 💇🏾‍♀️</div>
+                <div class="tab" data-category="home">Home Decor 🏡</div>
+            </div>
+            
+            <div class="controls">
+                <div class="filter-section">
+                    <div class="filter-tags">
+                        <div class="filter-tag" data-filter="all">All ✨</div>
+                        <div class="filter-tag" data-filter="dress up">Dress Up 👗</div>
+                        <div class="filter-tag" data-filter="dress down">Dress Down 👕</div>
+                        <div class="filter-tag" data-filter="favorites">Favorites ⭐</div>
+                    </div>
+                    <div class="color-filters" id="colorFilters" style="display: none;">
+                        <div class="color-filter" data-color="all" title="All Colors">✨</div>
+                        <div class="color-filter" data-color="black" title="Black"></div>
+                        <div class="color-filter" data-color="white" title="White"></div>
+                        <div class="color-filter" data-color="gray" title="Gray"></div>
+                        <div class="color-filter" data-color="navy" title="Navy"></div>
+                        <div class="color-filter" data-color="blue" title="Blue"></div>
+                        <div class="color-filter" data-color="pink" title="Pink"></div>
+                        <div class="color-filter" data-color="red" title="Red"></div>
+                        <div class="color-filter" data-color="orange" title="Orange"></div>
+                        <div class="color-filter" data-color="yellow" title="Yellow"></div>
+                        <div class="color-filter" data-color="green" title="Green"></div>
+                        <div class="color-filter" data-color="purple" title="Purple"></div>
+                        <div class="color-filter" data-color="brown" title="Brown"></div>
+                        <div class="color-filter" data-color="beige" title="Beige"></div>
+                        <div class="color-filter" data-color="multi" title="Multicolor"></div>
+                    </div>
+                </div>
+                <div class="add-section">
+                    <button class="btn-primary" id="addInspiration">
+                        📸 Add Inspiration
+                    </button>
+                    <input type="file" id="fileInput" accept="image/*" multiple>
+                    <p class="info-text">Images over 1200px will be optimized automatically</p>
+                </div>
+            </div>
+            
+            <div class="inspiration-grid" id="inspirationGrid">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📸</div>
+                    <h3>No inspirations yet</h3>
+                    <p>Start by adding your first outfit inspiration!</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Image Viewer Modal -->
+    <div class="image-viewer" id="imageViewer">
+        <div class="image-viewer-close" onclick="closeImageViewer()">✕</div>
+        <img id="viewerImage" src="" alt="">
+    </div>
+    
+    <script>
+        // Check if Firebase is available
+        let firebase = null;
+        let db = null;
+        let storage = null;
+        let storageRef = null;
+        
+        try {
+            // Your Firebase configuration
+            const firebaseConfig = {
+                apiKey: "your-api-key",
+                authDomain: "your-auth-domain",
+                projectId: "productivity-tracker-knf13",
+                storageBucket: "your-storage-bucket",
+                messagingSenderId: "your-sender-id",
+                appId: "your-app-id"
+            };
+            
+            // Initialize Firebase
+            if (typeof window.firebase !== 'undefined') {
+                firebase = window.firebase;
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                storage = firebase.storage();
+                storageRef = storage.ref();
+            }
+        } catch (error) {
+            console.log('Firebase not available, using local storage mode');
+        }
+        
+        // State management
+        let currentCategory = 'outfit';
+        let currentFilter = 'all';
+        let currentColorFilter = 'all';
+        let inspirationData = {
+            outfit: [],
+            beauty: [],
+            hair: [],
+            home: []
+        };
+        
+        // DOM elements
+        const tabs = document.querySelectorAll('.tab');
+        const filterTags = document.querySelectorAll('.filter-tag');
+        const addButton = document.getElementById('addInspiration');
+        const fileInput = document.getElementById('fileInput');
+        const inspirationGrid = document.getElementById('inspirationGrid');
+        const syncStatus = document.getElementById('syncStatus');
+        const syncText = document.getElementById('syncText');
+        const colorFilters = document.getElementById('colorFilters');
+        const colorFilterButtons = document.querySelectorAll('.color-filter');
+        
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentCategory = tab.dataset.category;
+                
+                // Show/hide color filters for outfit and home categories
+                if (currentCategory === 'outfit' || currentCategory === 'home') {
+                    colorFilters.style.display = 'flex';
+                } else {
+                    colorFilters.style.display = 'none';
+                    currentColorFilter = 'all';
+                }
+                
+                displayInspirationGrid();
+            });
+        });
+        
+        // Filter switching
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                filterTags.forEach(t => t.classList.remove('active'));
+                tag.classList.add('active');
+                currentFilter = tag.dataset.filter;
+                displayInspirationGrid();
+            });
+        });
+        
+        // Color filter switching
+        colorFilterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                colorFilterButtons.forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                currentColorFilter = button.dataset.color;
+                displayInspirationGrid();
+            });
+        });
+        
+        // Add inspiration button
+        addButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // File input handler
+        fileInput.addEventListener('change', handleInspirationUpload);
+        
+        // Resize image function
+        async function resizeImage(file, maxSize = 1200) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Calculate new dimensions
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height = (height * maxSize) / width;
+                                width = maxSize;
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width = (width * maxSize) / height;
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        // Draw resized image
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Convert to blob
+                        canvas.toBlob((blob) => {
+                            const resizedFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(resizedFile);
+                        }, 'image/jpeg', 0.85);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Handle file upload
+        async function handleInspirationUpload(event) {
+            const files = event.target.files;
+            
+            for (let file of files) {
+                if (!file.type.startsWith('image/')) continue;
+                
+                updateSyncStatus('Processing image...', 'processing');
+                
+                try {
+                    // Check if image needs resizing
+                    let processedFile = file;
+                    if (file.size > 1024 * 1024 || await needsResize(file)) {
+                        const originalSize = (file.size / 1024).toFixed(0);
+                        processedFile = await resizeImage(file);
+                        const newSize = (processedFile.size / 1024).toFixed(0);
+                        const saved = originalSize - newSize;
+                        updateSyncStatus(`Optimized! Saved ${saved} KB`, 'success');
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                    }
+                    
+                    // Check final size
+                    if (processedFile.size > 5 * 1024 * 1024) {
+                        alert('Image is too large even after optimization. Please use a smaller image.');
+                        continue;
+                    }
+                    
+                    // Get user input
+                    const notes = prompt('Add a note about this inspiration:', '');
+                    const tagsInput = prompt('Add tags (e.g., dress up, work, weekend):', '');
+                    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+                    
+                    // Get color for outfit and home categories
+                    let color = null;
+                    if (currentCategory === 'outfit' || currentCategory === 'home') {
+                        const colorPrompt = 'What\'s the main color? (black, white, gray, navy, blue, pink, red, orange, yellow, green, purple, brown, beige, multi):';
+                        color = prompt(colorPrompt, '');
+                        if (color) {
+                            color = color.toLowerCase().trim();
+                            const validColors = ['black', 'white', 'gray', 'navy', 'blue', 'pink', 'red', 'orange', 'yellow', 'green', 'purple', 'brown', 'beige', 'multi'];
+                            if (!validColors.includes(color)) {
+                                color = null;
+                            }
+                        }
+                    }
+                    
+                    // Create inspiration item
+                    const item = {
+                        id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        category: currentCategory,
+                        notes: notes || '',
+                        tags: tags,
+                        color: color,
+                        favorite: false,
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    // Save image
+                    if (storage && db) {
+                        // Upload to Firebase Storage
+                        updateSyncStatus('Uploading to cloud...', 'processing');
+                        const imagePath = `inspiration/${currentCategory}/${item.id}`;
+                        const imageRef = storageRef.child(imagePath);
+                        const snapshot = await imageRef.put(processedFile);
+                        const imageUrl = await snapshot.ref.getDownloadURL();
+                        item.imageUrl = imageUrl;
+                        item.storagePath = imagePath;
+                        
+                        // Save to Firestore
+                        await saveInspirationItem(item);
+                    } else {
+                        // Local storage mode
+                        const reader = new FileReader();
+                        reader.onload = async (e) => {
+                            item.imageUrl = e.target.result;
+                            inspirationData[currentCategory].push(item);
+                            localStorage.setItem('inspirationData', JSON.stringify(inspirationData));
+                            displayInspirationGrid();
+                        };
+                        reader.readAsDataURL(processedFile);
+                    }
+                    
+                    updateSyncStatus('Ready', 'ready');
+                    
+                } catch (error) {
+                    console.error('Error uploading:', error);
+                    updateSyncStatus('Error uploading', 'error');
+                }
+            }
+            
+            fileInput.value = '';
+        }
+        
+        // Check if image needs resizing
+        function needsResize(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    resolve(img.width > 1200 || img.height > 1200);
+                };
+                img.src = url;
+            });
+        }
+        
+        // Save inspiration item to Firestore
+        async function saveInspirationItem(item) {
+            if (!db) return;
+            
+            try {
+                await db.collection('inspirations').doc(item.id).set(item);
+                await loadInspirationData();
+            } catch (error) {
+                console.error('Error saving to Firestore:', error);
+                // Fallback to localStorage
+                inspirationData[item.category].push(item);
+                localStorage.setItem('inspirationData', JSON.stringify(inspirationData));
+                displayInspirationGrid();
+            }
+        }
+        
+        // Load inspiration data
+        async function loadInspirationData() {
+            updateSyncStatus('Loading...', 'processing');
+            
+            if (db) {
+                try {
+                    const snapshot = await db.collection('inspirations').get();
+                    inspirationData = {
+                        outfit: [],
+                        beauty: [],
+                        hair: [],
+                        home: []
+                    };
+                    
+                    snapshot.forEach(doc => {
+                        const item = doc.data();
+                        if (inspirationData[item.category]) {
+                            inspirationData[item.category].push(item);
+                        }
+                    });
+                    
+                    updateSyncStatus('Ready', 'ready');
+                } catch (error) {
+                    console.error('Error loading from Firestore:', error);
+                    loadFromLocalStorage();
+                }
+            } else {
+                loadFromLocalStorage();
+            }
+            
+            displayInspirationGrid();
+        }
+        
+        // Load from localStorage
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('inspirationData');
+            if (saved) {
+                inspirationData = JSON.parse(saved);
+            }
+            updateSyncStatus('Demo mode - Local only', 'local');
+        }
+        
+        // Display inspiration grid
+        function displayInspirationGrid() {
+            let items = inspirationData[currentCategory] || [];
+            
+            // Apply filters
+            if (currentFilter === 'favorites') {
+                items = items.filter(item => item.favorite);
+            } else if (currentFilter === 'dress up' || currentFilter === 'dress down') {
+                items = items.filter(item => 
+                    item.tags.some(tag => tag.toLowerCase() === currentFilter)
+                );
+            }
+            
+            // Apply color filter for outfit and home categories
+            if ((currentCategory === 'outfit' || currentCategory === 'home') && currentColorFilter !== 'all') {
+                items = items.filter(item => item.color === currentColorFilter);
+            }
+            
+            // Sort by date (newest first)
+            items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            // Clear grid
+            inspirationGrid.innerHTML = '';
+            
+            if (items.length === 0) {
+                const emptyMessage = currentFilter === 'favorites' 
+                    ? 'No favorite items yet' 
+                    : `No ${currentCategory} inspirations yet`;
+                    
+                inspirationGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">${getInspirationEmoji(currentCategory)}</div>
+                        <h3>${emptyMessage}</h3>
+                        <p>Start by adding your first ${currentCategory} inspiration!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Display items
+            items.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'inspiration-item';
+                itemEl.style.animationDelay = `${index * 0.1}s`;
+                
+                const colorDot = (item.color && (currentCategory === 'outfit' || currentCategory === 'home')) ? 
+                    `<div class="item-color-dot" style="background: ${getColorHex(item.color)}" title="${item.color}"></div>` : '';
+                
+                itemEl.innerHTML = `
+                    <img src="${item.imageUrl}" alt="${item.notes}" onclick="viewFullImage('${item.imageUrl}')">
+                    <div class="item-overlay">
+                        ${colorDot}
+                        ${item.notes ? `<div class="item-notes">${item.notes}</div>` : ''}
+                        ${item.tags.length > 0 ? `
+                            <div class="item-tags">
+                                ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="item-actions">
+                            <button class="action-btn favorite ${item.favorite ? 'active' : ''}" 
+                                    onclick="event.stopPropagation(); toggleFavorite('${item.id}')">
+                                ${item.favorite ? '⭐' : '☆'}
+                            </button>
+                            <button class="action-btn" onclick="event.stopPropagation(); editInspiration('${item.id}')">Edit</button>
+                            <button class="action-btn" onclick="event.stopPropagation(); deleteInspiration('${item.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                inspirationGrid.appendChild(itemEl);
+            });
+        }
+        
+        // Get emoji for category
+        function getInspirationEmoji(category) {
+            const emojis = {
+                outfit: '👗',
+                beauty: '💄',
+                hair: '💇🏾‍♀️',
+                home: '🏡'
+            };
+            return emojis[category] || '📸';
+        }
+        
+        // Toggle favorite
+        async function toggleFavorite(itemId) {
+            const items = inspirationData[currentCategory];
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+            
+            item.favorite = !item.favorite;
+            
+            if (db) {
+                try {
+                    await db.collection('inspirations').doc(itemId).update({
+                        favorite: item.favorite
+                    });
+                } catch (error) {
+                    console.error('Error updating favorite:', error);
+                }
+            } else {
+                localStorage.setItem('inspirationData', JSON.stringify(inspirationData));
+            }
+            
+            displayInspirationGrid();
+        }
+        
+        // Edit inspiration
+        async function editInspiration(itemId) {
+            const items = inspirationData[currentCategory];
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+            
+            const newNotes = prompt('Edit note:', item.notes);
+            const newTags = prompt('Edit tags:', item.tags.join(', '));
+            
+            if (newNotes !== null) item.notes = newNotes;
+            if (newTags !== null) {
+                item.tags = newTags.split(',').map(t => t.trim()).filter(t => t);
+            }
+            
+            // Edit color for outfit and home categories
+            if (currentCategory === 'outfit' || currentCategory === 'home') {
+                const newColor = prompt('Edit color (black, white, gray, navy, blue, pink, red, orange, yellow, green, purple, brown, beige, multi):', item.color || '');
+                if (newColor !== null) {
+                    const validColors = ['black', 'white', 'gray', 'navy', 'blue', 'pink', 'red', 'orange', 'yellow', 'green', 'purple', 'brown', 'beige', 'multi', ''];
+                    item.color = validColors.includes(newColor.toLowerCase().trim()) ? newColor.toLowerCase().trim() : null;
+                }
+            }
+            
+            if (db) {
+                try {
+                    await db.collection('inspirations').doc(itemId).update({
+                        notes: item.notes,
+                        tags: item.tags,
+                        color: item.color
+                    });
+                } catch (error) {
+                    console.error('Error updating:', error);
+                }
+            } else {
+                localStorage.setItem('inspirationData', JSON.stringify(inspirationData));
+            }
+            
+            displayInspirationGrid();
+        }
+        
+        // Delete inspiration
+        async function deleteInspiration(itemId) {
+            if (!confirm('Are you sure you want to delete this inspiration?')) return;
+            
+            const items = inspirationData[currentCategory];
+            const itemIndex = items.findIndex(i => i.id === itemId);
+            if (itemIndex === -1) return;
+            
+            const item = items[itemIndex];
+            
+            updateSyncStatus('Deleting...', 'processing');
+            
+            try {
+                // Delete from storage
+                if (storage && item.storagePath) {
+                    const imageRef = storageRef.child(item.storagePath);
+                    await imageRef.delete();
+                }
+                
+                // Delete from Firestore
+                if (db) {
+                    await db.collection('inspirations').doc(itemId).delete();
+                }
+                
+                // Remove from local data
+                items.splice(itemIndex, 1);
+                
+                if (!db) {
+                    localStorage.setItem('inspirationData', JSON.stringify(inspirationData));
+                }
+                
+                updateSyncStatus('Ready', 'ready');
+                displayInspirationGrid();
+                
+            } catch (error) {
+                console.error('Error deleting:', error);
+                updateSyncStatus('Error deleting', 'error');
+            }
+        }
+        
+        // View full image
+        function viewFullImage(imageUrl) {
+            const viewer = document.getElementById('imageViewer');
+            const viewerImage = document.getElementById('viewerImage');
+            viewerImage.src = imageUrl;
+            viewer.classList.add('active');
+        }
+        
+        // Close image viewer
+        function closeImageViewer() {
+            const viewer = document.getElementById('imageViewer');
+            viewer.classList.remove('active');
+        }
+        
+        // Update sync status
+        function updateSyncStatus(text, status) {
+            syncText.textContent = text;
+            syncStatus.className = 'sync-status';
+            if (status === 'processing') {
+                syncStatus.classList.add('processing');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadInspirationData();
+            
+            // Click outside image viewer to close
+            document.getElementById('imageViewer').addEventListener('click', (e) => {
+                if (e.target.id === 'imageViewer') {
+                    closeImageViewer();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
