@@ -1,23 +1,248 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
-            authDomain: "productivity-tracker-knf13.firebaseapp.com",
-            projectId: "productivity-tracker-knf13",
-            storageBucket: "productivity-tracker-knf13.firebasestorage.app",
-            messagingSenderId: "76203539357",
-            appId: "1:76203539357:web:7d474a6a57c631b80d96"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        console.log('Firebase initialized!', db);
-    </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kimberly's Closet</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #fdf8ff, #f0e9ff);
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+    }
+
+    header h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: #8e44ad;
+      margin: 0;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #5e5e5e;
+      margin-top: 0.5rem;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto 4rem;
+      padding: 2rem;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      color: #3c3c3c;
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+
+    .controls, .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 1.75rem;
+    }
+
+    select, .button {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      border-radius: 9999px;
+      border: 1px solid #ddd;
+      background-color: #faf4ff;
+      color: #6e3fa2;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .button:hover, select:hover {
+      background-color: #e7d8fb;
+    }
+
+    .button-primary {
+      background-color: #a259ff;
+      color: white;
+      border: none;
+    }
+
+    .button-primary:hover {
+      background-color: #8e3ee6;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .item {
+      background: #fcfaff;
+      border: 1px solid #e5dcf3;
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .item img {
+      width: 100%;
+      border-radius: 12px;
+    }
+
+    .item p {
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      color: #4a4a4a;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #777;
+      margin-top: 3rem;
+    }
+  </style>
 </head>
 <body>
-    <h1>Firebase Test</h1>
+  <header>
+    <h1>Kimberly's Closet</h1>
+    <p>A visual archive of everything I own</p>
+  </header>
+
+  <main>
+    <h2>Organize Your Wardrobe ✨</h2>
+
+    <div class="categories">
+      <button class="button" onclick="filterByCategory('all')">All</button>
+      <button class="button" onclick="filterByCategory('shoes')">Shoes</button>
+      <button class="button" onclick="filterByCategory('dresses')">Dresses</button>
+      <button class="button" onclick="filterByCategory('tops')">Tops</button>
+      <button class="button" onclick="filterByCategory('bottoms')">Bottoms</button>
+      <button class="button" onclick="filterByCategory('outerwear')">Outerwear</button>
+    </div>
+
+    <div class="controls">
+      <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+
+      <select id="colorSelect">
+        <option value="all">Choose Color</option>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="yellow">Yellow</option>
+        <option value="black">Black</option>
+        <option value="white">White</option>
+        <option value="neutral">Neutral</option>
+        <option value="pink">Pink</option>
+        <option value="purple">Purple</option>
+        <option value="gold">Gold</option>
+        <option value="silver">Silver</option>
+        <option value="bronze">Bronze</option>
+        <option value="rose gold">Rose Gold</option>
+        <option value="multicolor">Multicolor</option>
+        <option value="clear">Clear</option>
+      </select>
+
+      <select id="filterSelect">
+        <option value="all">Filter by Color</option>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="yellow">Yellow</option>
+        <option value="black">Black</option>
+        <option value="white">White</option>
+        <option value="neutral">Neutral</option>
+        <option value="pink">Pink</option>
+        <option value="purple">Purple</option>
+        <option value="gold">Gold</option>
+        <option value="silver">Silver</option>
+        <option value="bronze">Bronze</option>
+        <option value="rose gold">Rose Gold</option>
+        <option value="multicolor">Multicolor</option>
+        <option value="clear">Clear</option>
+      </select>
+
+      <button class="button button-primary" onclick="document.getElementById('imageInput').click()">📸 Add Item</button>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+    <div class="empty-state" id="emptyState">No items yet. Start uploading your wardrobe!</div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const firebaseConfig = {
+        apiKey: "AIzaSyDTd4lvs1lzjKeGu7Ee91lM30-8v88h-ng",
+        authDomain: "productivity-tracker-knf13.firebaseapp.com",
+        projectId: "productivity-tracker-knf13",
+        storageBucket: "productivity-tracker-knf13.appspot.com",
+        messagingSenderId: "762035393571",
+        appId: "1:762035393571:web:7d474a6a57cc031b860d96"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const storage = getStorage(app);
+
+      const imageInput = document.getElementById("imageInput");
+      const colorSelect = document.getElementById("colorSelect");
+      const filterSelect = document.getElementById("filterSelect");
+      const gallery = document.getElementById("gallery");
+      const emptyState = document.getElementById("emptyState");
+
+      function createGalleryItem(imgSrc, colorLabel) {
+        const item = document.createElement("div");
+        item.className = "item";
+        item.setAttribute("data-color", colorLabel);
+        item.setAttribute("data-category", "dresses");
+        item.innerHTML = `
+          <img src="${imgSrc}" alt="Closet item" />
+          <p>Color: ${colorLabel}</p>
+        `;
+        return item;
+      }
+
+      imageInput.addEventListener("change", async function () {
+        const file = this.files[0];
+        const color = colorSelect.value;
+        if (file && color !== "all") {
+          const storageRef = ref(storage, 'closet/' + file.name);
+          await uploadBytes(storageRef, file);
+          const downloadURL = await getDownloadURL(storageRef);
+          const item = createGalleryItem(downloadURL, color);
+          gallery.appendChild(item);
+          emptyState.style.display = "none";
+        }
+      });
+
+      filterSelect.addEventListener("change", function () {
+        const selected = this.value;
+        const items = document.querySelectorAll(".item");
+        items.forEach(item => {
+          const color = item.getAttribute("data-color");
+          item.style.display = (selected === "all" || color === selected) ? "block" : "none";
+        });
+      });
+
+      window.filterByCategory = function(category) {
+        const items = document.querySelectorAll(".item");
+        items.forEach(item => {
+          const cat = item.getAttribute("data-category");
+          item.style.display = (category === "all" || cat === category) ? "block" : "none";
+        });
+      };
+    });
+  </script>
 </body>
 </html>
