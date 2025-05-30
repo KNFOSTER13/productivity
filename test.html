@@ -11,25 +11,21 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(to bottom right, #fdf8ff, #f0e9ff);
     }
-
     header {
       text-align: center;
       padding: 3rem 1rem 2rem;
     }
-
     header h1 {
       font-size: 2.75rem;
       font-weight: 800;
       color: #8e44ad;
       margin: 0;
     }
-
     header p {
       font-size: 1.2rem;
       color: #5e5e5e;
       margin-top: 0.5rem;
     }
-
     main {
       max-width: 900px;
       margin: 0 auto 4rem;
@@ -38,14 +34,12 @@
       border-radius: 24px;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
     }
-
     h2 {
       font-size: 1.5rem;
       color: #3c3c3c;
       margin-bottom: 1.25rem;
       text-align: center;
     }
-
     .controls, .categories {
       display: flex;
       flex-wrap: wrap;
@@ -53,7 +47,6 @@
       justify-content: center;
       margin-bottom: 1.75rem;
     }
-
     select, .button {
       padding: 0.6rem 1rem;
       font-size: 1rem;
@@ -65,27 +58,22 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-
     .button:hover, select:hover {
       background-color: #e7d8fb;
     }
-
     .button-primary {
       background-color: #a259ff;
       color: white;
       border: none;
     }
-
     .button-primary:hover {
       background-color: #8e3ee6;
     }
-
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1.25rem;
     }
-
     .item {
       background: #fcfaff;
       border: 1px solid #e5dcf3;
@@ -93,18 +81,15 @@
       padding: 1rem;
       text-align: center;
     }
-
     .item img {
       width: 100%;
       border-radius: 12px;
     }
-
     .item p {
       margin-top: 0.75rem;
       font-size: 0.95rem;
       color: #4a4a4a;
     }
-
     .empty-state {
       text-align: center;
       color: #777;
@@ -117,10 +102,8 @@
     <h1>Kimberly's Closet</h1>
     <p>A visual archive of everything I own</p>
   </header>
-
   <main>
     <h2>Organize Your Wardrobe ✨</h2>
-
     <div class="categories">
       <button class="button" onclick="filterByCategory('all')">All</button>
       <button class="button" onclick="filterByCategory('shoes')">Shoes</button>
@@ -129,10 +112,8 @@
       <button class="button" onclick="filterByCategory('bottoms')">Bottoms</button>
       <button class="button" onclick="filterByCategory('outerwear')">Outerwear</button>
     </div>
-
     <div class="controls">
       <input type="file" id="imageInput" accept="image/*" style="display: none;" />
-
       <select id="colorSelect">
         <option value="all">Choose Color</option>
         <option value="red">Red</option>
@@ -151,7 +132,6 @@
         <option value="multicolor">Multicolor</option>
         <option value="clear">Clear</option>
       </select>
-
       <select id="filterSelect">
         <option value="all">Filter by Color</option>
         <option value="red">Red</option>
@@ -170,17 +150,14 @@
         <option value="multicolor">Multicolor</option>
         <option value="clear">Clear</option>
       </select>
-
       <button class="button button-primary" onclick="document.getElementById('imageInput').click()">📸 Add Item</button>
     </div>
-
     <div class="gallery" id="gallery"></div>
     <div class="empty-state" id="emptyState">No items yet. Start uploading your wardrobe!</div>
   </main>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+    import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
     document.addEventListener("DOMContentLoaded", () => {
       const firebaseConfig = {
@@ -201,6 +178,11 @@
       const gallery = document.getElementById("gallery");
       const emptyState = document.getElementById("emptyState");
 
+      if (!imageInput || !colorSelect || !filterSelect || !gallery || !emptyState) {
+        console.error("One or more required elements are missing from the DOM.");
+        return;
+      }
+
       function createGalleryItem(imgSrc, colorLabel) {
         const item = document.createElement("div");
         item.className = "item";
@@ -213,16 +195,27 @@
         return item;
       }
 
-      imageInput.addEventListener("change", async function () {
+      imageInput.addEventListener("change", function () {
         const file = this.files[0];
         const color = colorSelect.value;
         if (file && color !== "all") {
-          const storageRef = ref(storage, 'closet/' + file.name);
-          await uploadBytes(storageRef, file);
-          const downloadURL = await getDownloadURL(storageRef);
-          const item = createGalleryItem(downloadURL, color);
-          gallery.appendChild(item);
-          emptyState.style.display = "none";
+          const reader = new FileReader();
+          reader.onload = async function (e) {
+            const imageData = e.target.result;
+            const imageId = Date.now();
+            const storageRef = ref(storage, `closet/${imageId}`);
+            try {
+              await uploadString(storageRef, imageData, 'data_url');
+              const downloadURL = await getDownloadURL(storageRef);
+              const item = createGalleryItem(downloadURL, color);
+              gallery.appendChild(item);
+              emptyState.style.display = "none";
+              console.log("Upload successful:", downloadURL);
+            } catch (err) {
+              console.error("Upload failed:", err);
+            }
+          };
+          reader.readAsDataURL(file);
         }
       });
 
