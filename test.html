@@ -3229,7 +3229,7 @@ quickActions.appendChild(publishedBtn);
             PIPELINES[brandId][toStage].splice(evt.newIndex, 0, movedItem);
         }
 
-        updateAll();
+        refreshView(brandId);
         saveToFirebase();
     }
 });
