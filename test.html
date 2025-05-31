@@ -2746,16 +2746,15 @@ function renderBulkOptions() {
   );
 }
 
-  function generateSchedule() {
+ function generateSchedule() {
   console.log('🚀 generateSchedule() called');
 
   const brandId = qs('#bulkScheduler').dataset.brandId;
   console.log('Brand ID:', brandId);
 
   const type = qs('input[name="scheduleType"]:checked').value;
-  console.log('Schedule Type:', type);  
-  const brandId = qs('#bulkScheduler').dataset.brandId;
-  const type = qs('input[name="scheduleType"]:checked').value;
+  console.log('Schedule Type:', type);
+
   const today = new Date();
   const ideas = PIPELINES[brandId].ideas || [];
 
@@ -2768,13 +2767,16 @@ function renderBulkOptions() {
     for (let w = 0; w < weeks; w++) {
       days.forEach(day => {
         const date = new Date();
-        date.setDate(today.getDate() + (7 * w) + (day - today.getDay() + 7) % 7);
-        const dateStr = date.toISOString().slice(0,10);
+        date.setDate(today.getDate() + (7 * w) + ((day - today.getDay() + 7) % 7));
+        const dateStr = date.toISOString().slice(0, 10);
+
         const item = createItem(`${template.title} ${dateStr}`, 'ideas', {
           ...template,
           type: contentType,
           scheduledDate: dateStr
         });
+
+        console.log('📅 Created weekly item:', item.title);
         ideas.push(item);
       });
     }
@@ -2786,16 +2788,20 @@ function renderBulkOptions() {
       const base = new Date(today.getFullYear(), today.getMonth() + m, 1);
 
       weekSelectors.forEach((sel, i) => {
-        const type = sel.value;
-        const template = CONTENT_TEMPLATES[type];
+        const contentType = sel.value;
+        const template = CONTENT_TEMPLATES[contentType];
+
         const date = new Date(base);
-        date.setDate((i * 7) + 1); // first day of each week
-        const dateStr = date.toISOString().slice(0,10);
+        date.setDate((i * 7) + 1); // Approximate start of each week
+        const dateStr = date.toISOString().slice(0, 10);
+
         const item = createItem(`${template.title} ${dateStr}`, 'ideas', {
           ...template,
-          type,
+          type: contentType,
           scheduledDate: dateStr
         });
+
+        console.log('📅 Created monthly item:', item.title);
         ideas.push(item);
       });
     }
@@ -2805,7 +2811,9 @@ function renderBulkOptions() {
   closeBulkScheduler();
   refreshView(brandId);
   saveToFirebase();
+  console.log('✅ Schedule created and saved');
 }
+
 
         
         // ---------- Content ideas generator ----------
