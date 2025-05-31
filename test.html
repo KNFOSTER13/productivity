@@ -3064,43 +3064,6 @@ qs('#publishedBrandFilter').onchange = populatePublishedList;
                     
                     // Add progress tracker
                     var progress = buildProgressTracker(b);
-                    // DAILY SUMMARY PANEL
-const todaySummary = el('div', 'progress-section daily-summary-panel');
-todaySummary.style.marginBottom = '1.5rem';
-
-const todayHeader = el('div', 'progress-header');
-todayHeader.appendChild(el('h3', null, 'Today\'s Schedule'));
-todaySummary.appendChild(todayHeader);
-
-const todayList = el('ul');
-todayList.style.listStyle = 'none';
-todayList.style.paddingLeft = '0';
-
-const todayStr = todayISO();
-EDIT_STAGES.forEach(stage => {
-  const items = PIPELINES[b.id][stage] || [];
-  items.forEach(item => {
-    if (item.scheduledDate === todayStr) {
-      const li = el('li');
-      li.style.marginBottom = '.6rem';
-      li.innerHTML = `
-        <span class="content-icon type-${item.type}">${getContentIcon(item.type)}</span>
-        <strong>${item.title}</strong>
-        <span style="font-size:.75rem; color: var(--text-m); margin-left: .5rem;">(${stage})</span>
-      `;
-      todayList.appendChild(li);
-    }
-  });
-});
-
-if (todayList.children.length === 0) {
-  const empty = el('li', null, 'No items scheduled today.');
-  empty.style.color = 'var(--text-m)';
-  todayList.appendChild(empty);
-}
-
-todaySummary.appendChild(todayList);
-v.appendChild(todaySummary);
 
                 }
                 const publishedBtn = el('button', 'quick-action-btn');
