@@ -2833,6 +2833,64 @@ function renderBulkOptions() {
   saveToFirebase();
   console.log('✅ Schedule created and saved');
 }
+window.openPublishedDirectory = function() {
+  const modal = qs('#publishedDirectory');
+  modal.classList.add('show');
+
+  const brandFilter = qs('#publishedBrandFilter');
+  brandFilter.innerHTML = '<option value="all">All Brands</option>';
+  BRANDS.forEach(brand => {
+    if (PIPELINES[brand.id]?.published?.length) {
+      const opt = document.createElement('option');
+      opt.value = brand.id;
+      opt.textContent = brand.name;
+      brandFilter.appendChild(opt);
+    }
+  });
+
+  populatePublishedList();
+};
+
+window.closePublishedDirectory = function() {
+  qs('#publishedDirectory').classList.remove('show');
+};
+
+function populatePublishedList() {
+  const ul = qs('#publishedList');
+  ul.innerHTML = '';
+
+  const filterBrand = qs('#publishedBrandFilter').value;
+  const keyword = qs('#publishedSearchInput').value.toLowerCase();
+
+  BRANDS.forEach(brand => {
+    if (filterBrand !== 'all' && brand.id !== filterBrand) return;
+
+    const published = PIPELINES[brand.id]?.published || [];
+    published.forEach(item => {
+      if (!item.title.toLowerCase().includes(keyword)) return;
+
+      const li = document.createElement('li');
+      li.style.padding = '.6rem 0';
+      li.style.borderBottom = '1px solid var(--border)';
+
+      li.innerHTML = `
+        <strong>${item.title}</strong><br>
+        <span style="font-size:.75rem; color: var(--text-m)">
+          ${brand.name} • ${item.scheduledDate || '—'} • 
+          ${item.metrics.views || 0} views • 
+          ${item.metrics.revenue ? '$' + item.metrics.revenue : ''}
+        </span>
+      `;
+      ul.appendChild(li);
+    });
+  });
+}
+
+function filterPublishedList() {
+  populatePublishedList();
+}
+
+qs('#publishedBrandFilter').onchange = populatePublishedList;
 
 
         
