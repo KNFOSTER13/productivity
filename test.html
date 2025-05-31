@@ -2584,8 +2584,7 @@ const db = firebase.firestore();
                     buildPipeline(brand, pipelineView);
                     var brandView = qs('#view-' + brandId);
 if (brandView) {
-  const oldSummary = brandView.querySelector('.progress-section:nth-of-type(2)');
-  if (oldSummary) oldSummary.remove();
+ qsa('.daily-summary-panel', brandView).forEach(p => p.remove());
   const afterProgress = brandView.querySelector('.progress-section');
   if (afterProgress) {
     afterProgress.insertAdjacentElement('afterend', buildTodaySummary(brandId));
