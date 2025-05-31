@@ -1,241 +1,5083 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kimberly's Closet</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom right, #fdf8ff, #f0e9ff);
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Your Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyDTd41vsTlzjKeGu7Eq91IM3Q-8v88h-ng",
+    authDomain: "productivity-tracker-knf13.firebaseapp.com",
+    projectId: "productivity-tracker-knf13",
+    storageBucket: "productivity-tracker-knf13.firebasestorage.app",
+    messagingSenderId: "76203539357",
+    appId: "1:76203539357:web:7d474a6a57c631b80d96"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+    <!-- 
+    =========================================================
+    Empire Dashboard • Enhanced Edition v4.0.0
+    ---------------------------------------------------------
+    • Object-based data structure with metadata
+    • Delete functionality with confirmation
+    • Inline and panel editing capabilities
+    • Enhanced item management
+    =========================================================
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire Dashboard — Enhanced</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fff;
+            --bg-mute: #f6f7fb;
+            --border: #e3e5ee;
+            --text: #1a1a1a;
+            --text-m: #6e6e82;
+            --accent: #8245ff;
+            --shadow: 0 2px 6px rgba(0,0,0,.06);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.55;
+            padding-bottom: 4rem;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem;
+            margin: 1.4rem 0 1rem;
+        }
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 1rem 0 .4rem;
+        }
+        .wrap {
+            max-width: 1280px;
+            margin: auto;
+            padding: 0 1.4rem;
+        }
+        /* nav */
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-bottom: 1.6rem;
+        }
+        .nav-btn {
+            padding: .45rem .9rem;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            font-size: .84rem;
+            font-weight: 600;
+            background: var(--bg-mute);
+            cursor: pointer;
+            transition: .2s;
+        }
+        .nav-btn.active,
+        .nav-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* totals */
+        .totals {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.1rem;
+        }
+        .tot {
+            flex: 1 1 160px;
+            background: var(--bg-mute);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            padding: 1rem;
+            box-shadow: var(--shadow);
+        }
+        .tot-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .tot-lbl {
+            font-size: .7rem;
+            color: var(--text-m);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+        /* overview */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.4rem;
+        }
+        .card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.1rem;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+        }
+        .badge {
+            display: inline-block;
+            padding: .15rem .55rem;
+            border-radius: 999px;
+            font-size: .66rem;
+            font-weight: 600;
+            color: #fff;
+            text-transform: lowercase;
+        }
+        .badge.active { background: #4ade80; }
+        .badge.launching { background: #f97316; }
+        .badge.planning { background: #60a5fa; }
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.23rem;
+            margin: .2rem 0 .4rem;
+        }
+        .desc {
+            font-size: .82rem;
+            color: var(--text-m);
+            margin-bottom: 1rem;
+        }
+        .metrics {
+            display: flex;
+            gap: .6rem;
+            flex-wrap: wrap;
+        }
+        .mbox {
+            flex: 1 1 90px;
+            background: var(--bg-mute);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: .6rem;
+            text-align: center;
+        }
+        .mval {
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .mlbl {
+            font-size: .68rem;
+            color: var(--text-m);
+            text-transform: uppercase;
+        }
+        /* view */
+        .view {
+            display: none;
+        }
+        .view.active {
+            display: block;
+        }
+        .p-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+        .p-controls {
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+        }
+        /* view toggle */
+        .view-toggle {
+            display: flex;
+            background: var(--bg-mute);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .toggle-btn {
+            padding: .4rem .8rem;
+            border: none;
+            background: transparent;
+            font-size: .78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .toggle-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        /* multi-brand toggle */
+        .multi-brand {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .78rem;
+        }
+        .multi-brand input[type="checkbox"] {
+            margin: 0;
+        }
+        /* pipeline */
+        .pipeline {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+        .col {
+            min-width: 220px;
+            background: var(--bg-mute);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 1rem;
+            flex: 1 0 220px;
+            display: flex;
+            flex-direction: column;
+        }
+        .c-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: .88rem;
+            margin-bottom: .65rem;
+        }
+        .c-count {
+            background: var(--accent);
+            color: #fff;
+            font-size: .65rem;
+            border-radius: 6px;
+            padding: .15rem .45rem;
+        }
+        .list {
+            flex: 1 1 auto;
+            min-height: 100px;
+        }
+        .item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            padding: .45rem;
+            font-size: .8rem;
+            margin-bottom: .5rem;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            transition: opacity .3s, transform .3s;
+        }
+        .item.deleting {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        .item-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .item-title {
+            flex: 1;
+            cursor: pointer;
+        }
+        .item-title:hover {
+            text-decoration: underline;
+        }
+        .item-date {
+            font-size: .68rem;
+            color: var(--text-m);
+            margin-left: .4rem;
+        }
+        .item-actions {
+            display: flex;
+            gap: .3rem;
+            opacity: 0;
+            transition: opacity .2s;
+        }
+        .item:hover .item-actions {
+            opacity: 1;
+        }
+        .item-action {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: .9rem;
+            padding: .2rem;
+            color: var(--text-m);
+            transition: color .2s;
+        }
+        .item-action.edit:hover {
+            color: var(--accent);
+        }
+        .item-action.delete:hover {
+            color: var(--danger);
+        }
+        .item.ready { border-left: 3px solid #4ade80; }
+        .item.published { border-left: 3px solid #6b7280; opacity: .7; }
+        .item.inProgress { border: 2px dashed var(--accent); }
+        .item.planning { opacity: .6; }
+        .item.upcoming { border-left: 3px solid #f97316; }
+        .item.marketing { animation: pulse 2s infinite; }
+        .item.completed { opacity: .5; text-decoration: line-through; }
+        /* priority badges */
+        .priority-badge {
+            font-size: .6rem;
+            padding: .1rem .3rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .priority-high {
+            background: var(--danger);
+            color: #fff;
+        }
+        .priority-medium {
+            background: var(--warning);
+            color: #fff;
+        }
+        .priority-low {
+            background: var(--bg-mute);
+            color: var(--text-m);
+        }
+        /* inline edit */
+        .item-edit-inline {
+            display: flex;
+            gap: .3rem;
+            flex: 1;
+        }
+        .item-edit-input {
+            flex: 1;
+            padding: .2rem .4rem;
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            font-size: .8rem;
+            font-family: inherit;
+        }
+        .item-edit-btn {
+            padding: .2rem .4rem;
+            border: none;
+            border-radius: 4px;
+            font-size: .7rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .item-edit-save {
+            background: var(--success);
+            color: #fff;
+        }
+        .item-edit-cancel {
+            background: var(--bg-mute);
+            color: var(--text);
+        }
+        /* edit panel */
+        .edit-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100%;
+            background: var(--bg);
+            box-shadow: -2px 0 10px rgba(0,0,0,.1);
+            transition: right .3s;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .edit-panel.open {
+            right: 0;
+        }
+        .edit-panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .edit-panel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .edit-panel-close {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-m);
+        }
+        .edit-panel-body {
+            padding: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: .4rem;
+        }
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: .5rem .7rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: .85rem;
+            font-family: inherit;
+            transition: border-color .2s;
+        }
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            padding: .4rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            min-height: 38px;
+        }
+        .tag {
+            background: var(--bg-mute);
+            padding: .2rem .5rem;
+            border-radius: 4px;
+            font-size: .75rem;
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+        }
+        .tag-remove {
+            cursor: pointer;
+            color: var(--text-m);
+        }
+        .tag-remove:hover {
+            color: var(--danger);
+        }
+        .form-actions {
+            display: flex;
+            gap: .5rem;
+            margin-top: 1.5rem;
+        }
+        .btn {
+            padding: .5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-secondary {
+            background: var(--bg-mute);
+            color: var(--text);
+        }
+        /* calendar */
+        .calendar {
+            display: none;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        .calendar.active {
+            display: block;
+        }
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .cal-nav {
+            background: var(--bg-mute);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: .3rem .8rem;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: .2s;
+            user-select: none;
+        }
+        .cal-nav:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+        .cal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            overflow: hidden;
+        }
+        .cal-day-header {
+            background: var(--bg-mute);
+            padding: .8rem .5rem;
+            text-align: center;
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--text-m);
+            text-transform: uppercase;
+        }
+        .cal-day-header.weekend {
+            background: #f8f9ff;
+        }
+        .cal-date {
+            background: var(--bg);
+            min-height: 85px;
+            padding: .4rem;
+            position: relative;
+            cursor: pointer;
+            transition: .2s;
+            border-bottom: 1px solid transparent;
+        }
+        .cal-date:hover {
+            background: var(--bg-mute);
+        }
+        .cal-date.today {
+            border-bottom: 2px solid var(--accent);
+            background: #fafbff;
+        }
+        .cal-date.other-month {
+            opacity: .3;
+        }
+        .cal-date.weekend {
+            background: #fafbff;
+        }
+        .cal-date.weekend.other-month {
+            background: #f8f9fa;
+            opacity: .2;
+        }
+        .cal-date-num {
+            font-size: .8rem;
+            font-weight: 600;
+            margin-bottom: .3rem;
+        }
+        .cal-items {
+            display: flex;
+            flex-direction: column;
+            gap: .2rem;
+        }
+        .cal-item {
+            font-size: .65rem;
+            padding: .15rem .3rem;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: opacity .3s, transform .3s;
+        }
+        .cal-item.deleting {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        .cal-item:hover .cal-item-delete {
+            display: block;
+        }
+        .cal-item-delete {
+            display: none;
+            position: absolute;
+            right: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,.3);
+            color: #fff;
+            border: none;
+            padding: 0 .2rem;
+            cursor: pointer;
+            font-size: .8rem;
+            border-radius: 3px;
+        }
+        .cal-item.ready {
+            background: #4ade80;
+        }
+        .cal-item.ready::before {
+            content: '📅 ';
+            font-size: .6rem;
+        }
+        .cal-item.published {
+            background: #6b7280;
+            opacity: .8;
+        }
+        .cal-item.published::before {
+            content: '✓ ';
+            font-size: .6rem;
+        }
+        .cal-item.inProgress {
+            background: transparent;
+            border: 1px dashed var(--accent);
+            color: var(--accent);
+        }
+        .cal-item.planning {
+            background: rgba(96, 165, 250, .4);
+            color: var(--text);
+        }
+        .cal-item.upcoming {
+            background: #f97316;
+        }
+        .cal-item.marketing {
+            background: #8b5cf6;
+            animation: pulse 2s infinite;
+        }
+        .cal-item.completed {
+            background: #6b7280;
+            opacity: .5;
+            text-decoration: line-through;
+        }
+        .cal-more {
+            font-size: .6rem;
+            color: var(--text-m);
+            padding: .1rem .3rem;
+            cursor: pointer;
+        }
+        .cal-more:hover {
+            color: var(--accent);
+        }
+        /* content type icons */
+        .content-icon {
+            font-size: .7rem;
+            margin-right: .2rem;
+        }
+        .type-video::before { content: '🎥 '; }
+        .type-article::before { content: '✏️ '; }
+        .type-newsletter::before { content: '📧 '; }
+        .type-social::before { content: '📱 '; }
+        .type-event::before { content: '📅 '; }
+        /* tooltip */
+        .tooltip {
+            position: absolute;
+            background: #1a1a1a;
+            color: #fff;
+            padding: .4rem .6rem;
+            border-radius: 6px;
+            font-size: .7rem;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .2s;
+            white-space: nowrap;
+        }
+        .tooltip.show {
+            opacity: 1;
+        }
+        /* animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .add {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: .4rem .8rem;
+            font-size: .78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        /* brand metrics grid */
+        .brand-metrics {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .brand-mbox {
+            flex: 1 1 140px;
+            background: var(--bg-mute);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            padding: .7rem;
+            box-shadow: var(--shadow);
+        }
+        .brand-mval {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .brand-mlabel {
+            font-size: .7rem;
+            color: var(--text-m);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+        /* responsive */
+        @media (max-width: 768px) {
+            .cal-date {
+                min-height: 70px;
+                padding: .3rem;
+            }
+            .cal-date-num {
+                font-size: .7rem;
+            }
+            .cal-item {
+                font-size: .6rem;
+                padding: .1rem .2rem;
+            }
+            .p-head {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .p-controls {
+                justify-content: space-between;
+            }
+            .edit-panel {
+                width: 100%;
+            }
+        }
+        /* Analytics Dashboard Styles */
+.analytics-view {
+    display: none;
+    padding: 1.5rem 0;
+}
+.analytics-view.active {
+    display: block;
+}
+.analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.date-range-selector {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+.date-range-btn {
+    padding: .4rem .8rem;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 6px;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: .2s;
+}
+.date-range-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.analytics-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+.analytics-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.analytics-card-title {
+    font-weight: 600;
+    font-size: 1rem;
+}
+.analytics-metric {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: .5rem;
+}
+.analytics-trend {
+    font-size: .8rem;
+    color: var(--text-m);
+}
+.trend-up {
+    color: var(--success);
+}
+.trend-down {
+    color: var(--danger);
+}
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin-top: 1rem;
+}
+.top-content-list {
+    list-style: none;
+    padding: 0;
+}
+.top-content-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--border);
+}
+.top-content-item:last-child {
+    border-bottom: none;
+}
+.content-title {
+    font-size: .85rem;
+    flex: 1;
+}
+.content-metric {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+.brand-performance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.brand-perf-card {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-mute);
+    border-radius: 8px;
+}
+.brand-perf-name {
+    font-size: .8rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+.brand-perf-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+}/* Event Modal Styles */
+.event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.event-modal {
+  background: var(--bg);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.event-hero {
+  padding: 3rem;
+  position: relative;
+  color: #fff;
+  text-align: center;
+}
+
+.event-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.event-date {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+.close-event {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-event:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+/* Event Tabs */
+.event-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-mute);
+  padding: 0 2rem;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 1.2rem 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  color: var(--text-m);
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  color: var(--accent);
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+
+.tab-icon {
+  font-size: 1.2rem;
+}
+
+/* Event Content */
+.event-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Moodboard Section */
+.moodboard-section {
+  display: grid;
+  gap: 2rem;
+}
+
+.moodboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.moodboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.moodboard-item {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-mute);
+  border: 2px dashed var(--border);
+  transition: 0.2s;
+}
+
+.moodboard-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.moodboard-item:hover .remove-image {
+  opacity: 1;
+}
+
+.remove-image {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.add-image-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-image-btn:hover {
+  background: var(--bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.add-image-btn input {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Color Palette */
+.color-palette-section {
+  background: var(--bg-mute);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.color-swatch {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.add-color {
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--text-m);
+}
+
+/* Details Section */
+.details-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.detail-card {
+  background: var(--bg-mute);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.detail-card h3 {
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.detail-field {
+  margin-bottom: 1rem;
+}
+
+.detail-field label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-m);
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-field input,
+.detail-field textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-family: inherit;
+}
+
+/* Checklist Section */
+.checklist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.checklist-progress {
+  background: var(--bg-mute);
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.checklist-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.checklist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.checklist-item {
+  background: var(--bg-mute);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: 0.2s;
+}
+
+.checklist-item:hover {
+  transform: translateX(5px);
+}
+
+.checklist-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.checklist-checkbox.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.checklist-checkbox.checked::after {
+  content: '✓';
+  color: #fff;
+  font-weight: bold;
+}
+
+.checklist-text {
+  flex: 1;
+}
+
+.checklist-item.completed .checklist-text {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.checklist-due {
+  font-size: 0.8rem;
+  color: var(--text-m);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .event-modal {
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .event-tabs {
+    padding: 0 1rem;
+  }
+  
+  .tab {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .tab-icon {
+    display: none;
+  }
+  
+  .moodboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+        /* Content Modal Styles */
+.content-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.content-modal {
+  background: var(--bg);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+.content-hero {
+  padding: 2.5rem;
+  position: relative;
+  color: #fff;
+  text-align: center;
+}
+
+.content-meta {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+.close-content {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-content:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.content-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-mute);
+  padding: 0 2rem;
+}
+
+.content-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.content-section {
+  margin-bottom: 2rem;
+}
+
+.content-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  min-height: 200px;
+  resize: vertical;
+}
+
+.content-textarea.large {
+  min-height: 400px;
+}
+
+/* Media Panel */
+.media-section {
+  padding: 1rem 0;
+}
+
+.media-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.media-item {
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg-mute);
+  border: 2px dashed var(--border);
+  transition: 0.2s;
+}
+
+.media-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-item:hover .remove-media {
+  opacity: 1;
+}
+
+.remove-media {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.add-media-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.add-media-btn:hover {
+  background: var(--bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.thumbnail-badge {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Links Panel */
+.links-section {
+  padding: 1rem 0;
+}
+
+.links-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.link-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.link-item input[type="text"] {
+  flex: 1;
+}
+
+.link-item input[type="url"] {
+  flex: 2;
+}
+
+.remove-link {
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notes Panel */
+.notes-section {
+  padding: 1rem 0;
+}
+
+.notes-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  min-height: 300px;
+  resize: vertical;
+}
+
+.media-grid.drag-over {
+  border-color: var(--accent);
+  background: var(--bg);
+}
+        /* Quick Search Styles */
+.quick-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10vh;
+    opacity: 0;
+    animation: fadeIn 0.2s forwards;
+}
+
+.quick-search-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
     }
-    header {
-      text-align: center;
-      padding: 3rem 1rem 2rem;
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
-    header h1 {
-      font-size: 2.75rem;
-      font-weight: 800;
-      color: #8e44ad;
-      margin: 0;
+}
+
+.quick-search-input {
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    font-size: 1.1rem;
+    font-family: inherit;
+    outline: none;
+    background: transparent;
+}
+
+.quick-search-results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-result {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+}
+
+.search-result:hover,
+.search-result.selected {
+    background: var(--bg-mute);
+}
+
+.search-result-icon {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.search-result-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-meta {
+    font-size: 0.8rem;
+    color: var(--text-m);
+    margin-top: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-brand {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    border-radius: 2px;
+}
+
+/* Empty state */
+.search-result[data-type="empty"] {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.search-result[data-type="empty"]:hover {
+    background: transparent;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .quick-search-overlay {
+        padding-top: 5vh;
     }
-    header p {
-      font-size: 1.2rem;
-      color: #5e5e5e;
-      margin-top: 0.5rem;
+    
+    .quick-search-modal {
+        width: 95%;
     }
-    main {
-      max-width: 900px;
-      margin: 0 auto 4rem;
-      padding: 2rem;
-      background: #ffffff;
-      border-radius: 24px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    
+    .quick-search-input {
+        font-size: 1rem;
+        padding: 1rem;
     }
-    h2 {
-      font-size: 1.5rem;
-      color: #3c3c3c;
-      margin-bottom: 1.25rem;
-      text-align: center;
-    }
-    .controls, .categories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-      margin-bottom: 1.75rem;
-    }
-    select, .button {
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
-      border-radius: 9999px;
-      border: 1px solid #ddd;
-      background-color: #faf4ff;
-      color: #6e3fa2;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .button:hover, select:hover {
-      background-color: #e7d8fb;
-    }
-    .button-primary {
-      background-color: #a259ff;
-      color: white;
-      border: none;
-    }
-    .button-primary:hover {
-      background-color: #8e3ee6;
-    }
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1.25rem;
-    }
-    .item {
-      background: #fcfaff;
-      border: 1px solid #e5dcf3;
-      border-radius: 16px;
-      padding: 1rem;
-      text-align: center;
-    }
-    .item img {
-      width: 100%;
-      border-radius: 12px;
-    }
-    .item p {
-      margin-top: 0.75rem;
-      font-size: 0.95rem;
-      color: #4a4a4a;
-    }
-    .empty-state {
-      text-align: center;
-      color: #777;
-      margin-top: 3rem;
-    }
-  </style>
+}.nav-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+/* Save notification toast */
+.save-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--success);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 3000;
+}
+.save-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* New Styles for Enhanced Features */
+
+/* Quick Actions Bar */
+.quick-actions {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--bg-mute);
+    border-radius: 10px;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.quick-action-btn {
+    padding: .5rem .8rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: .2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+}
+
+.quick-action-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.quick-action-icon {
+    font-size: 1rem;
+}
+
+/* Content Ideas Generator */
+.ideas-generator {
+    background: linear-gradient(135deg, var(--accent), #a370ff);
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.ideas-generator h3 {
+    margin-bottom: 1rem;
+}
+
+.ideas-generator button {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: .6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.ideas-generator button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.idea-suggestion {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    font-style: italic;
+}
+
+/* Progress Tracker */
+.progress-section {
+    background: var(--bg-mute);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .8rem;
+}
+
+.progress-bar {
+    height: 10px;
+    background: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #a370ff);
+    transition: width .3s ease;
+    position: relative;
+}
+
+.progress-text {
+    font-size: .75rem;
+    color: var(--text-m);
+    margin-top: .5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Content Templates */
+.template-selector {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    z-index: 1001;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0,0,0,.2);
+}
+
+.template-selector.show {
+    display: block;
+}
+
+.template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.template-option {
+    padding: 1.5rem 1rem;
+    background: var(--bg-mute);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.template-option:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.template-icon {
+    font-size: 2rem;
+    margin-bottom: .5rem;
+}
+
+.template-name {
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .2rem .5rem;
+    background: var(--bg-mute);
+    border-radius: 12px;
+    font-size: .7rem;
+    margin-left: .5rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-m);
+}
+
+.status-dot.overdue {
+    background: var(--danger);
+    animation: pulse 2s infinite;
+}
+
+.status-dot.due-soon {
+    background: var(--warning);
+}
+
+.status-dot.on-track {
+    background: var(--success);
+}
+
+/* Enhanced Item Cards */
+.item-enhanced {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .8rem;
+    margin-bottom: .6rem;
+    position: relative;
+    transition: all .2s;
+}
+
+.item-enhanced:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+}
+
+.item-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--bg-mute);
+    border-radius: 0 0 10px 10px;
+}
+
+.item-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 0 0 10px 10px;
+    transition: width .3s ease;
+}
+
+/* Streak Tracker */
+.streak-widget {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.streak-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: .2rem;
+}
+
+.streak-label {
+    font-size: .8rem;
+    opacity: .9;
+}
+
+/* Content Type Selector */
+.type-selector-popup {
+    position: absolute;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    z-index: 100;
+    display: none;
+}
+
+.type-selector-popup.show {
+    display: block;
+}
+
+.type-option {
+    padding: .5rem 1rem;
+    cursor: pointer;
+    transition: .15s;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    border-radius: 6px;
+}
+
+.type-option:hover {
+    background: var(--bg-mute);
+}
+
+/* Helpful Tooltips */
+.help-tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: .3rem;
+    cursor: help;
+}
+
+.help-tooltip::before {
+    content: '?';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: var(--bg-mute);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    font-size: .65rem;
+    text-align: center;
+    line-height: 14px;
+    color: var(--text-m);
+}
+
+.help-tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: #fff;
+    padding: .5rem .8rem;
+    border-radius: 6px;
+    font-size: .75rem;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: .3rem;
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Kimberly's Closet</h1>
-    <p>A visual archive of everything I own</p>
-  </header>
-  <main>
-    <h2>Organize Your Wardrobe ✨</h2>
-    <div class="categories">
-      <button class="button" onclick="filterByCategory('all')">All</button>
-      <button class="button" onclick="filterByCategory('shoes')">Shoes</button>
-      <button class="button" onclick="filterByCategory('dresses')">Dresses</button>
-      <button class="button" onclick="filterByCategory('tops')">Tops</button>
-      <button class="button" onclick="filterByCategory('bottoms')">Bottoms</button>
-      <button class="button" onclick="filterByCategory('outerwear')">Outerwear</button>
+    <div class="wrap">
+        <h1>Empire Dashboard</h1>
+        <div id="nav" class="nav"></div>
+        <div id="totals" class="totals"></div>
+        <div id="overview" class="grid"></div>
+        <div id="views"></div>
     </div>
-    <div class="controls">
-      <input type="file" id="imageInput" accept="image/*" style="display: none;" />
-      <select id="colorSelect">
-        <option value="all">Choose Color</option>
-        <option value="red">Red</option>
-        <option value="blue">Blue</option>
-        <option value="green">Green</option>
-        <option value="yellow">Yellow</option>
-        <option value="black">Black</option>
-        <option value="white">White</option>
-        <option value="neutral">Neutral</option>
-        <option value="pink">Pink</option>
-        <option value="purple">Purple</option>
-        <option value="gold">Gold</option>
-        <option value="silver">Silver</option>
-        <option value="bronze">Bronze</option>
-        <option value="rose gold">Rose Gold</option>
-        <option value="multicolor">Multicolor</option>
-        <option value="clear">Clear</option>
-      </select>
-      <select id="filterSelect">
-        <option value="all">Filter by Color</option>
-        <option value="red">Red</option>
-        <option value="blue">Blue</option>
-        <option value="green">Green</option>
-        <option value="yellow">Yellow</option>
-        <option value="black">Black</option>
-        <option value="white">White</option>
-        <option value="neutral">Neutral</option>
-        <option value="pink">Pink</option>
-        <option value="purple">Purple</option>
-        <option value="gold">Gold</option>
-        <option value="silver">Silver</option>
-        <option value="bronze">Bronze</option>
-        <option value="rose gold">Rose Gold</option>
-        <option value="multicolor">Multicolor</option>
-        <option value="clear">Clear</option>
-      </select>
-      <button class="button button-primary" onclick="document.getElementById('imageInput').click()">📸 Add Item</button>
+    
+    <!-- Template Selector -->
+    <div id="templateSelector" class="template-selector">
+        <div class="template-header">
+            <h3>Choose Content Type</h3>
+            <button class="close-btn" onclick="closeTemplateSelector()">×</button>
+        </div>
+        <div class="template-grid">
+            <div class="template-option" onclick="createFromTemplate('video')">
+                <div class="template-icon">🎥</div>
+                <div class="template-name">Video</div>
+            </div>
+            <div class="template-option" onclick="createFromTemplate('article')">
+                <div class="template-icon">✏️</div>
+                <div class="template-name">Article</div>
+            </div>
+            <div class="template-option" onclick="createFromTemplate('newsletter')">
+                <div class="template-icon">📧</div>
+                <div class="template-name">Newsletter</div>
+            </div>
+            <div class="template-option" onclick="createFromTemplate('social')">
+                <div class="template-icon">📱</div>
+                <div class="template-name">Social Post</div>
+            </div>
+        </div>
     </div>
-    <div class="gallery" id="gallery"></div>
-    <div class="empty-state" id="emptyState">No items yet. Start uploading your wardrobe!</div>
-  </main>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const firebaseConfig = {
-        apiKey: "AIzaSyDTd4lvs1lzjKeGu7Ee91lM30-8v88h-ng",
-        authDomain: "productivity-tracker-knf13.firebaseapp.com",
-        projectId: "productivity-tracker-knf13",
-        storageBucket: "productivity-tracker-knf13.appspot.com",
-        messagingSenderId: "762035393571",
-        appId: "1:762035393571:web:7d474a6a57cc031b860d96"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const storage = getStorage(app);
-
-      const imageInput = document.getElementById("imageInput");
-      const colorSelect = document.getElementById("colorSelect");
-      const filterSelect = document.getElementById("filterSelect");
-      const gallery = document.getElementById("gallery");
-      const emptyState = document.getElementById("emptyState");
-
-      if (!imageInput || !colorSelect || !filterSelect || !gallery || !emptyState) {
-        console.error("One or more required elements are missing from the DOM.");
-        return;
-      }
-
-      function createGalleryItem(imgSrc, colorLabel) {
-        const item = document.createElement("div");
-        item.className = "item";
-        item.setAttribute("data-color", colorLabel);
-        item.setAttribute("data-category", "dresses");
-        item.innerHTML = `
-          <img src="${imgSrc}" alt="Closet item" />
-          <p>Color: ${colorLabel}</p>
-        `;
-        return item;
-      }
-
-      imageInput.addEventListener("change", function () {
-        const file = this.files[0];
-        const color = colorSelect.value;
-        if (file && color !== "all") {
-          const reader = new FileReader();
-          reader.onload = async function (e) {
-            const imageData = e.target.result;
-            const imageId = Date.now();
-            const storageRef = ref(storage, `closet/${imageId}`);
-            try {
-              await uploadString(storageRef, imageData, 'data_url');
-              const downloadURL = await getDownloadURL(storageRef);
-              const item = createGalleryItem(downloadURL, color);
-              gallery.appendChild(item);
-              emptyState.style.display = "none";
-              console.log("Upload successful:", downloadURL);
-            } catch (err) {
-              console.error("Upload failed:", err);
-            }
-          };
-          reader.readAsDataURL(file);
+    
+    <!-- Edit Panel -->
+    <div id="editPanel" class="edit-panel">
+        <div class="edit-panel-header">
+            <h3 class="edit-panel-title">Edit Item</h3>
+            <button class="edit-panel-close" onclick="closeEditPanel()">×</button>
+        </div>
+        <div class="edit-panel-body">
+            <form id="editForm">
+                <div class="form-group">
+                    <label class="form-label">Title <span class="help-tooltip" data-tooltip="Give your content a clear, descriptive title">?</span></label>
+                    <input type="text" id="editTitle" class="form-input" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content Type</label>
+                    <select id="editType" class="form-select">
+                        <option value="video">🎥 Video</option>
+                        <option value="article">✏️ Article</option>
+                        <option value="newsletter">📧 Newsletter</option>
+                        <option value="social">📱 Social Post</option>
+                        <option value="podcast">🎙️ Podcast</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Scheduled Date</label>
+                    <input type="date" id="editDate" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select id="editPriority" class="form-select">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estimated Time (hours)</label>
+                    <input type="number" id="editEstimatedTime" class="form-input" placeholder="2" min="0.5" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tags <span class="help-tooltip" data-tooltip="Add tags to organize and find content easier">?</span></label>
+                    <div id="editTags" class="tags-input"></div>
+                    <input type="text" id="editTagInput" class="form-input" placeholder="Add tag and press Enter" style="margin-top: .5rem;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea id="editNotes" class="form-textarea" placeholder="Add notes..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="saveEditPanel()">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditPanel()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        'use strict';
+        
+        // ---------- helpers ----------
+        function el(tag, cls, txt) {
+            var e = document.createElement(tag);
+            if (cls) { e.className = cls; }
+            if (txt !== undefined) { e.textContent = txt; }
+            return e;
         }
-      });
+        
+        function qs(sel, scope) {
+            return (scope || document).querySelector(sel);
+        }
+        
+        function qsa(sel, scope) {
+            return Array.prototype.slice.call((scope || document).querySelectorAll(sel));
+        }
+        
+        function fmt(n) {
+            if (typeof n === 'string') { return n; }
+            return (n >= 1e6 ? Math.round(n/1e5)/10 + 'M' : n >= 1e3 ? Math.round(n/1e2)/10 + 'K' : n);
+        }
+        
+        function todayISO() {
+            return new Date().toISOString().slice(0, 10);
+        }
+        
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        // ---------- demo data ----------
+        var BRANDS = [
+            {id: 'knf', name: 'KNF', desc: 'Personal brand & cultural criticism', status: 'active', accent: '#9973ff', reach: 270000, revenue: 15000, engage: 4.5},
+            {id: 'fh', name: 'For Harriet', desc: 'Black feminist publication', status: 'active', accent: '#8b1ce8', reach: 250000, revenue: 22000, engage: 5.1},
+            {id: 'mtih', name: 'Making Things is Hard', desc: 'Tech & business for creatives', status: 'active', accent: '#006aff', reach: 45000, revenue: 8000, engage: 6.2},
+            {id: 'sss', name: 'The Shallow Side', desc: 'Fashion & beauty commentary', status: 'launching', accent: '#ff5880', reach: 500, revenue: 0, engage: 0},
+            {id: 'tok', name: 'Taste of Kimberly', desc: 'Personal style newsletter', status: 'planning', accent: '#9e2fff', reach: 0, revenue: 0, engage: 0},
+            {id: 'bwitw', name: 'Black Women in the Wild', desc: 'Community events & connections', status: 'active', accent: '#ffb600', events: 6, community: 250},
+            {id: 'indigo', name: 'Indigo Hour', desc: 'Intellectual salon series', status: 'planning', accent: '#532dff', events: 0, community: 0}
+        ];
+        
+        // Convert pipeline data to object structure
+        function createItem(title, stage, extra) {
+            return {
+                id: generateId(),
+                title: title,
+                type: extra?.type || getContentType(title),
+                created: new Date().toISOString(),
+                modified: new Date().toISOString(),
+                stage: stage,
+                scheduledDate: extra?.scheduledDate || '',
+                tags: extra?.tags || [],
+                priority: extra?.priority || 'medium',
+                notes: extra?.notes || '',
+                estimatedTime: extra?.estimatedTime || 2,
+                actualTime: extra?.actualTime || 0,
+                progress: extra?.progress || 0,
+                metrics: extra?.metrics || {views: 0, engagement: 0, revenue: 0}
+            };
+        }
+        
+        var PIPELINES = {
+            knf: {
+                ideas: [
+                    createItem('Award season analysis', 'ideas', {tags: ['culture', 'awards']}),
+                    createItem('TikTok trends', 'ideas', {tags: ['social', 'trends'], priority: 'high'}),
+                    createItem('Celebrity interviews', 'ideas', {tags: ['interview', 'celebrity']})
+                ],
+                inProgress: [
+                    createItem('Video: Nostalgia', 'inProgress', {type: 'video', tags: ['video', 'culture'], priority: 'high', progress: 45}),
+                    createItem('Article: Fashion Politics', 'inProgress', {type: 'article', tags: ['article', 'fashion'], progress: 70})
+                ],
+                ready: [
+                    createItem('Instagram posts', 'ready', {type: 'social', tags: ['social'], scheduledDate: '2024-04-01'}),
+                    createItem('Tweet threads', 'ready', {type: 'social', tags: ['social'], scheduledDate: '2024-04-02'})
+                ],
+                published: [
+                    createItem('Video: Representation', 'published', {type: 'video', tags: ['video'], metrics: {views: 15000, engagement: 8.5}}),
+                    createItem('Newsletter: March', 'published', {type: 'newsletter', tags: ['newsletter'], metrics: {views: 5000, engagement: 12}})
+                ]
+            },
+            fh: {
+                ideas: [
+                    createItem('Feature: Black Tech', 'ideas', {tags: ['tech', 'feature']}),
+                    createItem('Interview: Scholar', 'ideas', {tags: ['interview', 'academic']})
+                ],
+                inProgress: [
+                    createItem('Video essay', 'inProgress', {type: 'video', tags: ['video', 'essay'], priority: 'high', progress: 30})
+                ],
+                ready: [],
+                published: [
+                    createItem('Op-ed', 'published', {type: 'article', tags: ['article'], metrics: {views: 8000}})
+                ]
+            },
+            mtih: {
+                ideas: [
+                    createItem('Tool review video', 'ideas', {type: 'video', tags: ['video', 'review']}),
+                    createItem('Essay: Creative Burnout', 'ideas', {type: 'article', tags: ['essay', 'mental-health'], priority: 'high'})
+                ],
+                inProgress: [],
+                ready: [
+                    createItem('Podcast episode', 'ready', {type: 'podcast', tags: ['podcast'], scheduledDate: '2024-04-15'})
+                ],
+                published: [
+                    createItem('Newsletter: April', 'published', {type: 'newsletter', tags: ['newsletter']})
+                ]
+            },
+            sss: {
+                ideas: [createItem('Shade range critique', 'ideas', {tags: ['beauty', 'review']})],
+                inProgress: [],
+                ready: [],
+                published: []
+            },
+            tok: {
+                ideas: [createItem('Lookbook concept', 'ideas', {tags: ['fashion', 'lookbook']})],
+                inProgress: [],
+                ready: [],
+                published: []
+            },
+            bwitw: {
+                planning: [createItem('Spring Hike (2024-04-15)', 'planning', {scheduledDate: '2024-04-15', tags: ['outdoor', 'community']})],
+                upcoming: [createItem('June Mixer (2024-06-20)', 'upcoming', {scheduledDate: '2024-06-20', tags: ['networking', 'social']})],
+                marketing: [createItem('IG Carousel', 'marketing', {tags: ['social', 'promo']})],
+                completed: [createItem('January Brunch (2024-01-15)', 'completed', {scheduledDate: '2024-01-15', tags: ['food', 'community']})]
+            },
+            indigo: {
+                planning: [createItem('Select panelists', 'planning', {tags: ['preparation']})],
+                upcoming: [],
+                marketing: [],
+                completed: []
+            }
+        };
+        
+        // Content templates
+        var CONTENT_TEMPLATES = {
+            video: {
+                title: 'New Video: ',
+                tags: ['video'],
+                estimatedTime: 6,
+                notes: 'Hook:\n\nMain Points:\n1. \n2. \n3. \n\nCall to Action:'
+            },
+            article: {
+                title: 'Article: ',
+                tags: ['article'],
+                estimatedTime: 4,
+                notes: 'Outline:\n\nIntroduction:\n\nKey Points:\n\nConclusion:'
+            },
+            newsletter: {
+                title: 'Newsletter: ',
+                tags: ['newsletter'],
+                estimatedTime: 3,
+                notes: 'Subject Line:\n\nMain Story:\n\nQuick Updates:\n\nCall to Action:'
+            },
+            social: {
+                title: 'Social Post: ',
+                tags: ['social'],
+                estimatedTime: 1,
+                notes: 'Platform:\n\nCaption:\n\nHashtags:'
+            }
+        };
+        
+        // Content ideas
+        var CONTENT_IDEAS = [
+            "Behind the scenes of your creative process",
+            "Top 10 trends in your industry",
+            "Interview with an inspiring person",
+            "Day in the life vlog",
+            "Beginner's guide to [topic]",
+            "My biggest mistakes and what I learned",
+            "Product review and honest opinion",
+            "Q&A answering audience questions",
+            "How-to tutorial for beginners",
+            "Personal story about overcoming challenges",
+            "Reaction to current events",
+            "Collaboration with another creator",
+            "Tips for productivity and time management",
+            "Exploring a new place or experience",
+            "Debunking common myths about [topic]"
+        ];
+        
+        // Global variables
+        var CALENDAR_DATA = {};
+        var VIEW_STATES = {};
+        var CURRENT_MONTH = {};
+        var MULTI_BRAND_VIEW = false;
+        var EVENT_BRANDS = ['bwitw', 'indigo'];
+        var EDIT_STAGES = ['ideas', 'inProgress', 'ready', 'published'];
+        var EVENT_STAGES = ['planning', 'upcoming', 'marketing', 'completed'];
+        var brandOrder = BRANDS.map(function(b) { return b.id; });
+        var currentEditItem = null;
+        var currentEditBrand = null;
+        var sortableInstances = [];
+        var currentStreak = 0;
+        var lastPublishDate = null;
+        
+        function showSaveNotification() {
+            var toast = el('div', 'save-toast', '✓ Saved!');
+            document.body.appendChild(toast);
+            setTimeout(function() { toast.classList.add('show'); }, 10);
+            setTimeout(function() {
+                toast.classList.remove('show');
+                setTimeout(function() { toast.remove(); }, 300);
+            }, 2000);
+        }
+        
+        // ---------- Firebase sync functions ----------
+        function saveToFirebase() {
+            // Save pipelines
+            Object.keys(PIPELINES).forEach(function(brandId) {
+                db.collection('empire-pipelines').doc(brandId).set({
+                    data: PIPELINES[brandId],
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function(error) {
+                    console.error('Error saving pipeline for ' + brandId, error);
+                });
+            });
+            
+            // Save calendar data
+            Object.keys(CALENDAR_DATA).forEach(function(brandId) {
+                db.collection('empire-calendar').doc(brandId).set({
+                    data: CALENDAR_DATA[brandId],
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function(error) {
+                    console.error('Error saving calendar for ' + brandId, error);
+                });
+            });
+            
+            // Show notification once at the end
+            showSaveNotification();
+        }
 
-      filterSelect.addEventListener("change", function () {
-        const selected = this.value;
-        const items = document.querySelectorAll(".item");
-        items.forEach(item => {
-          const color = item.getAttribute("data-color");
-          item.style.display = (selected === "all" || color === selected) ? "block" : "none";
+        function loadFromFirebase() {
+            // Load pipelines
+            BRANDS.forEach(function(brand) {
+                db.collection('empire-pipelines').doc(brand.id).get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            PIPELINES[brand.id] = doc.data().data || PIPELINES[brand.id];
+                            updateAll();
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading pipeline for ' + brand.id, error);
+                    });
+            });
+            
+            // Load calendar data
+            BRANDS.forEach(function(brand) {
+                db.collection('empire-calendar').doc(brand.id).get()
+                    .then(function(doc) {
+                        if (doc.exists) {
+                            CALENDAR_DATA[brand.id] = doc.data().data || {};
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading calendar for ' + brand.id, error);
+                    });
+            });
+        }
+        
+        // Initialize calendar data and view states
+        BRANDS.forEach(function(b) {
+            CALENDAR_DATA[b.id] = {};
+            VIEW_STATES[b.id] = 'pipeline';
+            CURRENT_MONTH[b.id] = {
+                year: new Date().getFullYear(),
+                month: new Date().getMonth()
+            };
         });
-      });
+        
+        // ---------- date utilities ----------
+        function getMonthDates(year, month) {
+            var firstDay = new Date(year, month, 1);
+            var lastDay = new Date(year, month + 1, 0);
+            var startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            var dates = [];
+            var current = new Date(startDate);
+            
+            for (var i = 0; i < 42; i++) {
+                dates.push({
+                    date: new Date(current),
+                    dateStr: current.toISOString().slice(0, 10),
+                    day: current.getDate(),
+                    isCurrentMonth: current.getMonth() === month,
+                    isToday: current.toDateString() === new Date().toDateString(),
+                    isWeekend: current.getDay() === 0 || current.getDay() === 6
+                });
+                current.setDate(current.getDate() + 1);
+            }
+            
+            return dates;
+        }
+        
+        function getMonthName(month) {
+            var names = ['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+            return names[month];
+        }
+        
+        // ---------- calendar data management ----------
+        function addToCalendar(brandId, dateStr, item, stage) {
+            if (!CALENDAR_DATA[brandId][dateStr]) {
+                CALENDAR_DATA[brandId][dateStr] = [];
+            }
+            
+            CALENDAR_DATA[brandId][dateStr].push(item);
+        }
+        
+        function removeFromCalendar(brandId, dateStr, itemId) {
+            if (CALENDAR_DATA[brandId][dateStr]) {
+                CALENDAR_DATA[brandId][dateStr] = CALENDAR_DATA[brandId][dateStr].filter(function(item) {
+                    return item.id !== itemId;
+                });
+                if (CALENDAR_DATA[brandId][dateStr].length === 0) {
+                    delete CALENDAR_DATA[brandId][dateStr];
+                }
+            }
+        }
+        
+        function getContentType(title) {
+            var lower = title.toLowerCase();
+            if (lower.includes('video')) return 'video';
+            if (lower.includes('article') || lower.includes('essay')) return 'article';
+            if (lower.includes('newsletter')) return 'newsletter';
+            if (lower.includes('post') || lower.includes('tweet') || lower.includes('instagram')) return 'social';
+            if (lower.includes('podcast')) return 'podcast';
+            return 'article';
+        }
+        
+        function getContentIcon(type) {
+            var icons = {
+                video: '🎥',
+                article: '✏️',
+                newsletter: '📧',
+                social: '📱',
+                podcast: '🎙️'
+            };
+            return icons[type] || '📄';
+        }
+        
+        // ---------- item management ----------
+        function deleteItem(brandId, itemId, stage) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                // Find and remove from pipeline
+                var stages = EVENT_BRANDS.indexOf(brandId) === -1 ? EDIT_STAGES : EVENT_STAGES;
+                stages.forEach(function(s) {
+                    if (PIPELINES[brandId][s]) {
+                        PIPELINES[brandId][s] = PIPELINES[brandId][s].filter(function(item) {
+                            return item.id !== itemId;
+                        });
+                    }
+                });
+                
+                // Remove from calendar if exists
+                Object.keys(CALENDAR_DATA[brandId]).forEach(function(date) {
+                    removeFromCalendar(brandId, date, itemId);
+                });
+                
+                // Refresh view
+                if (VIEW_STATES[brandId] === 'calendar') {
+                    buildCalendar(brandId);
+                } else {
+                    var brand = BRANDS.find(function(b) { return b.id === brandId; });
+                    var pipelineView = qs('#pipeline-' + brandId);
+                    if (brand && pipelineView) {
+                        pipelineView.innerHTML = '';
+                        buildPipeline(brand, pipelineView);
+                    }
+                }
+                updateAll();
+                saveToFirebase();
+            }
+        }
+        
+        function deleteCalendarItem(brandId, itemId, dateStr) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                removeFromCalendar(brandId, dateStr, itemId);
+                buildCalendar(brandId);
+                updateAll();
+                saveToFirebase();
+            }
+        }
+        
+        function startInlineEdit(itemEl, item, brandId) {
+            var titleEl = itemEl.querySelector('.item-title');
+            var currentTitle = item.title;
+            
+            var editContainer = el('div', 'item-edit-inline');
+            var input = el('input', 'item-edit-input');
+            input.type = 'text';
+            input.value = currentTitle;
+            
+            var saveBtn = el('button', 'item-edit-btn item-edit-save', '✓');
+            var cancelBtn = el('button', 'item-edit-btn item-edit-cancel', '×');
+            
+            saveBtn.onclick = function() {
+                item.title = input.value;
+                item.modified = new Date().toISOString();
+                refreshView(brandId);
+                saveToFirebase();
+            };
+            
+            cancelBtn.onclick = function() {
+                refreshView(brandId);
+            };
+            
+            input.onkeydown = function(e) {
+                if (e.key === 'Enter') saveBtn.click();
+                if (e.key === 'Escape') cancelBtn.click();
+            };
+            
+            editContainer.appendChild(input);
+            editContainer.appendChild(saveBtn);
+            editContainer.appendChild(cancelBtn);
+            
+            titleEl.replaceWith(editContainer);
+            input.focus();
+            input.select();
+        }
+        
+        function refreshView(brandId) {
+            if (VIEW_STATES[brandId] === 'calendar') {
+                buildCalendar(brandId);
+            } else {
+                var brand = BRANDS.find(function(b) { return b.id === brandId; });
+                var pipelineView = qs('#pipeline-' + brandId);
+                if (brand && pipelineView) {
+                    pipelineView.innerHTML = '';
+                    buildPipeline(brand, pipelineView);
+                }
+            }
+            updateAll();
+        }
+        
+        // ---------- edit panel ----------
+        window.openEditPanel = function(item, brandId) {
+            currentEditItem = item;
+            currentEditBrand = brandId;
+            
+            qs('#editTitle').value = item.title || '';
+            qs('#editType').value = item.type || 'article';
+            qs('#editDate').value = item.scheduledDate || '';
+            qs('#editPriority').value = item.priority || 'medium';
+            qs('#editEstimatedTime').value = item.estimatedTime || 2;
+            qs('#editNotes').value = item.notes || '';
+            
+            // Load tags
+            var tagsContainer = qs('#editTags');
+            tagsContainer.innerHTML = '';
+            (item.tags || []).forEach(function(tag) {
+                addTagToPanel(tag);
+            });
+            
+            qs('#editPanel').classList.add('open');
+        };
+        
+        window.closeEditPanel = function() {
+            qs('#editPanel').classList.remove('open');
+            currentEditItem = null;
+            currentEditBrand = null;
+        };
+        
+        window.saveEditPanel = function() {
+            if (currentEditItem && currentEditBrand) {
+                currentEditItem.title = qs('#editTitle').value;
+                currentEditItem.type = qs('#editType').value;
+                currentEditItem.scheduledDate = qs('#editDate').value;
+                currentEditItem.priority = qs('#editPriority').value;
+                currentEditItem.estimatedTime = parseFloat(qs('#editEstimatedTime').value) || 2;
+                currentEditItem.notes = qs('#editNotes').value;
+                currentEditItem.modified = new Date().toISOString();
+                
+                // Update tags
+                currentEditItem.tags = [];
+                qsa('.tag', qs('#editTags')).forEach(function(tagEl) {
+                    var tagText = tagEl.textContent.replace('×', '').trim();
+                    if (tagText) currentEditItem.tags.push(tagText);
+                });
+                
+                // Check if this is a new item (not already in any stage)
+                var alreadyExists = false;
+                var stagesToCheck = EVENT_BRANDS.includes(currentEditBrand) ? EVENT_STAGES : EDIT_STAGES;
+                stagesToCheck.forEach(function(stage) {
+                    if (PIPELINES[currentEditBrand][stage] && PIPELINES[currentEditBrand][stage].some(function(i) { return i.id === currentEditItem.id; })) {
+                        alreadyExists = true;
+                    }
+                });
 
-      window.filterByCategory = function(category) {
-        const items = document.querySelectorAll(".item");
-        items.forEach(item => {
-          const cat = item.getAttribute("data-category");
-          item.style.display = (category === "all" || cat === category) ? "block" : "none";
-        });
-      };
+                if (!alreadyExists) {
+                    var defaultStage = EVENT_BRANDS.includes(currentEditBrand) ? 'planning' : 'ideas';
+                    if (!PIPELINES[currentEditBrand][defaultStage]) {
+                        PIPELINES[currentEditBrand][defaultStage] = [];
+                    }
+                    PIPELINES[currentEditBrand][defaultStage].push(currentEditItem);
+                }
+
+                refreshView(currentEditBrand);
+                closeEditPanel();
+                saveToFirebase();
+            }
+        };
+        
+        function addTagToPanel(tagText) {
+            if (!tagText.trim()) return;
+            
+            var tagsContainer = qs('#editTags');
+            var tagEl = el('div', 'tag');
+            tagEl.appendChild(el('span', null, tagText));
+            
+            var removeBtn = el('span', 'tag-remove', '×');
+            removeBtn.onclick = function() {
+                tagEl.remove();
+            };
+            
+            tagEl.appendChild(removeBtn);
+            tagsContainer.appendChild(tagEl);
+        }
+        
+        // Tag input handler
+        qs('#editTagInput').onkeydown = function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTagToPanel(this.value);
+                this.value = '';
+            }
+        };
+        
+        // ---------- Template functions ----------
+        window.showTemplateSelector = function(brandId) {
+            var selector = qs('#templateSelector');
+            selector.classList.add('show');
+            selector.dataset.brandId = brandId;
+        };
+        
+        window.closeTemplateSelector = function() {
+            var selector = qs('#templateSelector');
+            selector.classList.remove('show');
+        };
+        
+        window.createFromTemplate = function(type) {
+            var selector = qs('#templateSelector');
+            var brandId = selector.dataset.brandId;
+            var template = CONTENT_TEMPLATES[type];
+            
+            var newItem = createItem(
+                template.title + todayISO(),
+                'ideas',
+                {
+                    type: type,
+                    tags: template.tags,
+                    estimatedTime: template.estimatedTime,
+                    notes: template.notes
+                }
+            );
+            
+            closeTemplateSelector();
+            openEditPanel(newItem, brandId);
+        };
+        
+        // ---------- Content ideas generator ----------
+        function getRandomIdea() {
+            return CONTENT_IDEAS[Math.floor(Math.random() * CONTENT_IDEAS.length)];
+        }
+        
+        // ---------- build UI ----------
+        function buildNav() {
+            var nav = qs('#nav');
+            if (!nav) return;
+            nav.innerHTML = '';
+            
+            // Add Overview button
+            var overviewBtn = el('button', 'nav-btn', 'Overview');
+            overviewBtn.dataset.id = 'overview';
+            overviewBtn.onclick = function() { show('overview'); };
+            nav.appendChild(overviewBtn);
+            
+            // Add Analytics button
+            var analyticsBtn = el('button', 'nav-btn', 'Analytics');
+            analyticsBtn.dataset.id = 'analytics';
+            analyticsBtn.onclick = function() { show('analytics'); };
+            nav.appendChild(analyticsBtn);
+            
+            // Then add brand buttons
+            brandOrder.forEach(function(id) {
+                var b = BRANDS.filter(function(br) { return br.id === id; })[0];
+                if (!b) return;
+                
+                var btn = el('button', 'nav-btn', b.name);
+                btn.dataset.id = id;
+                btn.onclick = function() { show(id); };
+                nav.appendChild(btn);
+            });
+        }
+        
+        function buildOverview() {
+            var grid = qs('#overview');
+            if (!grid) return;
+            grid.innerHTML = '';
+            
+            BRANDS.forEach(function(b) {
+                var c = el('div', 'card');
+                c.onclick = function() { show(b.id); };
+                c.style.borderColor = b.accent;
+                c.appendChild(el('span', 'badge ' + b.status, b.status));
+                c.appendChild(el('div', 'brand', b.name));
+                c.appendChild(el('div', 'desc', b.desc));
+                
+                var mrow = el('div', 'metrics');
+                if (EVENT_BRANDS.indexOf(b.id) === -1) {
+                    mrow.appendChild(metricBox(fmt(b.reach), 'Reach'));
+                    mrow.appendChild(metricBox('$' + fmt(b.revenue), 'Revenue'));
+                    mrow.appendChild(metricBox(b.engage + '%', 'Engage'));
+                } else {
+                    mrow.appendChild(metricBox(b.events, 'Events'));
+                    mrow.appendChild(metricBox(b.community, 'Community'));
+                }
+                c.appendChild(mrow);
+                grid.appendChild(c);
+            });
+        }
+        
+        function metricBox(val, lbl) {
+            var box = el('div', 'mbox');
+            box.appendChild(el('div', 'mval', val));
+            box.appendChild(el('div', 'mlbl', lbl));
+            return box;
+        }
+        
+        function buildViews() {
+            var wrap = qs('#views');
+            if (!wrap) return;
+            wrap.innerHTML = '';
+            
+            BRANDS.forEach(function(b) {
+                var v = el('div', 'view');
+                v.id = 'view-' + b.id;
+                
+                // header with controls
+                var head = el('div', 'p-head');
+                head.appendChild(el('h2', null, b.name));
+                
+                var controls = el('div', 'p-controls');
+                
+                // view toggle
+                var toggle = el('div', 'view-toggle');
+                var pipeBtn = el('button', 'toggle-btn', 'Pipeline');
+                var calBtn = el('button', 'toggle-btn', 'Calendar');
+                
+                pipeBtn.onclick = function() { toggleView(b.id, 'pipeline'); };
+                calBtn.onclick = function() { toggleView(b.id, 'calendar'); };
+                
+                toggle.appendChild(pipeBtn);
+                toggle.appendChild(calBtn);
+                controls.appendChild(toggle);
+                
+                // multi-brand option (only show in calendar view)
+                var multiCheck = el('div', 'multi-brand');
+                multiCheck.style.display = 'none';
+                var checkbox = el('input');
+                checkbox.type = 'checkbox';
+                checkbox.onchange = function() {
+                    MULTI_BRAND_VIEW = this.checked;
+                    if (VIEW_STATES[b.id] === 'calendar') buildCalendar(b.id);
+                };
+                multiCheck.appendChild(checkbox);
+                multiCheck.appendChild(el('span', null, 'Multi-brand'));
+                controls.appendChild(multiCheck);
+                
+                // add button
+                var addBtn = el('button', 'add', (EVENT_BRANDS.indexOf(b.id) === -1) ? '+ Add Content' : '+ Add Event');
+                addBtn.style.background = b.accent;
+                addBtn.onclick = function() { addItem(b.id); };
+                controls.appendChild(addBtn);
+                
+                head.appendChild(controls);
+                v.appendChild(head);
+                
+                // Add quick actions bar for content brands
+                if (EVENT_BRANDS.indexOf(b.id) === -1) {
+                    var quickActions = el('div', 'quick-actions');
+                    
+                    var templateBtn = el('button', 'quick-action-btn');
+                    templateBtn.innerHTML = '<span class="quick-action-icon">📋</span> Use Template';
+                    templateBtn.onclick = function() { showTemplateSelector(b.id); };
+                    quickActions.appendChild(templateBtn);
+                    
+                    var bulkBtn = el('button', 'quick-action-btn');
+                    bulkBtn.innerHTML = '<span class="quick-action-icon">⚡</span> Bulk Schedule';
+                    bulkBtn.onclick = function() { alert('Bulk scheduling coming soon!'); };
+                    quickActions.appendChild(bulkBtn);
+                    
+                    var exportBtn = el('button', 'quick-action-btn');
+                    exportBtn.innerHTML = '<span class="quick-action-icon">📥</span> Export Content';
+                    exportBtn.onclick = function() { exportBrandContent(b.id); };
+                    quickActions.appendChild(exportBtn);
+                    
+                    v.appendChild(quickActions);
+                    
+                    // Add ideas generator
+                    var ideasGen = el('div', 'ideas-generator');
+                    ideasGen.innerHTML = '<h3>Need inspiration?</h3>';
+                    var ideaBtn = el('button', null, '💡 Generate Content Idea');
+                    ideaBtn.onclick = function() {
+                        var ideaDiv = qs('#idea-' + b.id);
+                        if (!ideaDiv) {
+                            ideaDiv = el('div', 'idea-suggestion');
+                            ideaDiv.id = 'idea-' + b.id;
+                            ideasGen.appendChild(ideaDiv);
+                        }
+                        ideaDiv.textContent = '"' + getRandomIdea() + '"';
+                    };
+                    ideasGen.appendChild(ideaBtn);
+                    v.appendChild(ideasGen);
+                    
+                    // Add progress tracker
+                    var progress = buildProgressTracker(b);
+                    v.appendChild(progress);
+                }
+                
+                // brand metrics
+                var bm = el('div', 'brand-metrics');
+                if (EVENT_BRANDS.indexOf(b.id) === -1) {
+                    bm.appendChild(brandBox(fmt(b.reach), 'Reach'));
+                    bm.appendChild(brandBox('$' + fmt(b.revenue), 'Revenue'));
+                    bm.appendChild(brandBox(b.engage + '%', 'Engage'));
+                    bm.appendChild(brandBox(getContentCount(b.id), 'Content'));
+                } else {
+                    bm.appendChild(brandBox(b.events, 'Events'));
+                    bm.appendChild(brandBox(b.community, 'Community'));
+                }
+                v.appendChild(bm);
+                
+                // pipeline view
+                var pipelineView = el('div', 'pipeline-view');
+                pipelineView.id = 'pipeline-' + b.id;
+                buildPipeline(b, pipelineView);
+                v.appendChild(pipelineView);
+                
+                // calendar view
+                var calendarView = el('div', 'calendar');
+                calendarView.id = 'calendar-' + b.id;
+                v.appendChild(calendarView);
+                
+                wrap.appendChild(v);
+            });
+        }
+        
+        function buildProgressTracker(brand) {
+            var progress = el('div', 'progress-section');
+            
+            var header = el('div', 'progress-header');
+            header.appendChild(el('h3', null, 'Monthly Progress'));
+            
+            var stats = el('span', null, getMonthlyStats(brand.id));
+            header.appendChild(stats);
+            progress.appendChild(header);
+            
+            var bar = el('div', 'progress-bar');
+            var fill = el('div', 'progress-fill');
+            var percentage = getMonthlyProgress(brand.id);
+            fill.style.width = percentage + '%';
+            bar.appendChild(fill);
+            progress.appendChild(bar);
+            
+            var text = el('div', 'progress-text');
+            text.innerHTML = '<span>' + percentage + '% Complete</span><span>Keep going! 💪</span>';
+            progress.appendChild(text);
+            
+            return progress;
+        }
+        
+        function getContentCount(brandId) {
+            var count = 0;
+            EDIT_STAGES.forEach(function(stage) {
+                if (PIPELINES[brandId][stage]) {
+                    count += PIPELINES[brandId][stage].length;
+                }
+            });
+            return count;
+        }
+        
+        function getMonthlyStats(brandId) {
+            var published = PIPELINES[brandId].published ? PIPELINES[brandId].published.length : 0;
+            var inProgress = PIPELINES[brandId].inProgress ? PIPELINES[brandId].inProgress.length : 0;
+            return published + ' published, ' + inProgress + ' in progress';
+        }
+        
+        function getMonthlyProgress(brandId) {
+            // Simple calculation: published items / total items * 100
+            var total = getContentCount(brandId);
+            var published = PIPELINES[brandId].published ? PIPELINES[brandId].published.length : 0;
+            return total > 0 ? Math.round((published / total) * 100) : 0;
+        }
+        
+        function exportBrandContent(brandId) {
+            var brand = BRANDS.find(function(b) { return b.id === brandId; });
+            var data = {
+                brand: brand.name,
+                exportDate: new Date().toISOString(),
+                pipeline: PIPELINES[brandId],
+                calendar: CALENDAR_DATA[brandId]
+            };
+            
+            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = brand.name.toLowerCase().replace(/\s+/g, '-') + '-content-' + todayISO() + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function buildPipeline(brand, container) {
+            var pipe = el('div', 'pipeline');
+            var stages = (EVENT_BRANDS.indexOf(brand.id) === -1) ? EDIT_STAGES : EVENT_STAGES;
+            
+            stages.forEach(function(stage) {
+                var col = el('div', 'col');
+                col.dataset.brand = brand.id;
+                col.dataset.stage = stage;
+                
+                var chead = el('div', 'c-head');
+                chead.appendChild(el('span', null, stage.replace(/([A-Z])/g, ' $1').replace(/^./, function(ch) { return ch.toUpperCase(); })));
+                var count = el('span', 'c-count', '0');
+                chead.appendChild(count);
+                col.appendChild(chead);
+                
+                var list = el('div', 'list');
+                (PIPELINES[brand.id][stage] || []).forEach(function(item) {
+                    list.appendChild(itemElem(item, stage, brand.id));
+                });
+                col.appendChild(list);
+                pipe.appendChild(col);
+                
+                // Enable drag and drop
+                if (typeof Sortable !== 'undefined') {
+           // Replace the existing Sortable initialization (around line 1615) with this:
+
+var sortable = new Sortable(list, {
+    group: brand.id,
+    animation: 150,
+    onEnd: function(evt) {
+        // Get the item that was moved
+        var itemEl = evt.item;
+        var itemId = itemEl.dataset.itemId;
+        var fromStage = evt.from.parentElement.dataset.stage;
+        var toStage = evt.to.parentElement.dataset.stage;
+        var brandId = evt.to.parentElement.dataset.brand;
+        
+        // If the item was moved to a different stage
+        if (fromStage !== toStage) {
+            // Find the item in the old stage
+            var movedItem = null;
+            var fromIndex = -1;
+            
+            if (PIPELINES[brandId][fromStage]) {
+                for (var i = 0; i < PIPELINES[brandId][fromStage].length; i++) {
+                    if (PIPELINES[brandId][fromStage][i].id === itemId) {
+                        movedItem = PIPELINES[brandId][fromStage][i];
+                        fromIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            if (movedItem && fromIndex !== -1) {
+                // Remove from old stage
+                PIPELINES[brandId][fromStage].splice(fromIndex, 1);
+                
+                // Update the item's stage
+                movedItem.stage = toStage;
+                movedItem.modified = new Date().toISOString();
+                
+                // Add to new stage
+                if (!PIPELINES[brandId][toStage]) {
+                    PIPELINES[brandId][toStage] = [];
+                }
+                PIPELINES[brandId][toStage].splice(evt.newIndex, 0, movedItem);
+                
+                // If moving to ready or published, you might want to set a scheduled date
+                if (toStage === 'ready' && !movedItem.scheduledDate) {
+                    movedItem.scheduledDate = todayISO();
+                }
+            }
+        }
+        
+        updateAll();
+        saveToFirebase();
+    }
+});
+            
+            container.appendChild(pipe);
+        }
+        
+        function buildCalendar(brandId) {
+            var brand = BRANDS.find(function(b) { return b.id === brandId; });
+            if (!brand) return;
+            
+            var calContainer = qs('#calendar-' + brandId);
+            if (!calContainer) return;
+            calContainer.innerHTML = '';
+            
+            var currentMonth = CURRENT_MONTH[brandId];
+            
+            // Calendar header
+            var header = el('div', 'cal-header');
+            
+            var prevBtn = el('div', 'cal-nav', '‹');
+            prevBtn.onclick = function() {
+                if (currentMonth.month === 0) {
+                    currentMonth.month = 11;
+                    currentMonth.year--;
+                } else {
+                    currentMonth.month--;
+                }
+                buildCalendar(brandId);
+            };
+            
+            var title = el('div', 'cal-title', getMonthName(currentMonth.month) + ' ' + currentMonth.year);
+            
+            var nextBtn = el('div', 'cal-nav', '›');
+            nextBtn.onclick = function() {
+                if (currentMonth.month === 11) {
+                    currentMonth.month = 0;
+                    currentMonth.year++;
+                } else {
+                    currentMonth.month++;
+                }
+                buildCalendar(brandId);
+            };
+            
+            header.appendChild(prevBtn);
+            header.appendChild(title);
+            header.appendChild(nextBtn);
+            calContainer.appendChild(header);
+            
+            // Calendar grid
+            var grid = el('div', 'cal-grid');
+            
+            // Day headers
+            var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(function(day, i) {
+                var dayHeader = el('div', 'cal-day-header' + (i === 0 || i === 6 ? ' weekend' : ''), day);
+                grid.appendChild(dayHeader);
+            });
+            
+            // Date cells
+            var dates = getMonthDates(currentMonth.year, currentMonth.month);
+            
+            dates.forEach(function(dateInfo) {
+                var dateCell = el('div', 'cal-date');
+                if (!dateInfo.isCurrentMonth) dateCell.classList.add('other-month');
+                if (dateInfo.isToday) dateCell.classList.add('today');
+                if (dateInfo.isWeekend) dateCell.classList.add('weekend');
+                
+                var dateNum = el('div', 'cal-date-num', dateInfo.day);
+                dateCell.appendChild(dateNum);
+                
+                var itemsContainer = el('div', 'cal-items');
+                
+                // Add items for this date
+                var itemsForDate = [];
+                
+                if (MULTI_BRAND_VIEW) {
+                    // Show items from all brands
+                    BRANDS.forEach(function(b) {
+                        if (CALENDAR_DATA[b.id] && CALENDAR_DATA[b.id][dateInfo.dateStr]) {
+                            CALENDAR_DATA[b.id][dateInfo.dateStr].forEach(function(item) {
+                                var extItem = Object.assign({}, item);
+                                extItem.brandColor = b.accent;
+                                extItem.brandId = b.id;
+                                itemsForDate.push(extItem);
+                            });
+                        }
+                    });
+                } else {
+                    // Show items only for current brand
+                    if (CALENDAR_DATA[brandId] && CALENDAR_DATA[brandId][dateInfo.dateStr]) {
+                        itemsForDate = CALENDAR_DATA[brandId][dateInfo.dateStr].map(function(item) {
+                            var extItem = Object.assign({}, item);
+                            extItem.brandColor = brand.accent;
+                            extItem.brandId = brandId;
+                            return extItem;
+                        });
+                    }
+                }
+                
+                // Display items (max 3, then show "more")
+                var maxVisible = 3;
+                itemsForDate.slice(0, maxVisible).forEach(function(item) {
+                    var itemEl = el('div', 'cal-item ' + item.stage + ' type-' + (item.type || getContentType(item.title)), item.title);
+                    itemEl.style.background = MULTI_BRAND_VIEW ? item.brandColor : brand.accent;
+                    itemEl.dataset.itemId = item.id;
+                    itemEl.dataset.brandId = item.brandId;
+                    itemEl.dataset.date = dateInfo.dateStr;
+                    
+                    // Add delete button
+                    var deleteBtn = el('button', 'cal-item-delete', '×');
+                    deleteBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        deleteCalendarItem(item.brandId, item.id, dateInfo.dateStr);
+                    };
+                    itemEl.appendChild(deleteBtn);
+                    
+                    // Add tooltip
+                    itemEl.title = item.title + ' (' + item.stage + ')';
+                    
+                    itemEl.onclick = function(e) {
+                        e.stopPropagation();
+                        openEditPanel(item, item.brandId);
+                    };
+                    
+                    itemsContainer.appendChild(itemEl);
+                });
+                
+                if (itemsForDate.length > maxVisible) {
+                    var moreEl = el('div', 'cal-more', '+' + (itemsForDate.length - maxVisible) + ' more');
+                    moreEl.onclick = function() {
+                        alert('Items for ' + dateInfo.dateStr + ':\n\n' + 
+                              itemsForDate.map(function(item) {
+                                  return '• ' + item.title + ' (' + item.stage + ')';
+                              }).join('\n'));
+                    };
+                    itemsContainer.appendChild(moreEl);
+                }
+                
+                dateCell.appendChild(itemsContainer);
+                
+                // Make date clickable for adding items
+                dateCell.onclick = function(e) {
+                    if (e.target === dateCell || e.target === dateNum || e.target === itemsContainer) {
+                        addItemToDate(brandId, dateInfo.dateStr);
+                    }
+                };
+                
+                grid.appendChild(dateCell);
+            });
+            
+            calContainer.appendChild(grid);
+        }
+        
+        function brandBox(val, lbl) {
+            var b = el('div', 'brand-mbox');
+            b.appendChild(el('div', 'brand-mval', val));
+            b.appendChild(el('div', 'brand-mlabel', lbl));
+            return b;
+        }
+        
+        function itemElem(item, stage, brandId) {
+            var it = el('div', 'item ' + (stage || ''));
+            
+            var content = el('div', 'item-content');
+            
+            // Content type icon
+            if (item.type) {
+                content.appendChild(el('span', 'content-icon', getContentIcon(item.type)));
+            }
+            
+            // Priority badge
+            if (item.priority && item.priority !== 'medium') {
+                var priorityBadge = el('span', 'priority-badge priority-' + item.priority, 
+                                      item.priority === 'high' ? '!' : 
+                                      item.priority === 'low' ? '↓' : '');
+                content.appendChild(priorityBadge);
+            }
+            
+            // Title
+            var titleSpan = el('span', 'item-title', item.title);
+            titleSpan.ondblclick = function() {
+                startInlineEdit(it, item, brandId);
+            };
+            content.appendChild(titleSpan);
+            
+            // Status indicator for scheduled items
+            if (item.scheduledDate) {
+                var status = getDateStatus(item.scheduledDate);
+                if (status) {
+                    var statusInd = el('span', 'status-indicator');
+                    statusInd.appendChild(el('span', 'status-dot ' + status.class));
+                    statusInd.appendChild(el('span', null, status.text));
+                    content.appendChild(statusInd);
+                }
+            }
+            
+            // Scheduled date
+            if (item.scheduledDate) {
+                content.appendChild(el('span', 'item-date', item.scheduledDate));
+            }
+            
+            it.appendChild(content);
+            
+            // Action buttons
+            var actions = el('div', 'item-actions');
+            
+            var editBtn = el('button', 'item-action edit', '✏️');
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                openEditPanel(item, brandId);
+            };
+            actions.appendChild(editBtn);
+            
+            var deleteBtn = el('button', 'item-action delete', '×');
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                it.classList.add('deleting');
+                setTimeout(function() {
+                    deleteItem(brandId, item.id, stage);
+                }, 300);
+            };
+            actions.appendChild(deleteBtn);
+            
+            it.appendChild(actions);
+            
+            // Progress bar for in-progress items
+            if (stage === 'inProgress' && item.progress) {
+                var progressBar = el('div', 'item-progress');
+                var progressFill = el('div', 'item-progress-fill');
+                progressFill.style.width = item.progress + '%';
+                progressBar.appendChild(progressFill);
+                it.appendChild(progressBar);
+            }
+            
+            it.dataset.itemId = item.id;
+            it.dataset.id = item.id;
+            it.dataset.title = item.title;
+            it.dataset.stage = stage;
+            
+            return it;
+        }
+        
+        function getDateStatus(dateStr) {
+            var date = new Date(dateStr);
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            date.setHours(0, 0, 0, 0);
+            
+            var diffDays = Math.floor((date - today) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) {
+                return { class: 'overdue', text: Math.abs(diffDays) + 'd overdue' };
+            } else if (diffDays === 0) {
+                return { class: 'due-soon', text: 'Today!' };
+            } else if (diffDays <= 3) {
+                return { class: 'due-soon', text: diffDays + 'd' };
+            }
+            return null;
+        }
+        
+        // ---------- interactions ----------
+        function show(id) {
+            if (id === 'analytics') {
+                showAnalytics();
+                return;
+            }
+            ['overview', 'analytics'].concat(brandOrder).forEach(function(bid) {
+                var navBtn = qs('.nav-btn[data-id="' + bid + '"]');
+                if (navBtn) {
+                    navBtn.classList[bid === id ? 'add' : 'remove']('active');
+                }
+            });
+            
+            var overview = qs('#overview');
+            if (overview) {
+                overview.style.display = (id === 'overview') ? 'grid' : 'none';
+            }
+            
+            var views = qs('#views');
+            if (views) {
+                Array.prototype.forEach.call(views.children, function(v) {
+                    v.classList.remove('active');
+                });
+            }
+            
+            if (id !== 'overview' && id !== 'analytics') {
+                var view = qs('#view-' + id);
+                if (view) {
+                    view.classList.add('active');
+                    
+                    // Update toggle buttons
+                    var pipeBtn = view.querySelector('.toggle-btn:first-child');
+                    var calBtn = view.querySelector('.toggle-btn:last-child');
+                    var multiBrand = view.querySelector('.multi-brand');
+                    var pipelineView = qs('#pipeline-' + id);
+                    var calendarView = qs('#calendar-' + id);
+                    
+                    if (VIEW_STATES[id] === 'pipeline') {
+                        if (pipeBtn) pipeBtn.classList.add('active');
+                        if (calBtn) calBtn.classList.remove('active');
+                        if (pipelineView) pipelineView.style.display = 'flex';
+                        if (calendarView) calendarView.classList.remove('active');
+                        if (multiBrand) multiBrand.style.display = 'none';
+                    } else {
+                        if (pipeBtn) pipeBtn.classList.remove('active');
+                        if (calBtn) calBtn.classList.add('active');
+                        if (pipelineView) pipelineView.style.display = 'none';
+                        if (calendarView) calendarView.classList.add('active');
+                        if (multiBrand) multiBrand.style.display = 'flex';
+                        buildCalendar(id);
+                    }
+                }
+            }
+            
+            updateAll();
+        }
+        
+        function toggleView(brandId, viewType) {
+            VIEW_STATES[brandId] = viewType;
+            show(brandId);
+        }
+        
+        function addItem(bid) {
+            if (EVENT_BRANDS.indexOf(bid) === -1) {
+                // For content brands, show template selector first
+                showTemplateSelector(bid);
+            } else {
+                // For event brands, create directly
+                var newItem = createItem('', 'planning');
+                openEditPanel(newItem, bid);
+            }
+        }
+        
+        function addItemToDate(brandId, dateStr) {
+            var title = prompt('Enter title for ' + dateStr + ':');
+            if (title) {
+                var newItem = createItem(title, 'planning', {scheduledDate: dateStr});
+                addToCalendar(brandId, dateStr, newItem, 'planning');
+                buildCalendar(brandId);
+                updateAll();
+                saveToFirebase();
+            }
+        }
+        
+        function updateCounts() {
+            var cols = qsa('.col');
+            cols.forEach(function(col) {
+                var cnt = col.querySelectorAll('.item').length;
+                var badge = col.querySelector('.c-count');
+                if (badge) { badge.textContent = cnt; }
+            });
+        }
+        
+        function updateTotals() {
+            var totalItems = 0, totalReach = 0, totalRevenue = 0, totalEvents = 0;
+            
+            BRANDS.forEach(function(b) {
+                var stages = (EVENT_BRANDS.indexOf(b.id) === -1) ? EDIT_STAGES : EVENT_STAGES;
+                stages.forEach(function(s) {
+                    if (PIPELINES[b.id][s]) {
+                        totalItems += PIPELINES[b.id][s].length;
+                    }
+                });
+                
+                // Add calendar items to total
+                if (CALENDAR_DATA[b.id]) {
+                    Object.keys(CALENDAR_DATA[b.id]).forEach(function(date) {
+                        totalItems += CALENDAR_DATA[b.id][date].length;
+                    });
+                }
+                
+                if (EVENT_BRANDS.indexOf(b.id) === -1) {
+                    totalReach += b.reach;
+                    totalRevenue += b.revenue;
+                } else {
+                    totalEvents += b.events;
+                }
+            });
+            
+            var totals = qs('#totals');
+            if (totals) {
+                totals.innerHTML = '';
+                totals.appendChild(totalBox(totalItems, 'Pipeline Items'));
+                totals.appendChild(totalBox(fmt(totalReach), 'Total Reach'));
+                totals.appendChild(totalBox('$' + fmt(totalRevenue), 'Total Revenue'));
+                totals.appendChild(totalBox(totalEvents, 'Total Events'));
+            }
+        }
+        
+        function totalBox(val, lbl) {
+            var t = el('div', 'tot');
+            t.appendChild(el('div', 'tot-val', val));
+            t.appendChild(el('div', 'tot-lbl', lbl));
+            return t;
+        }
+        
+        function updateAll() {
+            updateCounts();
+            updateTotals();
+        }
+        // ---------- Analytics Dashboard ----------
+var ANALYTICS_CHARTS = {};
+var CURRENT_DATE_RANGE = '30d';
+
+function buildAnalyticsView() {
+    // Create analytics view container
+    var views = qs('#views');
+    var analyticsView = el('div', 'analytics-view');
+    analyticsView.id = 'analytics-view';
+    
+    // Header with date range selector
+    var header = el('div', 'analytics-header');
+    header.appendChild(el('h2', null, 'Analytics Dashboard'));
+    
+    var dateRange = el('div', 'date-range-selector');
+    ['7d', '30d', '90d', 'All'].forEach(function(range) {
+        var btn = el('button', 'date-range-btn', range === '7d' ? '7 Days' : 
+                                                  range === '30d' ? '30 Days' : 
+                                                  range === '90d' ? '90 Days' : 'All Time');
+        btn.dataset.range = range;
+        if (range === '30d') btn.classList.add('active');
+        btn.onclick = function() {
+            qsa('.date-range-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            CURRENT_DATE_RANGE = range;
+            updateAnalytics();
+        };
+        dateRange.appendChild(btn);
     });
-  </script>
+    header.appendChild(dateRange);
+    analyticsView.appendChild(header);
+    
+    // Metrics grid
+    var metricsGrid = el('div', 'analytics-grid');
+    
+    // Total Content card
+    var totalCard = createMetricCard('Total Content', calculateTotalContent(), '+12% from last period');
+    metricsGrid.appendChild(totalCard);
+    
+    // Total Views card
+    var viewsCard = createMetricCard('Total Views', calculateTotalViews(), '+25% from last period');
+    metricsGrid.appendChild(viewsCard);
+    
+    // Average Engagement card
+    var engageCard = createMetricCard('Avg Engagement', calculateAvgEngagement() + '%', '+3.2% from last period');
+    metricsGrid.appendChild(engageCard);
+    
+    // Revenue card
+    var revenueCard = createMetricCard('Total Revenue', '$' + calculateTotalRevenue(), '+18% from last period');
+    metricsGrid.appendChild(revenueCard);
+    
+    analyticsView.appendChild(metricsGrid);
+    
+    // Charts grid
+    var chartsGrid = el('div', 'analytics-grid');
+    
+    // Content over time chart
+    var contentChartCard = el('div', 'analytics-card');
+    contentChartCard.style.gridColumn = 'span 2';
+    var contentChartHeader = el('div', 'analytics-card-header');
+    contentChartHeader.appendChild(el('h3', 'analytics-card-title', 'Content Production Over Time'));
+    contentChartCard.appendChild(contentChartHeader);
+    var contentChartContainer = el('div', 'chart-container');
+    contentChartContainer.innerHTML = '<canvas id="contentChart"></canvas>';
+    contentChartCard.appendChild(contentChartContainer);
+    chartsGrid.appendChild(contentChartCard);
+    
+    // Brand performance chart
+    var brandChartCard = el('div', 'analytics-card');
+    var brandChartHeader = el('div', 'analytics-card-header');
+    brandChartHeader.appendChild(el('h3', 'analytics-card-title', 'Brand Performance'));
+    brandChartCard.appendChild(brandChartHeader);
+    var brandChartContainer = el('div', 'chart-container');
+    brandChartContainer.innerHTML = '<canvas id="brandChart"></canvas>';
+    brandChartCard.appendChild(brandChartContainer);
+    chartsGrid.appendChild(brandChartCard);
+    
+    analyticsView.appendChild(chartsGrid);
+    
+    // Additional insights
+    var insightsGrid = el('div', 'analytics-grid');
+    
+    // Top performing content
+    var topContentCard = el('div', 'analytics-card');
+    var topContentHeader = el('div', 'analytics-card-header');
+    topContentHeader.appendChild(el('h3', 'analytics-card-title', 'Top Performing Content'));
+    topContentCard.appendChild(topContentHeader);
+    var topContentList = el('ul', 'top-content-list');
+    getTopContent().forEach(function(item) {
+        var li = el('li', 'top-content-item');
+        li.appendChild(el('span', 'content-title', item.title));
+        li.appendChild(el('span', 'content-metric', fmt(item.views) + ' views'));
+        topContentList.appendChild(li);
+    });
+    topContentCard.appendChild(topContentList);
+    insightsGrid.appendChild(topContentCard);
+    
+    // Brand breakdown
+    var brandBreakdownCard = el('div', 'analytics-card');
+    var brandBreakdownHeader = el('div', 'analytics-card-header');
+    brandBreakdownHeader.appendChild(el('h3', 'analytics-card-title', 'Brand Breakdown'));
+    brandBreakdownCard.appendChild(brandBreakdownHeader);
+    var brandPerfGrid = el('div', 'brand-performance-grid');
+    BRANDS.forEach(function(brand) {
+        if (EVENT_BRANDS.indexOf(brand.id) === -1) {
+            var perfCard = el('div', 'brand-perf-card');
+            perfCard.style.borderTop = '3px solid ' + brand.accent;
+            perfCard.appendChild(el('div', 'brand-perf-name', brand.name));
+            perfCard.appendChild(el('div', 'brand-perf-value', getPublishedCount(brand.id)));
+            perfCard.appendChild(el('div', 'analytics-trend', 'Published'));
+            brandPerfGrid.appendChild(perfCard);
+        }
+    });
+    brandBreakdownCard.appendChild(brandPerfGrid);
+    insightsGrid.appendChild(brandBreakdownCard);
+    
+    analyticsView.appendChild(insightsGrid);
+    
+    views.appendChild(analyticsView);
+}
+
+function createMetricCard(title, value, trend) {
+    var card = el('div', 'analytics-card');
+    card.appendChild(el('div', 'analytics-card-title', title));
+    card.appendChild(el('div', 'analytics-metric', value));
+    var trendEl = el('div', 'analytics-trend ' + (trend.includes('+') ? 'trend-up' : 'trend-down'), trend);
+    card.appendChild(trendEl);
+    return card;
+}
+
+function calculateTotalContent() {
+    var total = 0;
+    BRANDS.forEach(function(brand) {
+        var stages = EVENT_BRANDS.indexOf(brand.id) === -1 ? EDIT_STAGES : EVENT_STAGES;
+        stages.forEach(function(stage) {
+            if (PIPELINES[brand.id][stage]) {
+                total += PIPELINES[brand.id][stage].length;
+            }
+        });
+    });
+    return total;
+}
+
+function calculateTotalViews() {
+    var total = 0;
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                total += item.metrics.views || 0;
+            });
+        }
+    });
+    return fmt(total);
+}
+
+function calculateAvgEngagement() {
+    var totalEngagement = 0;
+    var count = 0;
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                if (item.metrics.engagement) {
+                    totalEngagement += item.metrics.engagement;
+                    count++;
+                }
+            });
+        }
+    });
+    return count > 0 ? (totalEngagement / count).toFixed(1) : '0';
+}
+
+function calculateTotalRevenue() {
+    var total = 0;
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                total += item.metrics.revenue || 0;
+            });
+        }
+    });
+    return fmt(total);
+}
+
+function getTopContent() {
+    var allContent = [];
+    BRANDS.forEach(function(brand) {
+        if (PIPELINES[brand.id].published) {
+            PIPELINES[brand.id].published.forEach(function(item) {
+                allContent.push({
+                    title: item.title,
+                    views: item.metrics.views || 0,
+                    brand: brand.name
+                });
+            });
+        }
+    });
+    return allContent.sort(function(a, b) { return b.views - a.views; }).slice(0, 5);
+}
+
+function getPublishedCount(brandId) {
+    return PIPELINES[brandId].published ? PIPELINES[brandId].published.length : 0;
+}
+
+function initializeCharts() {
+    // Content over time chart
+    var contentCtx = document.getElementById('contentChart');
+    if (contentCtx) {
+        ANALYTICS_CHARTS.content = new Chart(contentCtx, {
+            type: 'line',
+            data: {
+                labels: getLast30Days(),
+                datasets: [{
+                    label: 'Content Published',
+                    data: getContentTimeSeriesData(),
+                    borderColor: '#8245ff',
+                    backgroundColor: 'rgba(130, 69, 255, 0.1)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+    
+    // Brand performance chart
+    var brandCtx = document.getElementById('brandChart');
+    if (brandCtx) {
+        var brandData = BRANDS.filter(function(b) { 
+            return EVENT_BRANDS.indexOf(b.id) === -1; 
+        }).map(function(b) {
+            return getPublishedCount(b.id);
+        });
+        
+        var brandLabels = BRANDS.filter(function(b) { 
+            return EVENT_BRANDS.indexOf(b.id) === -1; 
+        }).map(function(b) { return b.name; });
+        
+        var brandColors = BRANDS.filter(function(b) { 
+            return EVENT_BRANDS.indexOf(b.id) === -1; 
+        }).map(function(b) { return b.accent; });
+        
+        ANALYTICS_CHARTS.brand = new Chart(brandCtx, {
+            type: 'doughnut',
+            data: {
+                labels: brandLabels,
+                datasets: [{
+                    data: brandData,
+                    backgroundColor: brandColors
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+}
+
+function getLast30Days() {
+    var dates = [];
+    for (var i = 29; i >= 0; i--) {
+        var d = new Date();
+        d.setDate(d.getDate() - i);
+        dates.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    return dates;
+}
+
+function getContentTimeSeriesData() {
+    // Generate sample data - in real implementation, calculate from actual publish dates
+    return Array(30).fill(0).map(function() { 
+        return Math.floor(Math.random() * 10) + 1; 
+    });
+}
+
+function showAnalytics() {
+    // Update navigation
+    qsa('.nav-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    var analyticsBtn = qs('.nav-btn[data-id="analytics"]');
+    if (analyticsBtn) analyticsBtn.classList.add('active');
+    
+    // Hide other views
+    var overview = qs('#overview');
+    if (overview) overview.style.display = 'none';
+    
+    qsa('.view').forEach(function(v) {
+        v.classList.remove('active');
+    });
+    
+    // Show analytics
+    var analyticsView = qs('#analytics-view');
+    if (analyticsView) {
+        analyticsView.classList.add('active');
+        
+        // Initialize or update charts
+        setTimeout(function() {
+            if (!ANALYTICS_CHARTS.content) {
+                initializeCharts();
+            } else {
+                updateAnalytics();
+            }
+        }, 100);
+    }
+}
+
+function updateAnalytics() {
+    // Update metrics based on date range
+    // Update charts
+    if (ANALYTICS_CHARTS.content) {
+        ANALYTICS_CHARTS.content.update();
+    }
+    if (ANALYTICS_CHARTS.brand) {
+        ANALYTICS_CHARTS.brand.update();
+    }
+}
+
+
+        // ---------- Event Details System ----------
+var EVENT_DETAILS = {}; // Store detailed event data
+
+function initEventSystem() {
+  // Make event items clickable
+  document.addEventListener('click', function(e) {
+    const item = e.target.closest('.item');
+    if (item && (item.classList.contains('planning') || 
+                 item.classList.contains('upcoming') ||
+                 item.classList.contains('marketing'))) {
+      const brandId = item.closest('.col').dataset.brand;
+      const eventId = item.dataset.id;
+      if (brandId && EVENT_BRANDS.includes(brandId)) {
+        openEventDetails(eventId, brandId);
+      }
+    }
+  });
+}
+
+function openEventDetails(eventId, brandId) {
+  // Get or create event data
+  const event = getEventDetails(eventId, brandId);
+  
+  const modal = el('div', 'event-modal-overlay');
+  modal.onclick = function(e) {
+    if (e.target === modal) closeEventModal();
+  };
+  
+  const brandColor = BRANDS.find(b => b.id === brandId).accent;
+  
+  modal.innerHTML = `
+    <div class="event-modal">
+      <div class="event-hero" style="background: linear-gradient(135deg, ${brandColor}, ${brandColor}22)">
+        <button class="close-event" onclick="closeEventModal()">×</button>
+        <h1>${event.title}</h1>
+        <p class="event-date">${formatEventDate(event.date)}</p>
+      </div>
+      
+      <div class="event-tabs">
+        <button class="tab active" onclick="showEventTab('moodboard', '${eventId}')">
+          <span class="tab-icon">🎨</span> Moodboard
+        </button>
+        <button class="tab" onclick="showEventTab('details', '${eventId}')">
+          <span class="tab-icon">📋</span> Details
+        </button>
+        <button class="tab" onclick="showEventTab('checklist', '${eventId}')">
+          <span class="tab-icon">✅</span> Checklist
+        </button>
+      </div>
+      
+      <div class="event-content">
+        <div id="moodboard" class="tab-panel active">
+          ${createMoodboardSection(eventId, event)}
+        </div>
+        <div id="details" class="tab-panel">
+          ${createDetailsSection(eventId, event)}
+        </div>
+        <div id="checklist" class="tab-panel">
+          ${createChecklistSection(eventId, event)}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Initialize moodboard functionality
+  setTimeout(() => initializeMoodboard(eventId), 100);
+}
+
+function closeEventModal() {
+  const modal = qs('.event-modal-overlay');
+  if (modal) {
+    modal.style.opacity = '0';
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+window.showEventTab = function(tabName, eventId) {
+  // Update active tabs
+  qsa('.tab').forEach(tab => tab.classList.remove('active'));
+  
+  // Find and activate the clicked tab
+  qsa('.tab').forEach(tab => {
+    if (tab.textContent.toLowerCase().includes(tabName)) {
+      tab.classList.add('active');
+    }
+  });
+  
+  // Show corresponding panel
+  qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  var panel = qs('#' + tabName);
+  if (panel) panel.classList.add('active');
+};
+
+function getEventDetails(eventId, brandId) {
+  // Check if we have saved details
+  if (EVENT_DETAILS[eventId]) {
+    return EVENT_DETAILS[eventId];
+  }
+  
+  // Find the event in pipelines
+  let eventTitle = 'New Event';
+  let eventDate = todayISO();
+  
+  const stages = EVENT_STAGES;
+  stages.forEach(stage => {
+    const items = PIPELINES[brandId][stage] || [];
+    const found = items.find(item => item.id === eventId);
+    if (found) {
+      eventTitle = found.title;
+      // Extract date from title if present
+      const dateMatch = found.title.match(/\((\d{4}-\d{2}-\d{2})\)/);
+      if (dateMatch) {
+        eventDate = dateMatch[1];
+        eventTitle = found.title.replace(dateMatch[0], '').trim();
+      }
+    }
+  });
+  
+  // Create new event details
+  const newEvent = {
+    id: eventId,
+    brandId: brandId,
+    title: eventTitle,
+    date: eventDate,
+    moodboard: {
+      images: [],
+      colors: ['#ffb600', '#ff5880', '#652399'],
+      theme: ''
+    },
+    details: {
+      venue: '',
+      address: '',
+      capacity: '',
+      time: '6:00 PM',
+      description: ''
+    },
+    checklist: [
+      { id: 1, text: 'Book venue', due: addDays(eventDate, -30), done: false },
+      { id: 2, text: 'Create event page', due: addDays(eventDate, -28), done: false },
+      { id: 3, text: 'Design marketing materials', due: addDays(eventDate, -21), done: false },
+      { id: 4, text: 'Open registration', due: addDays(eventDate, -21), done: false },
+      { id: 5, text: 'Send first announcement', due: addDays(eventDate, -20), done: false },
+      { id: 6, text: 'Confirm vendors/catering', due: addDays(eventDate, -14), done: false },
+      { id: 7, text: 'Send reminder email', due: addDays(eventDate, -7), done: false },
+      { id: 8, text: 'Final headcount', due: addDays(eventDate, -3), done: false },
+      { id: 9, text: 'Prepare materials', due: addDays(eventDate, -1), done: false }
+    ]
+  };
+  
+  EVENT_DETAILS[eventId] = newEvent;
+  return newEvent;
+}
+
+function createMoodboardSection(eventId, event) {
+  return `
+    <div class="moodboard-section">
+      <div class="moodboard-header">
+        <h3>Visual Inspiration</h3>
+        <button class="add" onclick="document.getElementById('image-upload-${eventId}').click()">
+          + Add Images
+        </button>
+      </div>
+      
+      <div class="moodboard-grid" id="moodboard-grid-${eventId}">
+        ${event.moodboard.images.map((img, i) => `
+          <div class="moodboard-item">
+            <img src="${img}" alt="Moodboard ${i}">
+            <button class="remove-image" onclick="removeImage('${eventId}', ${i})">×</button>
+          </div>
+        `).join('')}
+        
+        <div class="moodboard-item add-image-btn" onclick="document.getElementById('image-upload-${eventId}').click()">
+          <input type="file" id="image-upload-${eventId}" accept="image/*" multiple onchange="handleImageUpload('${eventId}', this)">
+          <span class="upload-icon">📷</span>
+          <span>Add Images</span>
+        </div>
+      </div>
+      
+      <div class="color-palette-section">
+        <h3>Color Palette</h3>
+        <div class="color-swatches" id="colors-${eventId}">
+          ${event.moodboard.colors.map((color, i) => `
+            <div class="color-swatch" style="background: ${color}" onclick="editColor('${eventId}', ${i})"></div>
+          `).join('')}
+          <div class="color-swatch add-color" onclick="addColor('${eventId}')">+</div>
+        </div>
+      </div>
+      
+      <div class="detail-card">
+        <h3>Theme & Vibe</h3>
+        <textarea placeholder="Describe the event atmosphere, feeling, and aesthetic..." 
+                  onblur="saveTheme('${eventId}', this.value)"
+                  rows="4">${event.moodboard.theme || ''}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function createDetailsSection(eventId, event) {
+  return `
+    <div class="details-grid">
+      <div class="detail-card">
+        <h3>Event Information</h3>
+        <div class="detail-field">
+          <label>Event Name</label>
+          <input type="text" value="${event.title}" onblur="saveEventField('${eventId}', 'title', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Date</label>
+          <input type="date" value="${event.date}" onblur="saveEventField('${eventId}', 'date', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Time</label>
+          <input type="text" value="${event.details.time || '6:00 PM'}" onblur="saveEventDetail('${eventId}', 'time', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Expected Attendance</label>
+          <input type="number" value="${event.details.capacity || ''}" placeholder="50" onblur="saveEventDetail('${eventId}', 'capacity', this.value)">
+        </div>
+      </div>
+      
+      <div class="detail-card">
+        <h3>Venue Details</h3>
+        <div class="detail-field">
+          <label>Venue Name</label>
+          <input type="text" value="${event.details.venue || ''}" placeholder="The Garden Room" onblur="saveEventDetail('${eventId}', 'venue', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Address</label>
+          <textarea rows="3" placeholder="123 Main Street..." onblur="saveEventDetail('${eventId}', 'address', this.value)">${event.details.address || ''}</textarea>
+        </div>
+      </div>
+      
+      <div class="detail-card" style="grid-column: span 2">
+        <h3>Event Description</h3>
+        <div class="detail-field">
+          <textarea rows="6" placeholder="What's this event about? What can attendees expect?" 
+                    onblur="saveEventDetail('${eventId}', 'description', this.value)">${event.details.description || ''}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function createChecklistSection(eventId, event) {
+  const completed = event.checklist.filter(item => item.done).length;
+  const total = event.checklist.length;
+  const progress = total > 0 ? (completed / total) * 100 : 0;
+  
+  return `
+    <div class="checklist-section">
+      <div class="checklist-header">
+        <h3>Planning Checklist</h3>
+        <span>${completed} of ${total} completed</span>
+      </div>
+      
+      <div class="checklist-progress">
+        <div class="checklist-progress-bar" style="width: ${progress}%"></div>
+      </div>
+      
+      <div class="checklist-items">
+        ${event.checklist.map(item => `
+          <div class="checklist-item ${item.done ? 'completed' : ''}">
+            <div class="checklist-checkbox ${item.done ? 'checked' : ''}" 
+                 onclick="toggleChecklistItem('${eventId}', ${item.id})"></div>
+            <div class="checklist-text">${item.text}</div>
+            <div class="checklist-due">${formatDueDate(item.due)}</div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <button class="add" style="margin-top: 1.5rem" onclick="addChecklistItem('${eventId}')">
+        + Add Task
+      </button>
+    </div>
+  `;
+}
+
+// Helper functions
+function formatEventDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+}
+
+function formatDueDate(dateStr) {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const diffDays = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return `${Math.abs(diffDays)} days overdue`;
+  if (diffDays === 0) return 'Due today';
+  if (diffDays === 1) return 'Due tomorrow';
+  return `Due in ${diffDays} days`;
+}
+
+function addDays(dateStr, days) {
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+// Moodboard functions
+function initializeMoodboard(eventId) {
+  // Enable drag and drop for moodboard
+  const grid = qs('#moodboard-grid-' + eventId);
+  if (grid) {
+    grid.ondragover = function(e) {
+      e.preventDefault();
+      grid.classList.add('drag-over');
+    };
+    
+    grid.ondragleave = function() {
+      grid.classList.remove('drag-over');
+    };
+    
+    grid.ondrop = function(e) {
+      e.preventDefault();
+      grid.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      handleFiles(eventId, files);
+    };
+  }
+}
+
+function handleImageUpload(eventId, input) {
+  const files = input.files;
+  handleFiles(eventId, files);
+}
+
+function handleFiles(eventId, files) {
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const event = EVENT_DETAILS[eventId];
+        event.moodboard.images.push(e.target.result);
+        refreshMoodboard(eventId);
+        saveEventToFirebase(eventId);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+function removeImage(eventId, index) {
+  const event = EVENT_DETAILS[eventId];
+  event.moodboard.images.splice(index, 1);
+  refreshMoodboard(eventId);
+  saveEventToFirebase(eventId);
+}
+
+function refreshMoodboard(eventId) {
+  const event = EVENT_DETAILS[eventId];
+  const grid = qs('#moodboard-grid-' + eventId);
+  if (grid) {
+    grid.innerHTML = event.moodboard.images.map((img, i) => `
+      <div class="moodboard-item">
+        <img src="${img}" alt="Moodboard ${i}">
+        <button class="remove-image" onclick="removeImage('${eventId}', ${i})">×</button>
+      </div>
+    `).join('') + `
+      <div class="moodboard-item add-image-btn" onclick="document.getElementById('image-upload-${eventId}').click()">
+        <input type="file" id="image-upload-${eventId}" accept="image/*" multiple onchange="handleImageUpload('${eventId}', this)">
+        <span class="upload-icon">📷</span>
+        <span>Add Images</span>
+      </div>
+    `;
+  }
+}
+
+function addColor(eventId) {
+  const color = prompt('Enter a hex color (e.g., #ffb600):');
+  if (color && /^#[0-9A-F]{6}$/i.test(color)) {
+    const event = EVENT_DETAILS[eventId];
+    event.moodboard.colors.push(color);
+    refreshColors(eventId);
+    saveEventToFirebase(eventId);
+  }
+}
+
+function editColor(eventId, index) {
+  const event = EVENT_DETAILS[eventId];
+  const newColor = prompt('Enter new color:', event.moodboard.colors[index]);
+  if (newColor && /^#[0-9A-F]{6}$/i.test(newColor)) {
+    event.moodboard.colors[index] = newColor;
+    refreshColors(eventId);
+    saveEventToFirebase(eventId);
+  }
+}
+
+function refreshColors(eventId) {
+  const event = EVENT_DETAILS[eventId];
+  const container = qs('#colors-' + eventId);
+  if (container) {
+    container.innerHTML = event.moodboard.colors.map((color, i) => `
+      <div class="color-swatch" style="background: ${color}" onclick="editColor('${eventId}', ${i})"></div>
+    `).join('') + '<div class="color-swatch add-color" onclick="addColor(\'' + eventId + '\')">+</div>';
+  }
+}
+
+// Save functions
+window.saveTheme = function(eventId, value) {
+  EVENT_DETAILS[eventId].moodboard.theme = value;
+  saveEventToFirebase(eventId);
+};
+
+window.saveEventField = function(eventId, field, value) {
+  EVENT_DETAILS[eventId][field] = value;
+  saveEventToFirebase(eventId);
+};
+
+window.saveEventDetail = function(eventId, field, value) {
+  EVENT_DETAILS[eventId].details[field] = value;
+  saveEventToFirebase(eventId);
+};
+
+window.toggleChecklistItem = function(eventId, itemId) {
+  const event = EVENT_DETAILS[eventId];
+  const item = event.checklist.find(i => i.id === itemId);
+  if (item) {
+    item.done = !item.done;
+    refreshChecklist(eventId);
+    saveEventToFirebase(eventId);
+  }
+};
+
+window.addChecklistItem = function(eventId) {
+  const text = prompt('Enter task:');
+  if (text) {
+    const event = EVENT_DETAILS[eventId];
+    const newItem = {
+      id: Date.now(),
+      text: text,
+      due: addDays(event.date, -7),
+      done: false
+    };
+    event.checklist.push(newItem);
+    refreshChecklist(eventId);
+    saveEventToFirebase(eventId);
+  }
+};
+
+function refreshChecklist(eventId) {
+  const checklistPanel = qs('#checklist');
+  if (checklistPanel && checklistPanel.classList.contains('active')) {
+    checklistPanel.innerHTML = createChecklistSection(eventId, EVENT_DETAILS[eventId]);
+  }
+}
+
+// Firebase integration for events
+function saveEventToFirebase(eventId) {
+  console.log('Saving event:', eventId, EVENT_DETAILS[eventId]); // Add this line
+  
+  if (typeof db !== 'undefined') {
+    db.collection('event-details')
+      .doc(eventId)
+      .set({
+        ...EVENT_DETAILS[eventId],
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(function() {
+        console.log('Event saved successfully!'); // Add this line
+      })
+      .catch(function(error) {
+        console.error('Error saving event details:', error);
+      });
+  } else {
+    console.error('Firebase db is not defined!'); // Add this line
+  }
+}
+
+function loadEventDetails() {
+  if (typeof db !== 'undefined') {
+    db.collection('event-details')
+      .get()
+      .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          const data = doc.data();
+          // Remove the lastUpdated field to avoid issues
+          delete data.lastUpdated;
+          EVENT_DETAILS[doc.id] = data;
+        });
+        console.log('Loaded event details:', EVENT_DETAILS); // Add for debugging
+      })
+      .catch(function(error) {
+        console.error('Error loading event details:', error);
+      });
+  }
+}
+
+// Make showEventTab work globally
+window.showEventTab = function(tabName, eventId) {
+  // Update active tab
+  qsa('.tab').forEach(tab => tab.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Show corresponding panel
+  qsa('.tab-panel').forEach(panel => panel.classList.remove('active'));
+  qs('#' + tabName).classList.add('active');
+};
+
+// Make these functions globally available
+window.closeEventModal = closeEventModal;
+window.removeImage = removeImage;
+window.handleImageUpload = handleImageUpload;
+window.addColor = addColor;
+window.editColor = editColor;
+        // ---------- Content Details System ----------
+var CONTENT_DETAILS = {}; // Store detailed content data
+
+// Add this after your event system initialization
+function initContentSystem() {
+  // Make content items clickable
+  document.addEventListener('click', function(e) {
+    const item = e.target.closest('.item');
+    if (item && !item.classList.contains('planning') && 
+                 !item.classList.contains('upcoming') &&
+                 !item.classList.contains('marketing') &&
+                 !item.classList.contains('completed')) {
+      const brandId = item.closest('.col')?.dataset.brand;
+      const itemId = item.dataset.itemId;
+      if (brandId && itemId && !EVENT_BRANDS.includes(brandId)) {
+        e.stopPropagation();
+        openContentDetails(itemId, brandId);
+      }
+    }
+  });
+}
+
+function openContentDetails(itemId, brandId) {
+  // Find the content item
+  let contentItem = null;
+  let contentStage = null;
+  
+  EDIT_STAGES.forEach(stage => {
+    const found = PIPELINES[brandId][stage]?.find(item => item.id === itemId);
+    if (found) {
+      contentItem = found;
+      contentStage = stage;
+    }
+  });
+  
+  if (!contentItem) return;
+  
+  // Get or create content details
+  const content = getContentDetails(itemId, contentItem, brandId);
+  const brandColor = BRANDS.find(b => b.id === brandId).accent;
+  
+  const modal = el('div', 'content-modal-overlay');
+  modal.onclick = function(e) {
+    if (e.target === modal) closeContentModal();
+  };
+  
+  modal.innerHTML = `
+    <div class="content-modal">
+      <div class="content-hero" style="background: linear-gradient(135deg, ${brandColor}, ${brandColor}22)">
+        <button class="close-content" onclick="closeContentModal()">×</button>
+        <h1>${content.title}</h1>
+        <p class="content-meta">${getContentTypeEmoji(content.type)} ${content.type} • ${content.stage}</p>
+      </div>
+      
+      <div class="content-tabs">
+        <button class="tab active" onclick="showContentTab('content')">
+          <span class="tab-icon">📝</span> Content
+        </button>
+        <button class="tab" onclick="showContentTab('media')">
+          <span class="tab-icon">🖼️</span> Media
+        </button>
+        <button class="tab" onclick="showContentTab('links')">
+          <span class="tab-icon">🔗</span> Links
+        </button>
+        <button class="tab" onclick="showContentTab('notes')">
+          <span class="tab-icon">📋</span> Notes
+        </button>
+      </div>
+      
+      <div class="content-body">
+        <div id="content-panel" class="tab-panel active">
+          ${createContentPanel(itemId, content)}
+        </div>
+        <div id="media-panel" class="tab-panel">
+          ${createMediaPanel(itemId, content)}
+        </div>
+        <div id="links-panel" class="tab-panel">
+          ${createLinksPanel(itemId, content)}
+        </div>
+        <div id="notes-panel" class="tab-panel">
+          ${createNotesPanel(itemId, content)}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Initialize media upload functionality
+  setTimeout(() => initializeContentMedia(itemId), 100);
+}
+
+function getContentDetails(itemId, item, brandId) {
+  if (CONTENT_DETAILS[itemId]) {
+    return CONTENT_DETAILS[itemId];
+  }
+  
+  const newContent = {
+    id: itemId,
+    brandId: brandId,
+    title: item.title,
+    type: item.type || getContentType(item.title),
+    stage: item.stage,
+    content: {
+      text: '',
+      images: [],
+      thumbnail: '',
+      links: [],
+      notes: item.notes || ''
+    }
+  };
+  
+  CONTENT_DETAILS[itemId] = newContent;
+  return newContent;
+}
+
+function createContentPanel(itemId, content) {
+  const templates = {
+    video: `
+      <div class="content-section">
+        <h3>Video Script</h3>
+        <textarea class="content-textarea" placeholder="Write your video script here..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+      </div>
+      <div class="content-section">
+        <h3>Video Details</h3>
+        <div class="detail-field">
+          <label>Duration (estimated)</label>
+          <input type="text" placeholder="5-10 minutes" onblur="saveContentMeta('${itemId}', 'duration', this.value)">
+        </div>
+        <div class="detail-field">
+          <label>Platform</label>
+          <select onchange="saveContentMeta('${itemId}', 'platform', this.value)">
+            <option>YouTube</option>
+            <option>Instagram Reels</option>
+            <option>TikTok</option>
+            <option>All Platforms</option>
+          </select>
+        </div>
+      </div>
+    `,
+    article: `
+      <div class="content-section">
+        <h3>Article Content</h3>
+        <textarea class="content-textarea large" placeholder="Write your article here..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+      </div>
+    `,
+    newsletter: `
+      <div class="content-section">
+        <h3>Newsletter Content</h3>
+        <div class="detail-field">
+          <label>Subject Line</label>
+          <input type="text" placeholder="This week's insights..." onblur="saveContentMeta('${itemId}', 'subject', this.value)">
+        </div>
+        <textarea class="content-textarea large" placeholder="Write your newsletter content..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+      </div>
+    `,
+    social: `
+      <div class="content-section">
+        <h3>Social Media Post</h3>
+        <textarea class="content-textarea" placeholder="Write your post/caption..." 
+                  onblur="saveContentText('${itemId}', this.value)">${content.content.text || ''}</textarea>
+        <div class="detail-field">
+          <label>Hashtags</label>
+          <input type="text" placeholder="#culture #fashion #thoughts" onblur="saveContentMeta('${itemId}', 'hashtags', this.value)">
+        </div>
+      </div>
+    `
+  };
+  
+  return templates[content.type] || templates.article;
+}
+
+function createMediaPanel(itemId, content) {
+  return `
+    <div class="media-section">
+      <div class="media-header">
+        <h3>Images & Media</h3>
+        <button class="add" onclick="document.getElementById('content-image-upload-${itemId}').click()">
+          + Add Images
+        </button>
+      </div>
+      
+      <div class="media-grid" id="media-grid-${itemId}">
+        ${content.content.images.map((img, i) => `
+          <div class="media-item">
+            <img src="${img}" alt="Content image ${i}">
+            <button class="remove-media" onclick="removeContentImage('${itemId}', ${i})">×</button>
+            ${i === 0 ? '<span class="thumbnail-badge">Thumbnail</span>' : ''}
+          </div>
+        `).join('')}
+        
+        <div class="media-item add-media-btn" onclick="document.getElementById('content-image-upload-${itemId}').click()">
+          <input type="file" id="content-image-upload-${itemId}" accept="image/*" multiple onchange="handleContentImageUpload('${itemId}', this)">
+          <span class="upload-icon">📷</span>
+          <span>Add Images</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function createLinksPanel(itemId, content) {
+  return `
+    <div class="links-section">
+      <div class="links-header">
+        <h3>Related Links</h3>
+        <button class="add" onclick="addContentLink('${itemId}')">+ Add Link</button>
+      </div>
+      
+      <div class="links-list" id="links-list-${itemId}">
+        ${content.content.links.map((link, i) => `
+          <div class="link-item">
+            <input type="text" value="${link.title}" placeholder="Link title" 
+                   onblur="updateContentLink('${itemId}', ${i}, 'title', this.value)">
+            <input type="url" value="${link.url}" placeholder="https://..." 
+                   onblur="updateContentLink('${itemId}', ${i}, 'url', this.value)">
+            <button class="remove-link" onclick="removeContentLink('${itemId}', ${i})">×</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function createNotesPanel(itemId, content) {
+  return `
+    <div class="notes-section">
+      <h3>Production Notes</h3>
+      <textarea class="notes-textarea" placeholder="Add any production notes, ideas, or reminders..." 
+                onblur="saveContentNotes('${itemId}', this.value)">${content.content.notes || ''}</textarea>
+    </div>
+  `;
+}
+
+// Helper functions
+function getContentTypeEmoji(type) {
+  const emojis = {
+    video: '🎥',
+    article: '✏️',
+    newsletter: '📧',
+    social: '📱',
+    podcast: '🎙️'
+  };
+  return emojis[type] || '📄';
+}
+
+// Content save functions
+window.saveContentText = function(itemId, text) {
+  CONTENT_DETAILS[itemId].content.text = text;
+  saveContentToFirebase(itemId);
+};
+
+window.saveContentMeta = function(itemId, field, value) {
+  if (!CONTENT_DETAILS[itemId].content.meta) {
+    CONTENT_DETAILS[itemId].content.meta = {};
+  }
+  CONTENT_DETAILS[itemId].content.meta[field] = value;
+  saveContentToFirebase(itemId);
+};
+
+window.saveContentNotes = function(itemId, notes) {
+  CONTENT_DETAILS[itemId].content.notes = notes;
+  saveContentToFirebase(itemId);
+};
+
+// Media handling
+function initializeContentMedia(itemId) {
+  const grid = qs('#media-grid-' + itemId);
+  if (grid) {
+    grid.ondragover = function(e) {
+      e.preventDefault();
+      grid.classList.add('drag-over');
+    };
+    
+    grid.ondragleave = function() {
+      grid.classList.remove('drag-over');
+    };
+    
+    grid.ondrop = function(e) {
+      e.preventDefault();
+      grid.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      handleContentFiles(itemId, files);
+    };
+  }
+}
+
+window.handleContentImageUpload = function(itemId, input) {
+  const files = input.files;
+  handleContentFiles(itemId, files);
+};
+
+function handleContentFiles(itemId, files) {
+  Array.from(files).forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = CONTENT_DETAILS[itemId];
+        content.content.images.push(e.target.result);
+        refreshMediaGrid(itemId);
+        saveContentToFirebase(itemId);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+window.removeContentImage = function(itemId, index) {
+  const content = CONTENT_DETAILS[itemId];
+  content.content.images.splice(index, 1);
+  refreshMediaGrid(itemId);
+  saveContentToFirebase(itemId);
+};
+
+function refreshMediaGrid(itemId) {
+  const content = CONTENT_DETAILS[itemId];
+  const grid = qs('#media-grid-' + itemId);
+  if (grid) {
+    grid.innerHTML = content.content.images.map((img, i) => `
+      <div class="media-item">
+        <img src="${img}" alt="Content image ${i}">
+        <button class="remove-media" onclick="removeContentImage('${itemId}', ${i})">×</button>
+        ${i === 0 ? '<span class="thumbnail-badge">Thumbnail</span>' : ''}
+      </div>
+    `).join('') + `
+      <div class="media-item add-media-btn" onclick="document.getElementById('content-image-upload-${itemId}').click()">
+        <input type="file" id="content-image-upload-${itemId}" accept="image/*" multiple onchange="handleContentImageUpload('${itemId}', this)">
+        <span class="upload-icon">📷</span>
+        <span>Add Images</span>
+      </div>
+    `;
+  }
+}
+
+// Links management
+window.addContentLink = function(itemId) {
+  const content = CONTENT_DETAILS[itemId];
+  content.content.links.push({ title: '', url: '' });
+  refreshLinksList(itemId);
+  saveContentToFirebase(itemId);
+};
+
+window.updateContentLink = function(itemId, index, field, value) {
+  const content = CONTENT_DETAILS[itemId];
+  if (content.content.links[index]) {
+    content.content.links[index][field] = value;
+    saveContentToFirebase(itemId);
+  }
+};
+
+window.removeContentLink = function(itemId, index) {
+  const content = CONTENT_DETAILS[itemId];
+  content.content.links.splice(index, 1);
+  refreshLinksList(itemId);
+  saveContentToFirebase(itemId);
+};
+
+function refreshLinksList(itemId) {
+  const content = CONTENT_DETAILS[itemId];
+  const list = qs('#links-list-' + itemId);
+  if (list) {
+    list.innerHTML = content.content.links.map((link, i) => `
+      <div class="link-item">
+        <input type="text" value="${link.title}" placeholder="Link title" 
+               onblur="updateContentLink('${itemId}', ${i}, 'title', this.value)">
+        <input type="url" value="${link.url}" placeholder="https://..." 
+               onblur="updateContentLink('${itemId}', ${i}, 'url', this.value)">
+        <button class="remove-link" onclick="removeContentLink('${itemId}', ${i})">×</button>
+      </div>
+    `).join('');
+  }
+}
+
+// Tab navigation
+window.showContentTab = function(tabName) {
+  qsa('.content-modal .tab').forEach(tab => tab.classList.remove('active'));
+  qsa('.content-modal .tab').forEach(tab => {
+    if (tab.textContent.toLowerCase().includes(tabName)) {
+      tab.classList.add('active');
+    }
+  });
+  
+  qsa('.content-modal .tab-panel').forEach(panel => panel.classList.remove('active'));
+  const panel = qs('#' + tabName + '-panel');
+  if (panel) panel.classList.add('active');
+};
+
+// Close modal
+window.closeContentModal = function() {
+  const modal = qs('.content-modal-overlay');
+  if (modal) {
+    modal.style.opacity = '0';
+    setTimeout(() => modal.remove(), 300);
+  }
+};
+
+// Firebase integration
+function saveContentToFirebase(itemId) {
+  if (typeof db !== 'undefined') {
+    db.collection('content-details')
+      .doc(itemId)
+      .set({
+        ...CONTENT_DETAILS[itemId],
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .catch(function(error) {
+        console.error('Error saving content details:', error);
+      });
+  }
+}
+
+function loadContentDetails() {
+  if (typeof db !== 'undefined') {
+    db.collection('content-details')
+      .get()
+      .then(function(querySnapshot) {
+        querySnapshot.forEach(function(doc) {
+          CONTENT_DETAILS[doc.id] = doc.data();
+        });
+      })
+      .catch(function(error) {
+        console.error('Error loading content details:', error);
+      });
+  }
+}
+      // ---------- Quick Search System ----------
+        var QuickSearch = {
+            isOpen: false,
+            selectedIndex: 0,
+            results: [],
+            
+            init: function() {
+                console.log('QuickSearch init called');
+                var self = this;
+                document.addEventListener('keydown', function(e) {
+                    console.log('Key pressed:', e.key, 'Ctrl:', e.ctrlKey, 'Cmd:', e.metaKey);
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                        e.preventDefault();
+                        console.log('Quick search keyboard shortcut triggered!');
+                        self.toggle();
+                    }
+                });
+            },
+            
+            toggle: function() {
+                console.log('Toggle called. isOpen:', this.isOpen);
+                if (this.isOpen) {
+                    this.close();
+                } else {
+                    this.open();
+                }
+            },
+            
+            open: function() {
+                console.log('Open called');
+                var self = this;
+                this.isOpen = true;
+                this.selectedIndex = 0; // Reset selection
+                
+                var overlay = el('div', 'quick-search-overlay');
+                overlay.onclick = function(e) {
+                    if (e.target === overlay) self.close();
+                };
+                
+                var modal = el('div', 'quick-search-modal');
+                
+                var input = el('input', 'quick-search-input');
+                input.type = 'text';
+                input.placeholder = 'Search content, jump to brand, or type > for commands...';
+                
+                var results = el('div', 'quick-search-results');
+                
+                input.addEventListener('input', function() {
+                    self.search(this.value, results);
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        self.selectNext();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        self.selectPrev();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        self.executeSelected();
+                    } else if (e.key === 'Escape') {
+                        self.close();
+                    }
+                });
+                
+                modal.appendChild(input);
+                modal.appendChild(results);
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                
+                input.focus();
+                
+                // Show initial suggestions
+                this.showSuggestions(results);
+            },
+            
+            close: function() {
+                this.isOpen = false;
+                var overlay = qs('.quick-search-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    setTimeout(function() { 
+                        if (overlay && overlay.parentNode) {
+                            overlay.parentNode.removeChild(overlay);
+                        }
+                    }, 200);
+                }
+            },
+            
+            search: function(query, resultsContainer) {
+                this.selectedIndex = 0;
+                this.results = [];
+                
+                if (!query) {
+                    this.showSuggestions(resultsContainer);
+                    return;
+                }
+                
+                // Command mode
+                if (query.indexOf('>') === 0) {
+                    this.searchCommands(query.slice(1).trim(), resultsContainer);
+                    return;
+                }
+                
+                // Search all content
+                this.searchContent(query, resultsContainer);
+            },
+            
+            showSuggestions: function(container) {
+                var self = this;
+                this.results = [
+                    { type: 'command', icon: '🚀', title: 'Create new content', action: function() { self.createNewContent(); } },
+                    { type: 'command', icon: '📊', title: 'View analytics', action: function() { self.close(); show('analytics'); } },
+                    { type: 'command', icon: '🔍', title: 'Search all content', action: function() {} }
+                ];
+                
+                // Add brand shortcuts
+                BRANDS.forEach(function(brand) {
+                    self.results.push({
+                        type: 'brand',
+                        icon: '🏷️',
+                        title: brand.name,
+                        meta: brand.desc,
+                        brandColor: brand.accent,
+                        action: function() { self.close(); show(brand.id); }
+                    });
+                });
+                
+                this.renderResults(container);
+            },
+            
+            searchContent: function(query, container) {
+                var self = this;
+                var lowerQuery = query.toLowerCase();
+                
+                // Search through all pipeline content
+                BRANDS.forEach(function(brand) {
+                    var stages = EVENT_BRANDS.indexOf(brand.id) !== -1 ? EVENT_STAGES : EDIT_STAGES;
+                    
+                    stages.forEach(function(stage) {
+                        var items = PIPELINES[brand.id][stage] || [];
+                        
+                        items.forEach(function(item) {
+                            var matchesTitle = item.title.toLowerCase().indexOf(lowerQuery) !== -1;
+                            var matchesTags = false;
+                            
+                            if (item.tags && item.tags.length > 0) {
+                                for (var i = 0; i < item.tags.length; i++) {
+                                    if (item.tags[i].toLowerCase().indexOf(lowerQuery) !== -1) {
+                                        matchesTags = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if (matchesTitle || matchesTags) {
+                                self.results.push({
+                                    type: 'content',
+                                    icon: self.getContentIcon(item.title),
+                                    title: item.title,
+                                    meta: brand.name + ' • ' + stage,
+                                    brandColor: brand.accent,
+                                    itemId: item.id,
+                                    brandId: brand.id,
+                                    action: function() {
+                                        self.close();
+                                        show(brand.id);
+                                        // Highlight the item after view loads
+                                        setTimeout(function() {
+                                            var element = qs('[data-id="' + item.id + '"]');
+                                            if (element) {
+                                                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                element.style.animation = 'pulse 2s ease-out';
+                                            }
+                                        }, 300);
+                                    }
+                                });
+                            }
+                        });
+                    });
+                });
+                
+                // Search calendar items too
+                BRANDS.forEach(function(brand) {
+                    if (CALENDAR_DATA[brand.id]) {
+                        Object.keys(CALENDAR_DATA[brand.id]).forEach(function(dateStr) {
+                            var items = CALENDAR_DATA[brand.id][dateStr] || [];
+                            items.forEach(function(item) {
+                                if (item.title && item.title.toLowerCase().indexOf(lowerQuery) !== -1) {
+                                    self.results.push({
+                                        type: 'calendar',
+                                        icon: '📅',
+                                        title: item.title,
+                                        meta: brand.name + ' • Scheduled ' + dateStr,
+                                        brandColor: brand.accent,
+                                        action: function() {
+                                            self.close();
+                                            show(brand.id);
+                                            toggleView(brand.id, 'calendar');
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    }
+                });
+                
+                // Show "no results" if empty
+                if (this.results.length === 0) {
+                    this.results.push({
+                        type: 'empty',
+                        icon: '🔍',
+                        title: 'No results found',
+                        meta: 'Try a different search term',
+                        action: function() {}
+                    });
+                }
+                
+                this.renderResults(container);
+            },
+            
+            searchCommands: function(query, container) {
+                var self = this;
+                var commands = [
+                    { icon: '➕', title: 'New Video', action: function() { self.createNewItem('video'); } },
+                    { icon: '➕', title: 'New Article', action: function() { self.createNewItem('article'); } },
+                    { icon: '➕', title: 'New Event', action: function() { self.createNewItem('event'); } },
+                    { icon: '📊', title: 'Analytics', action: function() { self.close(); show('analytics'); } },
+                    { icon: '🔄', title: 'Refresh Data', action: function() { self.close(); loadFromFirebase(); } },
+                    { icon: '📥', title: 'Export All Data', action: function() { self.exportAllData(); } }
+                ];
+                
+                this.results = [];
+                for (var i = 0; i < commands.length; i++) {
+                    if (commands[i].title.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+                        this.results.push(commands[i]);
+                    }
+                }
+                
+                this.renderResults(container);
+            },
+            
+            renderResults: function(container) {
+                var self = this;
+                container.innerHTML = '';
+                
+                this.results.forEach(function(result, index) {
+                    var item = el('div', 'search-result');
+                    if (index === self.selectedIndex) {
+                        item.classList.add('selected');
+                    }
+                    
+                    var icon = el('span', 'search-result-icon', result.icon);
+                    var content = el('div', 'search-result-content');
+                    var title = el('div', 'search-result-title', result.title);
+                    content.appendChild(title);
+                    
+                    if (result.meta) {
+                        var meta = el('div', 'search-result-meta', result.meta);
+                        content.appendChild(meta);
+                    }
+                    
+                    item.appendChild(icon);
+                    item.appendChild(content);
+                    
+                    if (result.brandColor && result.type !== 'empty') {
+                        var brand = el('span', 'search-result-brand');
+                        brand.style.background = result.brandColor;
+                        item.appendChild(brand);
+                    }
+                    
+                    item.onclick = function() {
+                        self.selectedIndex = index;
+                        self.executeSelected();
+                    };
+                    
+                    container.appendChild(item);
+                });
+            },
+            
+            selectNext: function() {
+                if (this.selectedIndex < this.results.length - 1) {
+                    this.selectedIndex++;
+                    this.updateSelection();
+                }
+            },
+            
+            selectPrev: function() {
+                if (this.selectedIndex > 0) {
+                    this.selectedIndex--;
+                    this.updateSelection();
+                }
+            },
+            
+            updateSelection: function() {
+                var self = this;
+                qsa('.search-result').forEach(function(el, index) {
+                    if (index === self.selectedIndex) {
+                        el.classList.add('selected');
+                    } else {
+                        el.classList.remove('selected');
+                    }
+                });
+            },
+            
+            executeSelected: function() {
+                if (this.results[this.selectedIndex] && this.results[this.selectedIndex].type !== 'empty') {
+                    this.results[this.selectedIndex].action();
+                }
+            },
+            
+            getContentIcon: function(title) {
+                var lower = title.toLowerCase();
+                if (lower.indexOf('video') !== -1) return '🎥';
+                if (lower.indexOf('article') !== -1 || lower.indexOf('essay') !== -1) return '✏️';
+                if (lower.indexOf('newsletter') !== -1) return '📧';
+                if (lower.indexOf('podcast') !== -1) return '🎙️';
+                if (lower.indexOf('event') !== -1 || lower.indexOf('mixer') !== -1) return '📅';
+                if (lower.indexOf('post') !== -1 || lower.indexOf('tweet') !== -1) return '📱';
+                return '📄';
+            },
+            
+            createNewContent: function() {
+                this.close();
+                var brandId = prompt('Enter brand code (knf, fh, mtih, sss, tok, bwitw, indigo):');
+                if (brandId && BRANDS.find(function(b) { return b.id === brandId; })) {
+                    addItem(brandId);
+                }
+            },
+            
+            createNewItem: function(type) {
+                this.close();
+                // You can customize this based on type
+                if (type === 'event') {
+                    addItem('bwitw'); // Default to BWitW for events
+                } else {
+                    this.createNewContent();
+                }
+            },
+            
+            exportAllData: function() {
+                this.close();
+                try {
+                    var data = {
+                        pipelines: PIPELINES,
+                        calendar: CALENDAR_DATA,
+                        events: EVENT_DETAILS,
+                        content: CONTENT_DETAILS,
+                        exportDate: new Date().toISOString()
+                    };
+                    
+                    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'empire-dashboard-backup-' + todayISO() + '.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    alert('Export failed. Check console for details.');
+                }
+            }
+        };
+        
+        console.log('QuickSearch object defined:', QuickSearch);
+        
+        // ---------- initialize ----------
+        console.log('Starting initialization...');
+        buildNav();
+        buildOverview();
+        buildViews();
+        buildAnalyticsView();
+        console.log('About to initialize QuickSearch...');
+        QuickSearch.init();
+        console.log('QuickSearch initialized');
+        show('overview');
+        loadFromFirebase();
+        initEventSystem();
+        loadEventDetails();
+        initContentSystem();
+        loadContentDetails();
+        
+        // Real-time sync
+        BRANDS.forEach(function(brand) {
+            // Listen for pipeline changes
+            db.collection('empire-pipelines').doc(brand.id)
+                .onSnapshot(function(doc) {
+                    if (doc.exists && doc.metadata.hasPendingWrites === false) {
+                        PIPELINES[brand.id] = doc.data().data || PIPELINES[brand.id];
+                        refreshView(brand.id);
+                    }
+                });
+        });
+        
+    }); // This closes the DOMContentLoaded event listener
+    </script>
 </body>
 </html>
