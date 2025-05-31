@@ -2584,12 +2584,13 @@ const db = firebase.firestore();
                     buildPipeline(brand, pipelineView);
                     var brandView = qs('#view-' + brandId);
 if (brandView) {
- qsa('.daily-summary-panel', brandView).forEach(p => p.remove());
+  qsa('.daily-summary-panel', brandView).forEach(p => p.remove());
   const afterProgress = brandView.querySelector('.progress-section');
   if (afterProgress) {
     afterProgress.insertAdjacentElement('afterend', buildTodaySummary(brandId));
   }
 }
+
 
                 }
             }
