@@ -2072,6 +2072,26 @@ const db = firebase.firestore();
     <button class="btn btn-primary" onclick="generateSchedule()">Create Schedule</button>
   </div>
 </div>
+<!-- Published Directory Modal -->
+<div id="publishedDirectory" class="template-selector">
+  <div class="template-header">
+    <h3>Published Content</h3>
+    <button class="close-btn" onclick="closePublishedDirectory()">×</button>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label><strong>Filter by Brand:</strong></label>
+    <select id="publishedBrandFilter">
+      <option value="all">All Brands</option>
+    </select>
+  </div>
+
+  <div>
+    <input id="publishedSearchInput" class="form-input" type="text" placeholder="Search titles..." oninput="filterPublishedList()">
+  </div>
+
+  <ul id="publishedList" style="margin-top: 1.5rem; max-height: 60vh; overflow-y: auto; padding: 0; list-style: none;"></ul>
+</div>
 
     <!-- Edit Panel -->
     <div id="editPanel" class="edit-panel">
