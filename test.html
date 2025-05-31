@@ -2582,6 +2582,16 @@ const db = firebase.firestore();
                 if (brand && pipelineView) {
                     pipelineView.innerHTML = '';
                     buildPipeline(brand, pipelineView);
+                    var brandView = qs('#view-' + brandId);
+if (brandView) {
+  const oldSummary = brandView.querySelector('.progress-section:nth-of-type(2)');
+  if (oldSummary) oldSummary.remove();
+  const afterProgress = brandView.querySelector('.progress-section');
+  if (afterProgress) {
+    afterProgress.insertAdjacentElement('afterend', buildTodaySummary(brandId));
+  }
+}
+
                 }
             }
             updateAll();
