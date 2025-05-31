@@ -2054,7 +2054,25 @@ const db = firebase.firestore();
             </div>
         </div>
     </div>
-    
+    <!-- Bulk Scheduler Modal -->
+<div id="bulkScheduler" class="template-selector">
+  <div class="template-header">
+    <h3>Bulk Scheduler</h3>
+    <button class="close-btn" onclick="closeBulkScheduler()">×</button>
+  </div>
+  <div style="margin-bottom: 1rem">
+    <label><strong>Schedule Type:</strong></label><br>
+    <label><input type="radio" name="scheduleType" value="weekly" checked> Weekly</label>
+    <label><input type="radio" name="scheduleType" value="monthly" style="margin-left: 1rem"> Monthly Pattern</label>
+  </div>
+
+  <div id="bulkOptions"></div>
+
+  <div style="text-align: right; margin-top: 1.5rem;">
+    <button class="btn btn-primary" onclick="generateSchedule()">Create Schedule</button>
+  </div>
+</div>
+
     <!-- Edit Panel -->
     <div id="editPanel" class="edit-panel">
         <div class="edit-panel-header">
