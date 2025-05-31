@@ -2954,7 +2954,6 @@ const db = firebase.firestore();
                 // Enable drag and drop
                 if (typeof Sortable !== 'undefined') {
            // Replace the existing Sortable initialization (around line 1615) with this:
-
 var sortable = new Sortable(list, {
     group: brand.id,
     animation: 150,
@@ -2997,16 +2996,16 @@ var sortable = new Sortable(list, {
                 PIPELINES[brandId][toStage].splice(evt.newIndex, 0, movedItem);
                 
                 // If moving to ready or published, you might want to set a scheduled date
-    if (toStage === 'ready' && !movedItem.scheduledDate) {
-                movedItem.scheduledDate = todayISO();
+                if (toStage === 'ready' && !movedItem.scheduledDate) {
+                    movedItem.scheduledDate = todayISO();
+                }
             }
         }
         
-        // THESE TWO LINES SHOULD BE HERE, INSIDE onEnd:
         updateAll();
         saveToFirebase();
-    }  // <- This closes onEnd
-});  // <- This closes Sortable
+    }  // <-- This closes the onEnd function
+});    // <-- This closes the Sortable constructor
             
             container.appendChild(pipe);
         }
