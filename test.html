@@ -2746,7 +2746,7 @@ function renderBulkOptions() {
   );
 }
 
- function generateSchedule() {
+ window.generateSchedule = function() {
   console.log('🚀 generateSchedule() called');
 
   const brandId = qs('#bulkScheduler').dataset.brandId;
