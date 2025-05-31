@@ -3056,6 +3056,11 @@ qs('#publishedBrandFilter').onchange = populatePublishedList;
                     var progress = buildProgressTracker(b);
                     v.appendChild(progress);
                 }
+                const publishedBtn = el('button', 'quick-action-btn');
+publishedBtn.innerHTML = '<span class="quick-action-icon">📁</span> View Published';
+publishedBtn.onclick = function() { openPublishedDirectory(); };
+quickActions.appendChild(publishedBtn);
+
                 
                 // brand metrics
                 var bm = el('div', 'brand-metrics');
