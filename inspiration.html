@@ -35,6 +35,7 @@
             border-radius: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            padding-bottom: 20px;
         }
 
         .header {
@@ -57,16 +58,19 @@
 
         /* Data Recovery Section */
         .recovery-section {
-            background: #f8f9fa;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 15px;
+            background: linear-gradient(135deg, #f8f7ff 0%, #f0ecff 100%);
+            padding: 40px 20px;
+            margin: 40px 20px 20px 20px;
+            border-radius: 20px;
             border: 2px solid #e9ecef;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
         .recovery-section h3 {
-            color: var(--danger);
-            margin-bottom: 15px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 24px;
         }
 
         .recovery-buttons {
@@ -177,6 +181,31 @@
             color: white;
         }
 
+        /* Twinkle animation for button sparkle */
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.3;
+                transform: translateY(-50%) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-50%) scale(1.2);
+            }
+        }
+
+        /* Subtle pulse animation for upload button */
+        @keyframes gentlePulse {
+            0% {
+                box-shadow: 0 4px 15px rgba(127, 87, 211, 0.3);
+            }
+            50% {
+                box-shadow: 0 4px 25px rgba(127, 87, 211, 0.5);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(127, 87, 211, 0.3);
+            }
+        }
+
         .upload-btn {
             margin: 20px 0;
             padding: 15px 30px;
@@ -189,16 +218,123 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(127, 87, 211, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: gentlePulse 3s ease-in-out infinite;
         }
 
         .upload-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(127, 87, 211, 0.4);
+            background: var(--primary-light);
+            animation: none;
         }
 
         .upload-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+
+        /* Sparkle Animation */
+        @keyframes sparkle {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkle 1s ease-out forwards;
+        }
+
+        .sparkle::before,
+        .sparkle::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .sparkle::before {
+            transform: rotate(45deg);
+        }
+
+        .sparkle::after {
+            transform: rotate(-45deg);
+        }
+
+        /* Success Animation */
+        .success-burst {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            z-index: 3000;
+        }
+
+        @keyframes successBurst {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            70% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+
+        .success-burst::before {
+            content: '✨';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            animation: successBurst 0.8s ease-out forwards;
+        }
+
+        /* Floating sparkles for hover */
+        @keyframes floatSparkle {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            20% {
+                transform: translateY(-10px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-40px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .float-sparkle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatSparkle 1.5s ease-out forwards;
+            font-size: 20px;
+            z-index: 10;
         }
 
         .filters {
@@ -683,25 +819,6 @@
             <p>Curating my personal style & aesthetic</p>
         </div>
 
-        <!-- Data Recovery Section -->
-        <div class="recovery-section">
-            <h3>🚨 Data Recovery & Backup Tools</h3>
-            <div class="recovery-buttons">
-                <button class="recovery-btn primary" onclick="runDiagnostics()">🔍 Run Full Diagnostics</button>
-                <button class="recovery-btn success" onclick="attemptRecovery()">🔄 Attempt Data Recovery</button>
-                <button class="recovery-btn info" onclick="downloadBackup()">💾 Download Backup</button>
-                <button class="recovery-btn danger" onclick="syncFromFirebase()">☁️ Force Sync from Firebase</button>
-                <label class="recovery-btn success" style="margin: 0;">
-                    📥 Upload Backup
-                    <input type="file" accept=".json" style="display: none;" onchange="restoreFromFile(this.files[0])">
-                </label>
-            </div>
-            <div id="recoveryStatus" class="status-message"></div>
-            <div class="drop-zone" id="dropZone">
-                Drop backup file here or click "Upload Backup"
-            </div>
-        </div>
-
         <div class="controls">
             <div class="tabs">
                 <button class="tab-btn active" data-category="style">Style 👗</button>
@@ -710,7 +827,10 @@
                 <button class="tab-btn" data-category="home">Home Decor 🏡</button>
             </div>
 
-            <button class="upload-btn" id="uploadBtn">✨ Add Inspiration</button>
+            <button class="upload-btn" id="uploadBtn" style="position: relative; padding-right: 50px;">
+                <span class="button-text">✨ Add Inspiration</span>
+                <span class="button-sparkle" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 18px; animation: twinkle 2s ease-in-out infinite; pointer-events: none;">✨</span>
+            </button>
 
             <!-- Search Bar -->
             <div style="margin: 20px 0;">
@@ -757,6 +877,49 @@
                 <div class="empty-state">
                     <h3>Welcome to your Personal Archive!</h3>
                     <p>Click "Add Inspiration" to start building your collection</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Recovery Section -->
+        <div class="recovery-section">
+            <h3>💾 Backup & Recovery Tools</h3>
+            <div class="recovery-buttons">
+                <button class="recovery-btn primary" onclick="runDiagnostics()">🔍 Run Full Diagnostics</button>
+                <button class="recovery-btn success" onclick="attemptRecovery()">🔄 Attempt Data Recovery</button>
+                <button class="recovery-btn info" onclick="downloadBackup()">💾 Download Backup</button>
+                <button class="recovery-btn danger" onclick="syncFromFirebase()">☁️ Force Sync from Firebase</button>
+                <label class="recovery-btn success" style="margin: 0;">
+                    📥 Upload Backup
+                    <input type="file" accept=".json" style="display: none;" onchange="restoreFromFile(this.files[0])">
+                </label>
+            </div>
+            <div id="recoveryStatus" class="status-message"></div>
+            <div class="drop-zone" id="dropZone">
+                Drop backup file here or click "Upload Backup"
+            </div>
+            
+            <!-- Statistics -->
+            <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; color: var(--primary-color);" id="totalCount">0</div>
+                    <div style="font-size: 12px; color: #666;">Total Items</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; color: #e91e63;" id="styleCount">0</div>
+                    <div style="font-size: 12px; color: #666;">Style</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; color: #ff6b6b;" id="beautyCount">0</div>
+                    <div style="font-size: 12px; color: #666;">Beauty</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; color: #4ecdc4;" id="hairCount">0</div>
+                    <div style="font-size: 12px; color: #666;">Hair</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold; color: #f7b731;" id="homeCount">0</div>
+                    <div style="font-size: 12px; color: #666;">Home</div>
                 </div>
             </div>
         </div>
@@ -947,6 +1110,7 @@
             loadData();
             updateSyncStatus();
             updateColorFiltersVisibility();
+            updateStatistics();
         });
 
         // Setup drag and drop
@@ -1030,6 +1194,7 @@
                     window.inspirationData = JSON.parse(localData);
                     displayGallery();
                     updateStatus(`Recovered ${window.inspirationData.length} items from localStorage!`, 'success');
+                    createSuccessAnimation();
                     
                     // Offer to sync to Firebase
                     if (firebaseEnabled && confirm('Data recovered! Would you like to sync it to Firebase?')) {
@@ -1085,6 +1250,7 @@
                             saveToLocalStorage();
                             displayGallery();
                             updateStatus(`Restored ${backup.items.length} items from backup!`, 'success');
+                            createSuccessAnimation();
                             
                             if (firebaseEnabled && confirm('Would you like to sync the restored data to Firebase?')) {
                                 await syncToFirebase();
@@ -1119,6 +1285,7 @@
                     saveToLocalStorage();
                     displayGallery();
                     updateStatus(`Synced ${firebaseData.length} items from Firebase!`, 'success');
+                    createSuccessAnimation();
                 } else {
                     updateStatus('No data found in Firebase', 'error');
                 }
@@ -1152,6 +1319,10 @@
         function setupEventListeners() {
             // Upload button
             uploadBtn.addEventListener('click', openUploadModal);
+            
+            // Add sparkle effect to upload button
+            uploadBtn.addEventListener('mouseenter', createSparkles);
+            uploadBtn.addEventListener('mousemove', createFloatingSparkle);
 
             // Category tabs
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1180,6 +1351,73 @@
                     event.target.style.display = 'none';
                 }
             };
+        }
+
+        // Create sparkle effects
+        function createSparkles(e) {
+            const button = e.target;
+            const rect = button.getBoundingClientRect();
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * rect.width + 'px';
+                    sparkle.style.top = Math.random() * rect.height + 'px';
+                    button.appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 1000);
+                }, i * 100);
+            }
+        }
+
+        let lastSparkleTime = 0;
+        function createFloatingSparkle(e) {
+            const now = Date.now();
+            if (now - lastSparkleTime < 100) return;
+            lastSparkleTime = now;
+            
+            const button = e.currentTarget;
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const sparkle = document.createElement('div');
+            sparkle.className = 'float-sparkle';
+            sparkle.innerHTML = '✨';
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            button.appendChild(sparkle);
+            
+            setTimeout(() => sparkle.remove(), 1500);
+        }
+
+        // Create success animation
+        function createSuccessAnimation() {
+            const burst = document.createElement('div');
+            burst.className = 'success-burst';
+            burst.style.left = window.innerWidth / 2 + 'px';
+            burst.style.top = window.innerHeight / 2 + 'px';
+            document.body.appendChild(burst);
+            
+            // Create multiple sparkles around the center
+            for (let i = 0; i < 8; i++) {
+                const angle = (i * 45) * Math.PI / 180;
+                const distance = 100;
+                const sparkle = document.createElement('div');
+                sparkle.className = 'float-sparkle';
+                sparkle.innerHTML = '✨';
+                sparkle.style.position = 'fixed';
+                sparkle.style.left = (window.innerWidth / 2 + Math.cos(angle) * distance) + 'px';
+                sparkle.style.top = (window.innerHeight / 2 + Math.sin(angle) * distance) + 'px';
+                sparkle.style.fontSize = '30px';
+                sparkle.style.zIndex = '3001';
+                document.body.appendChild(sparkle);
+                
+                setTimeout(() => sparkle.remove(), 1500);
+            }
+            
+            setTimeout(() => burst.remove(), 800);
         }
 
         // Switch category
@@ -1285,6 +1523,7 @@
                 displayGallery();
                 closeModal('upload');
                 updateStatus('Added new inspiration!', 'success');
+                createSuccessAnimation();
             };
             reader.readAsDataURL(file);
         };
@@ -1348,6 +1587,7 @@
             displayGallery();
             closeModal('edit');
             updateStatus('Updated inspiration!', 'success');
+            createSuccessAnimation();
         };
 
         // Delete item
@@ -1375,7 +1615,7 @@
             window.inspirationData.splice(index, 1);
             saveToLocalStorage();
             displayGallery();
-            updateStatus('Deleted inspiration', 'success');
+            updateStatus('Deleted inspiration', 'info');
         };
 
         // Image Viewer Functions
@@ -1491,7 +1731,32 @@
 
             // Update upload button
             uploadBtn.disabled = false;
-            uploadBtn.textContent = `✨ Add Inspiration (${window.inspirationData.length} total)`;
+            const buttonText = uploadBtn.querySelector('.button-text');
+            if (buttonText) {
+                buttonText.textContent = `✨ Add Inspiration (${window.inspirationData.length} total)`;
+            } else {
+                uploadBtn.textContent = `✨ Add Inspiration (${window.inspirationData.length} total)`;
+            }
+            
+            // Update statistics
+            updateStatistics();
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const stats = {
+                total: window.inspirationData.length,
+                style: window.inspirationData.filter(item => item.category === 'style').length,
+                beauty: window.inspirationData.filter(item => item.category === 'beauty').length,
+                hair: window.inspirationData.filter(item => item.category === 'hair').length,
+                home: window.inspirationData.filter(item => item.category === 'home').length
+            };
+            
+            document.getElementById('totalCount').textContent = stats.total;
+            document.getElementById('styleCount').textContent = stats.style;
+            document.getElementById('beautyCount').textContent = stats.beauty;
+            document.getElementById('hairCount').textContent = stats.hair;
+            document.getElementById('homeCount').textContent = stats.home;
         }
 
         // Get color hex
