@@ -2746,7 +2746,14 @@ function renderBulkOptions() {
   );
 }
 
-function generateSchedule() {
+  function generateSchedule() {
+  console.log('🚀 generateSchedule() called');
+
+  const brandId = qs('#bulkScheduler').dataset.brandId;
+  console.log('Brand ID:', brandId);
+
+  const type = qs('input[name="scheduleType"]:checked').value;
+  console.log('Schedule Type:', type);  
   const brandId = qs('#bulkScheduler').dataset.brandId;
   const type = qs('input[name="scheduleType"]:checked').value;
   const today = new Date();
