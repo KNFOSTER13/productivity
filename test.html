@@ -2953,14 +2953,59 @@ const db = firebase.firestore();
                 
                 // Enable drag and drop
                 if (typeof Sortable !== 'undefined') {
-                    var sortable = new Sortable(list, {
-                        group: brand.id,
-                        animation: 150,
-                        onEnd: function(evt) {
-                            updateAll();
-                            saveToFirebase();
-                        }
-                    });
+                 var sortable = new Sortable(list, {
+    group: brand.id,
+    animation: 150,
+    onEnd: function(evt) {
+        var itemEl = evt.item;
+        var itemId = itemEl.dataset.itemId;
+        var fromStage = evt.from.closest('.col').dataset.stage;
+        var toStage = evt.to.closest('.col').dataset.stage;
+        var brandId = evt.to.closest('.col').dataset.brand;
+
+        // If no change, do nothing
+        if (fromStage === toStage) return;
+
+        var movedItem = null;
+        var fromIndex = -1;
+
+        // Find and remove from old stage
+        if (PIPELINES[brandId][fromStage]) {
+            for (var i = 0; i < PIPELINES[brandId][fromStage].length; i++) {
+                if (PIPELINES[brandId][fromStage][i].id === itemId) {
+                    movedItem = PIPELINES[brandId][fromStage][i];
+                    fromIndex = i;
+                    break;
+                }
+            }
+        }
+
+        if (movedItem && fromIndex !== -1) {
+            PIPELINES[brandId][fromStage].splice(fromIndex, 1);
+
+            // Update metadata
+            movedItem.stage = toStage;
+            movedItem.modified = new Date().toISOString();
+
+            // Assign a default scheduled date if moved to 'ready' or 'published'
+            if ((toStage === 'ready' || toStage === 'published') && !movedItem.scheduledDate) {
+                movedItem.scheduledDate = todayISO();
+            }
+
+            // Ensure destination stage exists
+            if (!PIPELINES[brandId][toStage]) {
+                PIPELINES[brandId][toStage] = [];
+            }
+
+            // Insert at new position
+            PIPELINES[brandId][toStage].splice(evt.newIndex, 0, movedItem);
+        }
+
+        updateAll();
+        saveToFirebase();
+    }
+});
+
                     sortableInstances.push(sortable);
                 }
             });
