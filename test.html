@@ -3151,6 +3151,47 @@ quickActions.appendChild(publishedBtn);
             
             return progress;
         }
+        function buildTodaySummary(brandId) {
+  const todaySummary = el('div', 'progress-section');
+  todaySummary.style.marginBottom = '1.5rem';
+
+  const header = el('div', 'progress-header');
+  header.appendChild(el('h3', null, "Today's Schedule"));
+  todaySummary.appendChild(header);
+
+  const list = el('ul');
+  list.style.listStyle = 'none';
+  list.style.paddingLeft = '0';
+
+  const todayStr = todayISO();
+  const stages = EDIT_STAGES;
+
+  stages.forEach(stage => {
+    const items = PIPELINES[brandId][stage] || [];
+    items.forEach(item => {
+      if (item.scheduledDate === todayStr) {
+        const li = el('li');
+        li.style.marginBottom = '.6rem';
+        li.innerHTML = `
+          <span class="content-icon type-${item.type}">${getContentIcon(item.type)}</span>
+          <strong>${item.title}</strong>
+          <span style="font-size:.75rem; color: var(--text-m); margin-left: .5rem;">(${stage})</span>
+        `;
+        list.appendChild(li);
+      }
+    });
+  });
+
+  if (list.children.length === 0) {
+    const empty = el('li', null, 'No items scheduled today.');
+    empty.style.color = 'var(--text-m)';
+    list.appendChild(empty);
+  }
+
+  todaySummary.appendChild(list);
+  return todaySummary;
+}
+
         
         function getContentCount(brandId) {
             var count = 0;
