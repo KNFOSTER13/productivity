@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taste of Kimberly</title>
+    <title>Taste of Kimberly - Data Recovery Edition</title>
     <style>
         * {
             box-sizing: border-box;
@@ -16,6 +16,9 @@
             --primary-light: #9b7dd8;
             --primary-dark: #6442a8;
             --background: linear-gradient(135deg, #f5f3ff 0%, #e8e4f7 100%);
+            --success: #28a745;
+            --danger: #dc3545;
+            --info: #17a2b8;
         }
 
         body {
@@ -50,6 +53,91 @@
         .header p {
             color: #666;
             font-size: 18px;
+        }
+
+        /* Data Recovery Section */
+        .recovery-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .recovery-section h3 {
+            color: var(--danger);
+            margin-bottom: 15px;
+        }
+
+        .recovery-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .recovery-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .recovery-btn.primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .recovery-btn.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .recovery-btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .recovery-btn.info {
+            background: var(--info);
+            color: white;
+        }
+
+        .recovery-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-message {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .status-message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
         }
 
         .controls {
@@ -103,9 +191,14 @@
             box-shadow: 0 4px 15px rgba(127, 87, 211, 0.3);
         }
 
-        .upload-btn:hover {
+        .upload-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(127, 87, 211, 0.4);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .filters {
@@ -191,6 +284,7 @@
             transition: all 0.3s;
             cursor: pointer;
             background: white;
+            position: relative;
         }
 
         .inspiration-item:hover {
@@ -411,6 +505,21 @@
             margin-bottom: 10px;
         }
 
+        /* Drag and drop zone */
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.active {
+            border-color: var(--primary-color);
+            background: rgba(127, 87, 211, 0.1);
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 36px;
@@ -428,6 +537,14 @@
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                 gap: 15px;
             }
+
+            .recovery-buttons {
+                flex-direction: column;
+            }
+
+            .recovery-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -436,6 +553,25 @@
         <div class="header">
             <h1>✨ Taste of Kimberly</h1>
             <p>Curating my personal style & aesthetic</p>
+        </div>
+
+        <!-- Data Recovery Section -->
+        <div class="recovery-section">
+            <h3>🚨 Data Recovery & Backup Tools</h3>
+            <div class="recovery-buttons">
+                <button class="recovery-btn primary" onclick="runDiagnostics()">🔍 Run Full Diagnostics</button>
+                <button class="recovery-btn success" onclick="attemptRecovery()">🔄 Attempt Data Recovery</button>
+                <button class="recovery-btn info" onclick="downloadBackup()">💾 Download Backup</button>
+                <button class="recovery-btn danger" onclick="syncFromFirebase()">☁️ Force Sync from Firebase</button>
+                <label class="recovery-btn success" style="margin: 0;">
+                    📥 Upload Backup
+                    <input type="file" accept=".json" style="display: none;" onchange="restoreFromFile(this.files[0])">
+                </label>
+            </div>
+            <div id="recoveryStatus" class="status-message"></div>
+            <div class="drop-zone" id="dropZone">
+                Drop backup file here or click "Upload Backup"
+            </div>
         </div>
 
         <div class="controls">
@@ -622,6 +758,7 @@
             console.log('Firebase initialized successfully');
         } catch (error) {
             console.error('Firebase initialization error:', error);
+            updateStatus('Firebase initialization failed: ' + error.message, 'error');
         }
 
         // Global state
@@ -636,14 +773,219 @@
         const syncStatus = document.getElementById('syncStatus');
         const uploadBtn = document.getElementById('uploadBtn');
         const colorFilters = document.getElementById('colorFilters');
+        const recoveryStatus = document.getElementById('recoveryStatus');
+        const dropZone = document.getElementById('dropZone');
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
+            setupDragDrop();
+            // First, try to load from localStorage
+            loadFromLocalStorage();
+            // Then attempt Firebase sync
             loadData();
             updateSyncStatus();
             updateColorFiltersVisibility();
         });
+
+        // Setup drag and drop
+        function setupDragDrop() {
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('active');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('active');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                
+                const file = e.dataTransfer.files[0];
+                if (file && file.type === 'application/json') {
+                    restoreFromFile(file);
+                }
+            });
+        }
+
+        // Update status message
+        function updateStatus(message, type = 'info') {
+            recoveryStatus.textContent = message;
+            recoveryStatus.className = `status-message ${type}`;
+            recoveryStatus.style.display = 'block';
+            
+            if (type !== 'error') {
+                setTimeout(() => {
+                    recoveryStatus.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Data Recovery Functions
+        window.runDiagnostics = async () => {
+            console.log('=== RUNNING FULL DIAGNOSTICS ===');
+            
+            // Check localStorage
+            const localData = localStorage.getItem('inspirationGallery');
+            if (localData) {
+                const parsed = JSON.parse(localData);
+                console.log('✅ localStorage: ' + parsed.length + ' items found');
+                updateStatus(`Found ${parsed.length} items in localStorage`, 'success');
+            } else {
+                console.log('❌ localStorage: No data found');
+                updateStatus('No data found in localStorage', 'error');
+            }
+
+            // Check memory
+            console.log('✅ Memory: ' + window.inspirationData.length + ' items loaded');
+
+            // Check Firebase
+            if (firebaseEnabled && db) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, 'inspirations'));
+                    let count = 0;
+                    querySnapshot.forEach(() => count++);
+                    console.log('✅ Firebase: ' + count + ' items found');
+                    updateStatus(`Firebase has ${count} items`, 'info');
+                } catch (error) {
+                    console.error('❌ Firebase error:', error);
+                    updateStatus('Firebase connection error: ' + error.message, 'error');
+                }
+            } else {
+                console.log('❌ Firebase: Not connected');
+                updateStatus('Firebase is not connected', 'error');
+            }
+        };
+
+        window.attemptRecovery = async () => {
+            updateStatus('Attempting data recovery...', 'info');
+            
+            // First try localStorage
+            const localData = localStorage.getItem('inspirationGallery');
+            if (localData) {
+                try {
+                    window.inspirationData = JSON.parse(localData);
+                    displayGallery();
+                    updateStatus(`Recovered ${window.inspirationData.length} items from localStorage!`, 'success');
+                    
+                    // Offer to sync to Firebase
+                    if (firebaseEnabled && confirm('Data recovered! Would you like to sync it to Firebase?')) {
+                        await syncToFirebase();
+                    }
+                } catch (error) {
+                    updateStatus('Error parsing localStorage data', 'error');
+                }
+            } else if (firebaseEnabled) {
+                // Try Firebase
+                await syncFromFirebase();
+            } else {
+                updateStatus('No data found in localStorage or Firebase', 'error');
+            }
+        };
+
+        window.downloadBackup = () => {
+            if (window.inspirationData.length === 0) {
+                updateStatus('No data to backup!', 'error');
+                return;
+            }
+
+            const backup = {
+                version: '1.0',
+                date: new Date().toISOString(),
+                items: window.inspirationData
+            };
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `taste-of-kimberly-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            updateStatus(`Backup downloaded with ${window.inspirationData.length} items`, 'success');
+        };
+
+        window.restoreFromFile = async (file) => {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    
+                    if (backup.items && Array.isArray(backup.items)) {
+                        const confirmRestore = confirm(`This will restore ${backup.items.length} items from backup dated ${new Date(backup.date).toLocaleDateString()}. Continue?`);
+                        
+                        if (confirmRestore) {
+                            window.inspirationData = backup.items;
+                            saveToLocalStorage();
+                            displayGallery();
+                            updateStatus(`Restored ${backup.items.length} items from backup!`, 'success');
+                            
+                            if (firebaseEnabled && confirm('Would you like to sync the restored data to Firebase?')) {
+                                await syncToFirebase();
+                            }
+                        }
+                    } else {
+                        updateStatus('Invalid backup file format', 'error');
+                    }
+                } catch (error) {
+                    updateStatus('Error reading backup file: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        window.syncFromFirebase = async () => {
+            if (!firebaseEnabled || !db) {
+                updateStatus('Firebase is not available', 'error');
+                return;
+            }
+
+            updateStatus('Syncing from Firebase...', 'info');
+            try {
+                const querySnapshot = await getDocs(collection(db, 'inspirations'));
+                const firebaseData = [];
+                querySnapshot.forEach((doc) => {
+                    firebaseData.push(doc.data());
+                });
+
+                if (firebaseData.length > 0) {
+                    window.inspirationData = firebaseData;
+                    saveToLocalStorage();
+                    displayGallery();
+                    updateStatus(`Synced ${firebaseData.length} items from Firebase!`, 'success');
+                } else {
+                    updateStatus('No data found in Firebase', 'error');
+                }
+            } catch (error) {
+                updateStatus('Firebase sync error: ' + error.message, 'error');
+            }
+        };
+
+        async function syncToFirebase() {
+            if (!firebaseEnabled || !db) {
+                updateStatus('Firebase is not available', 'error');
+                return;
+            }
+
+            updateStatus('Syncing to Firebase...', 'info');
+            let synced = 0;
+            
+            for (const item of window.inspirationData) {
+                try {
+                    await setDoc(doc(db, 'inspirations', item.id), item);
+                    synced++;
+                } catch (error) {
+                    console.error('Error syncing item:', error);
+                }
+            }
+            
+            updateStatus(`Synced ${synced}/${window.inspirationData.length} items to Firebase`, 'success');
+        }
 
         // Setup event listeners
         function setupEventListeners() {
@@ -773,6 +1115,7 @@
                         await setDoc(doc(db, 'inspirations', newItem.id), newItem);
                     } catch (error) {
                         console.error('Firebase upload error:', error);
+                        updateStatus('Firebase upload failed, saved locally', 'error');
                     }
                 }
 
@@ -780,6 +1123,7 @@
                 saveToLocalStorage();
                 displayGallery();
                 closeModal('upload');
+                updateStatus('Added new inspiration!', 'success');
             };
             reader.readAsDataURL(file);
         };
@@ -842,6 +1186,7 @@
             saveToLocalStorage();
             displayGallery();
             closeModal('edit');
+            updateStatus('Updated inspiration!', 'success');
         };
 
         // Delete item
@@ -869,6 +1214,7 @@
             window.inspirationData.splice(index, 1);
             saveToLocalStorage();
             displayGallery();
+            updateStatus('Deleted inspiration', 'success');
         };
 
         // Display gallery
@@ -913,6 +1259,10 @@
                     </div>
                 </div>
             `).join('');
+
+            // Update upload button
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = `✨ Add Inspiration (${window.inspirationData.length} total)`;
         }
 
         // Get color hex
@@ -935,47 +1285,94 @@
             return colors[color] || 'linear-gradient(45deg, #FF0000, #FFA500, #FFD700, #228B22, #0066CC, #6A0DAD, #FF69B4)';
         }
 
-        // Load data
+        // FIXED Load data function
         async function loadData() {
+            console.log('Loading data...');
+            
+            // ALWAYS check localStorage first
+            const savedData = localStorage.getItem('inspirationGallery');
+            if (savedData) {
+                try {
+                    const parsed = JSON.parse(savedData);
+                    if (parsed && parsed.length > 0) {
+                        window.inspirationData = parsed;
+                        console.log('Loaded ' + parsed.length + ' items from localStorage');
+                    }
+                } catch (error) {
+                    console.error('Error parsing localStorage:', error);
+                }
+            }
+
+            // Then try Firebase if available
             if (firebaseEnabled && db) {
                 try {
                     const querySnapshot = await getDocs(collection(db, 'inspirations'));
-                    window.inspirationData = [];
-                    querySnapshot.forEach((doc) => {
-                        window.inspirationData.push(doc.data());
-                    });
+                    
+                    // IMPORTANT: Only update if Firebase returns actual data
+                    if (querySnapshot && !querySnapshot.empty) {
+                        const firebaseData = [];
+                        querySnapshot.forEach((doc) => {
+                            firebaseData.push(doc.data());
+                        });
+                        
+                        if (firebaseData.length > 0) {
+                            // If we have more data in Firebase, use it
+                            if (firebaseData.length > window.inspirationData.length) {
+                                window.inspirationData = firebaseData;
+                                saveToLocalStorage(); // Save Firebase data to localStorage
+                                console.log('Updated from Firebase: ' + firebaseData.length + ' items');
+                            } else if (window.inspirationData.length > firebaseData.length && window.inspirationData.length > 0) {
+                                // We have more data locally, offer to sync
+                                if (confirm(`You have ${window.inspirationData.length} items locally but only ${firebaseData.length} in Firebase. Sync local data to Firebase?`)) {
+                                    await syncToFirebase();
+                                }
+                            }
+                        }
+                    } else {
+                        console.log('Firebase returned no data, keeping local data');
+                        // If Firebase is empty but we have local data, offer to sync
+                        if (window.inspirationData.length > 0) {
+                            updateStatus('Firebase is empty. Using local data.', 'info');
+                        }
+                    }
                 } catch (error) {
                     console.error('Firebase load error:', error);
-                    loadFromLocalStorage();
+                    updateStatus('Firebase connection error. Using local data.', 'error');
                 }
-            } else {
-                loadFromLocalStorage();
             }
+
             displayGallery();
         }
 
         // Local storage functions
         function saveToLocalStorage() {
             localStorage.setItem('inspirationGallery', JSON.stringify(window.inspirationData));
+            console.log('Saved ' + window.inspirationData.length + ' items to localStorage');
         }
 
         function loadFromLocalStorage() {
             const saved = localStorage.getItem('inspirationGallery');
             if (saved) {
-                window.inspirationData = JSON.parse(saved);
+                try {
+                    window.inspirationData = JSON.parse(saved);
+                    console.log('Loaded ' + window.inspirationData.length + ' items from localStorage');
+                } catch (error) {
+                    console.error('Error parsing localStorage:', error);
+                    window.inspirationData = [];
+                }
             }
         }
 
         // Update sync status
         function updateSyncStatus() {
             if (firebaseEnabled) {
-                syncStatus.innerHTML = '☁️ Cloud Storage Active';
+                syncStatus.innerHTML = '☁️ Cloud Storage Active | 💾 Local Backup Enabled';
                 syncStatus.style.background = '#d4edda';
                 syncStatus.style.color = '#155724';
             } else {
-                syncStatus.innerHTML = '💾 Local Storage Mode';
-                syncStatus.style.background = '#f8f9fa';
-                syncStatus.style.color = '#495057';
+                syncStatus.innerHTML = '💾 Local Storage Mode (Firebase Offline)';
+                syncStatus.style.background = '#f8d7da';
+                syncStatus.style.color = '#721c24';
             }
         }
     </script>
