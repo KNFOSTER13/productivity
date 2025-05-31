@@ -2691,6 +2691,115 @@ const db = firebase.firestore();
             closeTemplateSelector();
             openEditPanel(newItem, brandId);
         };
+        // Bulk Scheduler Modal
+window.openBulkScheduler = function(brandId) {
+  const modal = qs('#bulkScheduler');
+  modal.classList.add('show');
+  modal.dataset.brandId = brandId;
+  renderBulkOptions();
+};
+
+window.closeBulkScheduler = function() {
+  qs('#bulkScheduler').classList.remove('show');
+};
+
+function renderBulkOptions() {
+  const type = qs('input[name="scheduleType"]:checked').value;
+  const container = qs('#bulkOptions');
+  container.innerHTML = '';
+
+  if (type === 'weekly') {
+    container.innerHTML = `
+      <label>Content Type:
+        <select id="bulkContentType">
+          <option value="video">🎥 Video</option>
+          <option value="article">✏️ Article</option>
+          <option value="newsletter">📧 Newsletter</option>
+          <option value="social">📱 Social Post</option>
+        </select>
+      </label><br><br>
+      <label>Choose Days of the Week:</label><br>
+      ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((day, i) =>
+        `<label><input type="checkbox" value="${i}"> ${day}</label>`
+      ).join(' ')}<br><br>
+      <label>Weeks Ahead: <input type="number" id="bulkWeeks" value="4" min="1" max="12"></label>
+    `;
+  } else {
+    container.innerHTML = `
+      <label>Monthly Pattern:</label><br>
+      ${[1,2,3,4].map(i => `
+        <label>Week ${i}:
+          <select data-week="${i}" class="monthPattern">
+            <option value="video">🎥 Video</option>
+            <option value="article">✏️ Article</option>
+            <option value="newsletter">📧 Newsletter</option>
+            <option value="social">📱 Social Post</option>
+          </select>
+        </label><br><br>
+      `).join('')}
+      <label>Months Ahead: <input type="number" id="bulkMonths" value="3" min="1" max="12"></label>
+    `;
+  }
+
+  qsa('input[name="scheduleType"]').forEach(radio =>
+    radio.onchange = renderBulkOptions
+  );
+}
+
+function generateSchedule() {
+  const brandId = qs('#bulkScheduler').dataset.brandId;
+  const type = qs('input[name="scheduleType"]:checked').value;
+  const today = new Date();
+  const ideas = PIPELINES[brandId].ideas || [];
+
+  if (type === 'weekly') {
+    const days = qsa('#bulkOptions input[type="checkbox"]:checked').map(cb => parseInt(cb.value));
+    const weeks = parseInt(qs('#bulkWeeks').value);
+    const contentType = qs('#bulkContentType').value;
+    const template = CONTENT_TEMPLATES[contentType];
+
+    for (let w = 0; w < weeks; w++) {
+      days.forEach(day => {
+        const date = new Date();
+        date.setDate(today.getDate() + (7 * w) + (day - today.getDay() + 7) % 7);
+        const dateStr = date.toISOString().slice(0,10);
+        const item = createItem(`${template.title} ${dateStr}`, 'ideas', {
+          ...template,
+          type: contentType,
+          scheduledDate: dateStr
+        });
+        ideas.push(item);
+      });
+    }
+  } else {
+    const months = parseInt(qs('#bulkMonths').value);
+    const weekSelectors = qsa('.monthPattern');
+
+    for (let m = 0; m < months; m++) {
+      const base = new Date(today.getFullYear(), today.getMonth() + m, 1);
+
+      weekSelectors.forEach((sel, i) => {
+        const type = sel.value;
+        const template = CONTENT_TEMPLATES[type];
+        const date = new Date(base);
+        date.setDate((i * 7) + 1); // first day of each week
+        const dateStr = date.toISOString().slice(0,10);
+        const item = createItem(`${template.title} ${dateStr}`, 'ideas', {
+          ...template,
+          type,
+          scheduledDate: dateStr
+        });
+        ideas.push(item);
+      });
+    }
+  }
+
+  PIPELINES[brandId].ideas = ideas;
+  closeBulkScheduler();
+  refreshView(brandId);
+  saveToFirebase();
+}
+
         
         // ---------- Content ideas generator ----------
         function getRandomIdea() {
