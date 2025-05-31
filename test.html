@@ -3043,7 +3043,11 @@ qs('#publishedBrandFilter').onchange = populatePublishedList;
                     exportBtn.innerHTML = '<span class="quick-action-icon">📥</span> Export Content';
                     exportBtn.onclick = function() { exportBrandContent(b.id); };
                     quickActions.appendChild(exportBtn);
-                    
+                    const publishedBtn = el('button', 'quick-action-btn');
+publishedBtn.innerHTML = '<span class="quick-action-icon">📁</span> View Published';
+publishedBtn.onclick = function() { openPublishedDirectory(); };
+quickActions.appendChild(publishedBtn);
+
                     v.appendChild(quickActions);
                     
                     // Add ideas generator
