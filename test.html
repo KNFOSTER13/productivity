@@ -2821,7 +2821,10 @@ const db = firebase.firestore();
                     
                     var bulkBtn = el('button', 'quick-action-btn');
                     bulkBtn.innerHTML = '<span class="quick-action-icon">⚡</span> Bulk Schedule';
-                    bulkBtn.onclick = function() { alert('Bulk scheduling coming soon!'); };
+                   bulkBtn.onclick = function() {
+  openBulkScheduler(b.id);
+};
+
                     quickActions.appendChild(bulkBtn);
                     
                     var exportBtn = el('button', 'quick-action-btn');
