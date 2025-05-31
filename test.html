@@ -2953,59 +2953,17 @@ const db = firebase.firestore();
                 
                 // Enable drag and drop
                 if (typeof Sortable !== 'undefined') {
-           // Replace the existing Sortable initialization (around line 1615) with this:
-var sortable = new Sortable(list, {
-    group: brand.id,
-    animation: 150,
-    onEnd: function(evt) {
-        // Get the item that was moved
-        var itemEl = evt.item;
-        var itemId = itemEl.dataset.itemId;
-        var fromStage = evt.from.parentElement.dataset.stage;
-        var toStage = evt.to.parentElement.dataset.stage;
-        var brandId = evt.to.parentElement.dataset.brand;
-        
-        // If the item was moved to a different stage
-        if (fromStage !== toStage) {
-            // Find the item in the old stage
-            var movedItem = null;
-            var fromIndex = -1;
-            
-            if (PIPELINES[brandId][fromStage]) {
-                for (var i = 0; i < PIPELINES[brandId][fromStage].length; i++) {
-                    if (PIPELINES[brandId][fromStage][i].id === itemId) {
-                        movedItem = PIPELINES[brandId][fromStage][i];
-                        fromIndex = i;
-                        break;
-                    }
+                    var sortable = new Sortable(list, {
+                        group: brand.id,
+                        animation: 150,
+                        onEnd: function(evt) {
+                            updateAll();
+                            saveToFirebase();
+                        }
+                    });
+                    sortableInstances.push(sortable);
                 }
-            }
-            
-            if (movedItem && fromIndex !== -1) {
-                // Remove from old stage
-                PIPELINES[brandId][fromStage].splice(fromIndex, 1);
-                
-                // Update the item's stage
-                movedItem.stage = toStage;
-                movedItem.modified = new Date().toISOString();
-                
-                // Add to new stage
-                if (!PIPELINES[brandId][toStage]) {
-                    PIPELINES[brandId][toStage] = [];
-                }
-                PIPELINES[brandId][toStage].splice(evt.newIndex, 0, movedItem);
-                
-                // If moving to ready or published, you might want to set a scheduled date
-                if (toStage === 'ready' && !movedItem.scheduledDate) {
-                    movedItem.scheduledDate = todayISO();
-                }
-            }
-        }
-        
-        updateAll();
-        saveToFirebase();
-    }  // <-- This closes the onEnd function
-});    // <-- This closes the Sortable constructor
+            });
             
             container.appendChild(pipe);
         }
