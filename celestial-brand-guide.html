@@ -1,0 +1,323 @@
+<!--  ░░ Celestial Brand Guide ░░
+     Save this text as “celestial-brand-guide.html”.
+     Put KNFBG.png (the star-field background you supplied) in the same folder,
+     then double-click the HTML file to view the living guidelines site.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Celestial Brand Guide</title>
+
+<!-- Google Fonts — headlines + body -->
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Lato:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════  ROOT TOKENS  ═══════════ */
+:root{
+ /* Primary */
+ --p1:#8F6BFF; --p2:#9A74FF; --p3:#A67EFF;
+ --p4:#B288FF; --p5:#BE91FF; --p6:#CA9BFF;
+ /* Secondary */
+ --s1:#6245FF; --s2:#6C57FF; --s3:#7669FF;
+ --s4:#807BFF; --s5:#8A8DFF; --s6:#949FFF;
+ /* Accent */
+ --a1:#FF70F9; --a2:#FFC368; --a3:#7EFFB0; --a4:#FF7C8A;
+ /* Neutral */
+ --n1:#FFFFFF; --n2:#F3F3F7; --n3:#E1E1EA;
+ --n4:#BBBBCC; --n5:#6E6E7F; --n6:#262630;
+ /* Metallic (for gradient refs only) */
+ --m-rose:linear-gradient(45deg,#FFD1F3 0%,#FFC4B8 100%);
+ --m-pearl:linear-gradient(45deg,#F8F8FF 0%,#E2E2F0 100%);
+ --m-platinum:linear-gradient(45deg,#D5DEF1 0%,#A8B3CC 100%);
+ --m-lavender:linear-gradient(45deg,#D8C0FF 0%,#B69CFF 100%);
+ /* Timing & misc */
+ --ease: cubic-bezier(.25,.1,.25,1);
+}
+
+/* ═══════════  RESET / BASE  ═══════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ font-family:"Lato",sans-serif;
+ color:var(--n1);
+ line-height:1.6;
+ background:url('KNFBG.png') center/cover fixed;
+ overflow-x:hidden;
+}
+h1,h2,h3,h4,h5,h6{
+ font-family:"Caprasimo",serif;
+ letter-spacing:.5px;
+}
+section{padding:5rem 4vw;border-bottom:1px solid rgba(255,255,255,.08)}
+a{color:var(--a1);text-decoration:none}
+button{font-family:"Caprasimo",serif;padding:.6em 1.4em;border:none;border-radius:.4em;background:var(--a2);color:#000;cursor:pointer;transition:.2s var(--ease)}
+button:hover{transform:translateY(-2px)}
+
+/* ═══════════  HERO  ═══════════ */
+.hero{
+ text-align:center;
+ position:relative;
+ overflow:hidden;
+}
+.hero h1{font-size:clamp(2.6rem,6vw,4rem);text-shadow:0 0 8px #0008}
+.hero p{font-size:clamp(1rem,2.1vw,1.3rem);max-width:45rem;margin:.75rem auto 0}
+.star-bg::before{
+ content:"";
+ position:absolute;inset:0;
+ background:url('KNFBG.png') center/cover fixed;
+ animation:parallax 60s linear infinite;
+ opacity:.25;pointer-events:none;
+}
+@keyframes parallax{0%{transform:translateY(0)}100%{transform:translateY(-30%)}}
+
+/* ═══════════  COLOR SWATCHES  ═══════════ */
+.palette{display:grid;gap:1.1rem}
+.palette--6{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+.swatch{
+ aspect-ratio:1/1;border-radius:.6rem;display:flex;
+ align-items:end;justify-content:center;
+ padding:.5rem;font-size:.8rem;font-weight:bold;
+ box-shadow:0 0 0 3px rgba(255,255,255,.12);
+ transition:.25s var(--ease);
+}
+.swatch:hover{transform:scale(1.05);box-shadow:0 0 0 3px #fff}
+
+/* Metallic & gradient bars */
+.bar{height:90px;border-radius:.6rem;
+ box-shadow:0 0 0 3px rgba(255,255,255,.12);
+}
+
+/* ═══════════  TYPOGRAPHY DEMO  ═══════════ */
+.type-demo h3{margin-top:2rem}
+.type-demo article{background:rgba(0,0,0,.35);padding:2rem;border-radius:1rem}
+
+.interface-demo{
+ margin-top:1rem;display:flex;flex-wrap:wrap;gap:1rem;
+}
+.interface-demo nav{background:var(--p1);padding:.6rem 1rem;border-radius:.5rem}
+.interface-demo nav a{color:var(--n1);margin-right:1rem;font-weight:700}
+.card{
+ background:rgba(0,0,0,.35);padding:1rem 1.2rem;border-radius:.8rem;flex:1 1 220px;
+}
+.card h4{margin-bottom:.3rem}
+.card p{font-size:.9rem}
+
+/* ═══════════  MOCKUPS  ═══════════ */
+.mock-grid{display:grid;gap:1.5rem;margin-top:2rem}
+.mock-3{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.mock-5{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+
+.mock{
+ position:relative;background:rgba(0,0,0,.45);
+ border:3px dashed var(--n4);border-radius:.8rem;
+ display:flex;align-items:center;justify-content:center;
+ color:var(--n4);text-align:center;font-size:.9rem;
+ aspect-ratio:16/9;
+}
+.mock::after{/* safe zone */
+ content:"";position:absolute;inset:6%;border:2px solid var(--a2);opacity:.35;border-radius:.4rem;pointer-events:none;
+}
+.mock .webcam{
+ position:absolute;bottom:6%;right:6%;
+ width:28%;height:28%;background:#000;border:2px solid var(--n5);border-radius:.4rem;
+}
+
+/* ═══════════  INTERACTIVE HOVERS  ═══════════ */
+.swatch:focus-visible,.bar:focus-visible{outline:2px solid var(--a3);outline-offset:2px}
+.mock:hover{border-style:solid}
+
+/* ═══════════  FOOTER  ═══════════ */
+footer{padding:2rem 4vw;font-size:.8rem;text-align:center;color:var(--n3)}
+</style>
+</head>
+
+<body>
+<!-- ░░░░░░░░░░  HERO  ░░░░░░░░░░ -->
+<section class="hero star-bg">
+ <h1>Celestial Brand Guide</h1>
+ <p>Crafted for bold voices who broadcast in stardust-soaked purple skies.</p>
+</section>
+
+<!-- ░░░░░░░░░░  COLOR SYSTEM  ░░░░░░░░░░ -->
+<section>
+ <h2>1 · Expanded Color System</h2>
+
+ <h3>Primary Palette</h3>
+ <div class="palette palette--6">
+  <div class="swatch" style="background:var(--p1)">#8F6BFF</div>
+  <div class="swatch" style="background:var(--p2)">#9A74FF</div>
+  <div class="swatch" style="background:var(--p3)">#A67EFF</div>
+  <div class="swatch" style="background:var(--p4)">#B288FF</div>
+  <div class="swatch" style="background:var(--p5)">#BE91FF</div>
+  <div class="swatch" style="background:var(--p6)">#CA9BFF</div>
+ </div>
+
+ <h3>Secondary Palette</h3>
+ <div class="palette palette--6">
+  <div class="swatch" style="background:var(--s1)">#6245FF</div>
+  <div class="swatch" style="background:var(--s2)">#6C57FF</div>
+  <div class="swatch" style="background:var(--s3)">#7669FF</div>
+  <div class="swatch" style="background:var(--s4)">#807BFF</div>
+  <div class="swatch" style="background:var(--s5)">#8A8DFF</div>
+  <div class="swatch" style="background:var(--s6)">#949FFF</div>
+ </div>
+
+ <h3>Accent Palette</h3>
+ <div class="palette palette--6" style="grid-template-columns:repeat(4,1fr)">
+  <div class="swatch" style="background:var(--a1)">#FF70F9</div>
+  <div class="swatch" style="background:var(--a2)">#FFC368</div>
+  <div class="swatch" style="background:var(--a3)">#7EFFB0</div>
+  <div class="swatch" style="background:var(--a4)">#FF7C8A</div>
+ </div>
+
+ <h3>Neutrals</h3>
+ <div class="palette palette--6">
+  <div class="swatch" style="background:var(--n1);color:#000">#FFFFFF</div>
+  <div class="swatch" style="background:var(--n2);color:#000">#F3F3F7</div>
+  <div class="swatch" style="background:var(--n3);color:#000">#E1E1EA</div>
+  <div class="swatch" style="background:var(--n4)">#BBBBCC</div>
+  <div class="swatch" style="background:var(--n5)">#6E6E7F</div>
+  <div class="swatch" style="background:var(--n6)">#262630</div>
+ </div>
+
+ <h3>Metallic Gradients</h3>
+ <div class="palette palette--6" style="grid-template-columns:repeat(4,1fr)">
+  <div class="bar" style="background:var(--m-rose)"></div>
+  <div class="bar" style="background:var(--m-pearl)"></div>
+  <div class="bar" style="background:var(--m-platinum)"></div>
+  <div class="bar" style="background:var(--m-lavender)"></div>
+ </div>
+
+ <h3>Brand Gradients</h3>
+ <div class="palette palette--6" style="grid-template-columns:repeat(3,1fr)">
+  <div class="bar" style="background:linear-gradient(45deg,var(--p1),var(--p3))"></div>
+  <div class="bar" style="background:linear-gradient(45deg,var(--p4),var(--a1))"></div>
+  <div class="bar" style="background:linear-gradient(45deg,var(--s1),var(--s4),var(--a4))"></div>
+</div>
+
+ <article style="margin-top:2rem;background:rgba(0,0,0,.25);padding:1.5rem;border-radius:.8rem">
+  <strong>Color Usage Guidelines</strong><br>
+  ✔ Maintain 4.5:1 contrast for body text.<br>
+  ✔ Use <code>--a2</code> or <code>--a4</code> for CTAs.<br>
+  ✖ Avoid pairing <code>--p6</code> text on <code>--n2</code> backgrounds (fails AA).<br>
+  ✖ Reserve metallic gradients for highlights &amp; merch foil only.
+ </article>
+</section>
+
+<!-- ░░░░░░░░░░  TYPOGRAPHY  ░░░░░░░░░░ -->
+<section class="type-demo">
+ <h2>2 · Typography Hierarchy</h2>
+
+ <h1>Heading One (H1)</h1>
+ <h2>Heading Two (H2)</h2>
+ <h3>Heading Three (H3)</h3>
+ <h4>Heading Four (H4)</h4>
+ <h5>Heading Five (H5)</h5>
+ <h6>Heading Six (H6)</h6>
+ <p>This is body text in Lato. <em>Lato Italic appears like this.</em>  
+ Buttons, badges &amp; nav labels use Caprasimo for extra personality.</p>
+
+ <article>
+  <h3>Editorial Snippet</h3>
+  <h2 style="margin-bottom:.4rem">When Stars Become Storytellers</h2>
+  <p>Every pixel in the night sky is a chapter in our brand’s narrative. The lavender nebula whispers curiosity; the brilliant white stars shout conviction.</p>
+ </article>
+
+ <div class="interface-demo">
+  <nav><a href="#">Home</a><a href="#">Shop</a><a href="#">About</a></nav>
+  <div class="card">
+   <h4>Card Heading</h4>
+   <p>Interface elements lean on clear hierarchy, 1.3rem→1rem→.85rem scaling.</p>
+   <button>Primary CTA</button>
+  </div>
+  <div class="card">
+   <h4>Font Rules</h4>
+   <p>• H1 = 3.2× body size<br>• H2 = 2.4×<br>• H3 = 1.7×<br>• Min mobile body = 18 px</p>
+  </div>
+ </div>
+</section>
+
+<!-- ░░░░░░░░░░  LAYOUT APPS  ░░░░░░░░░░ -->
+<section>
+ <h2>3 · Layout Applications</h2>
+ <div class="mock-grid mock-3">
+  <div class="mock">Product Card Example</div>
+  <div class="mock">Blog Post Tile</div>
+  <div class="mock">Billboard / Merch Mock</div>
+ </div>
+</section>
+
+<!-- ░░░░░░░░░░  SLIDES & LIVESTREAM  ░░░░░░░░░░ -->
+<section>
+ <h2>4 · Slide & Livestream Layouts</h2>
+ <h3>Presentation Slides</h3>
+ <div class="mock-grid mock-5">
+  <div class="mock">Title<br>Slide<br>(animated fade)</div>
+  <div class="mock">Content-heavy Slide</div>
+  <div class="mock">Split Image + Text</div>
+  <div class="mock">Quote Slide</div>
+  <div class="mock">CTA / End Slide</div>
+ </div>
+
+ <h3 style="margin-top:3rem">Livestream Screens</h3>
+ <div class="mock-grid mock-5">
+  <div class="mock"><div class="webcam"></div>Starting Soon<br>(countdown)</div>
+  <div class="mock"><div class="webcam"></div>Main Layout<br>Video + Chat</div>
+  <div class="mock">BRB Screen</div>
+  <div class="mock">Outro Screen</div>
+  <div class="mock">Alert Overlay</div>
+ </div>
+</section>
+
+<!-- ░░░░░░░░░░  STREAM PACKAGE  ░░░░░░░░░░ -->
+<section>
+ <h2>5 · “Breakfast with Kimberly” Stream Graphics</h2>
+ <h3>Pre / Post Stream Screens</h3>
+ <div class="mock-grid mock-3">
+  <div class="mock"><div class="webcam"></div>Starting Soon</div>
+  <div class="mock">BRB<br>Grabbing More Coffee</div>
+  <div class="mock">Outro / Thanks</div>
+ </div>
+
+ <h3 style="margin-top:2rem">Main Overlays</h3>
+ <div class="mock-grid mock-3">
+  <div class="mock"><div class="webcam"></div>Lower Third</div>
+  <div class="mock">Logo Bug “BwK”</div>
+  <div class="mock">Live Chat Overlay</div>
+ </div>
+
+ <h3 style="margin-top:2rem">Segment Graphics</h3>
+ <div class="mock-grid mock-5">
+  <div class="mock">Show Intro (static)</div>
+  <div class="mock">What’s on the Burner?</div>
+  <div class="mock">Pop Culture Court<br>+ Poll</div>
+  <div class="mock">Ask Kimberly Anything</div>
+  <div class="mock">Question Display</div>
+  <div class="mock">The Last Sip</div>
+ </div>
+</section>
+
+<!-- ░░░░░░░░░░  FOOTER  ░░░░░░░░░░ -->
+<footer>
+ Celestial Brand Guide · Build v1.0 · WCAG AA compliant · 16 × 9 every time ✨
+</footer>
+
+<!-- ═══════════  TINY JS (OPTIONAL)  ═══════════ -->
+<script>
+/* Coffee-steam emoji easter egg on “Starting Soon” mock */
+document.querySelectorAll('.mock').forEach(m=>{
+  if(m.textContent.includes('Starting Soon')){
+    let span=document.createElement('span');
+    span.textContent='☕️';span.style.position='absolute';
+    span.style.fontSize='2rem';span.style.opacity='.3';
+    span.style.animation='steam 3s ease-in-out infinite';
+    m.appendChild(span);
+  }
+});
+/* simple float */
+document.head.appendChild(document.createElement('style')).textContent=
+`@keyframes steam{0%{transform:translateY(15%);opacity:.0}
+ 50%{opacity:.5}100%{transform:translateY(-110%);opacity:0}}`;
+</script>
+</body>
+</html>
