@@ -1971,36 +1971,41 @@
         
         // Data Management
         const data = {
-            async saveData() {
-                try {
-                    state.lastLocalSaveTime = Date.now();
-                    ui.updateSyncStatus('🔄 Syncing...');
-                    const dataToSave = this.getCurrentDayData();
-                    const todayKey = utils.getDateString();
-                    
-                    // Save to localStorage first (backup)
-                    localStorage.setItem(todayKey, JSON.stringify(dataToSave));
-                    
-                    // Save to Firebase
-                    await db.collection('productivity').doc(todayKey)
-                        .set({
-                            ...dataToSave,
-                            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    
-                    ui.updateSyncStatus('☁ Cloud Synced');
-                    state.unsavedChanges = false;
-                    
-                    setTimeout(() => {
-                        ui.updateSyncStatus('Ready to Track');
-                    }, 2000);
-                    
-                } catch (error) {
-                    console.error('Save error:', error);
-                    ui.updateSyncStatus('⚠ Local Only');
-                    utils.showToast('Data saved locally. Cloud sync failed.');
-                }
-            },
+          async saveData() {
+    try {
+        state.lastLocalSaveTime = Date.now();
+        ui.updateSyncStatus('🔄 Syncing...');
+        const dataToSave = this.getCurrentDayData();
+        const todayKey = utils.getDateString();
+        
+        // Try localStorage but don't fail if it's full
+        try {
+            localStorage.setItem(todayKey, JSON.stringify(dataToSave));
+        } catch (localError) {
+            console.warn('localStorage full, skipping local save:', localError);
+            // Continue with Firebase save even if localStorage fails
+        }
+        
+        // Save to Firebase
+        await db.collection('productivity').doc(todayKey)
+            .set({
+                ...dataToSave,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        
+        ui.updateSyncStatus('☁ Cloud Synced');
+        state.unsavedChanges = false;
+        
+        setTimeout(() => {
+            ui.updateSyncStatus('Ready to Track');
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Save error:', error);
+        ui.updateSyncStatus('⚠ Cloud Sync Failed');
+        utils.showToast('Cloud sync failed. Data may not be saved.');
+    }
+},
             
             async loadData(date = utils.getDateString()) {
                 try {
